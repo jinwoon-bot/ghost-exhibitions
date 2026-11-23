@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101310"><meta name="description" content="귀신의 전화 · 한국 전통 귀신 전화기 인터랙티브 전시">
+  <title>귀신의 전화 — 끊지 못한 이야기</title>
+  <link rel="icon" href="./assets/phone.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css?v=4.2.0"><link rel="stylesheet" href="./studio.css?v=4.2.0">
+</head>
+<body data-state="IDLE">
+  <main class="exhibit" aria-label="귀신의 전화 전시 화면">
+    <div class="grain" aria-hidden="true"></div><div class="wall-line" aria-hidden="true"></div>
+    <header class="art-title"><span class="edition">THE LINE THAT NEVER DIED</span><h1>귀신의 전화</h1><p>끊지 못한 이야기</p></header>
+    <div class="phone-scene" aria-hidden="true"><div class="halo"></div><img class="phone" src="./assets/phone.svg" alt=""><div class="table-shadow"></div><span class="phone-number">돌아오지 않는 이에게</span></div>
+    <div class="line-status" aria-hidden="true"><span></span><i></i><span></span></div>
+    <footer class="art-footer"><span>한국 전통 귀신 인터랙티브</span><span>AI 음성: ElevenLabs · 비상업적 이용 · 배경음 CC0</span></footer>
+  </main>
+  <section id="setup" class="veil" aria-labelledby="setupTitle">
+    <div class="setup-card"><span class="eyebrow">EXHIBITION / OPERATOR SETUP</span><h2 id="setupTitle">아직, 끊지 마세요.</h2><p class="intro">전화가 울리면 이야기가 시작됩니다.<br>관객은 수화기를 들고, 목소리는 선을 건너옵니다.</p>
+      <div class="setup-note"><span class="dot"></span><p>현재 장비 없는 가상 센서 모드<br><small>실제 전화기·ESP32 연결로 표시하지 않습니다.</small></p></div>
+      <button id="start" disabled class="primary">오디오 활성화하고 시작 <span>↗</span></button>
+      <button id="previewStart" disabled class="quiet">장비 없이 한 통화 듣기</button><a class="quiet" style="display:block;text-align:center" href="./library.html?v=4.2.0">모든 음원 모아 듣기</a><button id="openSetup" disabled class="quiet">설정 먼저 보기</button><p id="setupError" class="error" role="alert"></p>
+      <p class="fine">운영자가 한 번 시작하면 관객 조작 화면은 숨겨집니다.<br>여섯 귀신의 사전 제작 음성·배경음과 추가20편의 짧은 통화가 포함되어 있습니다. 전시 중에는 인터넷이나 음성 API를 사용하지 않습니다.</p>
+    </div>
+  </section>
+  <section id="previewControls" hidden aria-label="장비 없는 전화 시연"><span>가상 전화 시연 · 실제 센서 미연결</span><label>다음 통화 <select id="previewEpisode" aria-label="통화 연출"><option value="auto">자동 선택 · 기존26+신규4 · 희귀 히든2</option><option value="classic">기존 전체 대사</option></select></label><label>다음 발신자 <select id="previewGhost" aria-label="시연 발신자"><option value="random">회차마다 다른 귀신</option></select></label><div><button id="previewAnswer">수화기 들기</button><button id="previewHangup">수화기 내려놓기</button><button id="previewNext">다음 관객</button><button id="previewExit">시연 닫기</button><a href="./library.html?v=4.2.0">모든 음원 모아 듣기</a></div></section>
+  <button id="operatorHandle" aria-label="운영자 패널 열기" title="D · 운영자 패널">···</button>
+  <aside id="panel" class="panel" aria-label="전시 운영자 패널" hidden>
+    <a class="studio-link" href="./studio.html">Voice Studio · 목소리 제작 / A·B 비교 ↗</a><div class="panel-head"><div><span class="eyebrow">CONTROL ROOM <b>V4.2</b></span><h2>전화 운영실</h2></div><button id="closePanel" class="icon-button" aria-label="운영자 패널 닫기">×</button></div>
+    <div class="status-card"><div class="state-row"><strong id="state">IDLE</strong><span id="sensor">가상 센서 모드</span></div><p id="stateDetail">다음 관객 대기</p><p id="voiceState" role="status" aria-live="polite">오디오 활성화 전</p><p id="voiceError" class="error"></p><div class="indicators"><span id="presence">관객 없음</span><span id="hook">수화기 내려놓음</span><span id="armed">재호출 준비</span></div></div>
+    <nav class="tabs" aria-label="운영 설정 분류"><button data-tab="simulate" class="selected">체험 시험</button><button data-tab="voices">목소리</button><button data-tab="installation">설치·진단</button></nav>
+    <section data-pane="simulate">
+      <div class="section-label">VIRTUAL SENSOR <span>장비 없이 전체 흐름 시험</span></div>
+      <div class="sim-grid"><button data-event="visitor_enter"><span>01</span>관객 접근</button><button data-event="visitor_leave"><span>04</span>관객 퇴장</button><button data-event="handset_lifted"><span>02</span>수화기 들기</button><button data-event="handset_replaced"><span>03</span>수화기 내려놓기</button></div>
+        <p class="fine">같은 관객도 수화기를 내려놓고 다시 들면 새 통화가 시작됩니다. 준비 중 다시 들었으면 준비 시간이 끝날 때 연결됩니다. 들고 있기만 하면 자동 반복하지 않습니다.</p>
+      <label class="check"><input id="expandedScenes" type="checkbox" checked>추가20편을 자동 통화에 포함</label><label class="check"><input id="directed" type="checkbox" checked>연출형 통화 · 침묵 후 상대방 종료</label><label>배경음 크기<input id="ambientVolume" type="range" min="0" max="0.15" step="0.005"></label><label>전화선 잡음<input id="lineNoise" type="range" min="0" max="1" step="0.05"></label><label>말 중간 정적 (초)<input id="lineGap" type="range" min="0.6" max="4" step="0.1"></label><label>호출할 귀신<select id="ghost"></select></label><label>재생 방식<select id="mode"><option value="browser">C · 브라우저 한국어 음성 테스트</option><option value="mp3">MP3 Only</option><option value="ai">AI Only</option><option value="hybrid">Hybrid · 선정 음원 / AI</option><option value="random">Random · 활성 후보</option></select></label>
+      <div class="test-row"><button id="ringTest">벨 시험</button><button id="mp3Test">MP3 시험</button><button id="aiTest">AI 시험</button></div><div class="test-row"><button id="stopTest">시험 중단</button><button id="reset" class="danger">시스템 초기화</button></div>
+      <p class="fine">시험 음성도 수화기를 내려놓거나 ‘시험 중단’을 누르면 즉시 멈춥니다. 실제 통화 중 별도 시험은 차단합니다.</p>
+    </section>
+    <section data-pane="voices" hidden>
+      <div class="section-label">VOICE LIBRARY <span>귀신별 데이터 설정</span></div>
+      <label>편집할 귀신<select id="editGhost"></select></label>
+      <div class="two"><label>이름<input id="ghostName" maxlength="50"></label><label>기본 모드<select id="ghostMode"><option value="browser">브라우저 테스트</option><option value="mp3">MP3</option><option value="ai">AI</option></select></label></div>
+      <label class="check"><input type="checkbox" id="enabled">이 귀신 사용</label>
+      <label>AI 제공자<select id="provider"><option value="elevenlabs">ElevenLabs · TTS</option><option value="fish">Fish Audio</option><option value="custom">운영자 전용 TTS 게이트웨이</option></select></label>
+      <label>모델 ID<input id="model" list="models" autocomplete="off"><datalist id="models"><option value="eleven_multilingual_v2"><option value="eleven_flash_v2_5"><option value="eleven_v3"><option value="s2.1-pro"><option value="s2.1-pro-free"></datalist></label>
+      <label>권한을 확보한 목소리 ID<input id="voiceId" autocomplete="off" placeholder="실제 계정에서 사용할 수 있는 ID"></label>
+      <label>발성·감정 지시<textarea id="style" rows="3" maxlength="1200"></textarea></label>
+      <p class="fine">Multilingual v2는 자유로운 스타일 지시 프롬프트를 지원하지 않습니다. 해당 모델은 목소리 선택·속도·안정성으로 조절하며, 스타일 메모를 읽어 주지 않습니다. 지시를 전달하는 별도 게이트웨이는 서버 어댑터로 연결합니다.</p>
+      <div class="two"><label>속도<input id="rate" type="number" min="0.6" max="1.2" step="0.05"></label><label>귀신별 음량<input id="ghostVolume" type="number" min="0" max="0.65" step="0.05"></label></div>
+      <label class="check"><input type="checkbox" id="telephone">전화선 음질 사용</label>
+      <label>대사 · 한 줄에 하나<textarea id="lines" rows="6"></textarea></label><label>프로젝트 MP3 경로 · 한 줄에 하나<textarea id="mp3Paths" rows="2" placeholder="assets/audio/songaksi-01.mp3"></textarea></label>
+      <div class="two"><button id="saveGhost">귀신 설정 저장</button><button id="newGhost">새 귀신 추가</button></div>
+      <label class="file-button">이 PC에서 MP3 가져오기<input id="mp3Files" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm" multiple></label><p id="fileNote" class="fine">가져온 파일은 이 탭에서만 사용됩니다. 다른 PC로 옮길 때 프로젝트 assets/audio에 넣고 경로를 등록하세요.</p>
+      <label>브라우저 한국어 목소리<select id="browserVoice"><option value="">한국어 자동 선택</option></select></label><p id="browserVoiceNote" class="fine"></p>
+      <div class="test-row"><button id="exportConfig">설정 내보내기</button><label class="file-button compact">설정 가져오기<input id="importConfig" type="file" accept="application/json"></label></div>
+      <p class="fine">AI 대사를 바꾼 뒤에는 내보낸 설정으로 백엔드 허용 목록도 배포해야 합니다. 브라우저의 임의 대사·모델은 서버가 실행하지 않습니다.</p>
+    </section>
+    <section data-pane="installation" hidden>
+      <div class="section-label">AUDIO & HARDWARE <span>연결은 실제 결과로 확인</span></div>
+      <label>벨 음량 <output id="ringVolumeValue"></output><input id="ringVolume" type="range" min="0" max="0.5" step="0.01"></label>
+      <label>수화기 음량 <output id="handsetVolumeValue"></output><input id="handsetVolume" type="range" min="0" max="0.65" step="0.01"></label>
+      <label>전화선 잡음 <output id="noiseValue"></output><input id="noise" type="range" min="0" max="0.04" step="0.001"></label>
+      <label class="check"><input id="effect" type="checkbox">MP3·AI 전화선 필터 / 미세 왜곡</label>
+      <p class="fine">브라우저 TTS에는 필터·별도 출력이 적용되지 않습니다. 수치 제한은 실제 귀에 닿는 음압을 보장하지 않으므로, 현장에서 낮은 시스템 음량부터 조정하세요.</p>
+      <div class="two"><label>통화 시작 지연(ms)<input id="delayMs" type="number" min="0" max="6000" step="100"></label><label>재호출 대기(ms)<input id="cooldownMs" type="number" min="1000" max="60000" step="500"></label></div>
+      <div class="two"><label>벨 대기 제한(ms)<input id="ringTimeoutMs" type="number" min="5000" max="90000" step="1000"></label><label>최대 통화(ms)<input id="callTimeoutMs" type="number" min="5000" max="180000" step="1000"></label></div>
+      <label>벨 출력 장치<select id="ringOutput"><option value="">Windows 기본 출력</option></select></label><label>MP3·AI 수화기 출력<select id="output"><option value="">Windows 기본 출력</option></select></label><button id="refreshOutputs">출력 장치 새로고침</button>
+      <label>서버리스 AI 주소<input id="endpoint" type="url" placeholder="https://ghost-phone-api.example.workers.dev/"></label>
+      <label>운영자 접속 토큰<input id="token" type="password" autocomplete="off" placeholder="공급자 API 키를 넣지 마세요"></label><p class="fine">이 토큰은 현재 탭의 메모리에만 있습니다. 공급자 API 키는 Cloudflare 비밀 환경변수로만 등록합니다.</p>
+      <label class="check"><input id="cache" type="checkbox">동일 음원 메모리 캐시 · 최대 12MiB</label><button id="clearCache">음원 캐시 지우기</button><button id="checkBackend">AI 서버 연결 점검 · 생성 안 함</button>
+      <p id="backendState" class="fine">AI 백엔드 미설정 · 실제 AI 요청 미검증</p>
+      <div class="serial-row"><button id="connectSerial">ESP32 USB 연결</button><button id="disconnectSerial">USB 해제</button></div><p class="fine">ESP32는 센서 신호만 전달합니다. 외부 AI 음성은 PC의 오디오 장치로 출력합니다.</p>
+      <div class="test-row"><button id="diagnose">시스템 진단</button><button id="fullscreen">전체화면</button></div><pre id="diagnostics">진단 전</pre>
+    </section>
+    <details class="log-wrap"><summary>최근 기록 · <span id="logCount">0</span></summary><ol id="log"></ol></details>
+    <p class="panel-foot">D 운영실 · F 전체화면 · R 초기화 · Esc 시험 중단<br>가상 센서 / 실제 하드웨어 시험은 별도</p>
+  </aside>
+  <script type="module" src="./js/main.js?v=4.2.0"></script>
+</body></html>

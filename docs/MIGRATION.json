@@ -1,0 +1,1302 @@
+{
+  "created": "2026-11-20",
+  "source": "previous approved six-work offline collection",
+  "source_bytes": 182984800,
+  "shared_omitted_bytes": 91261600,
+  "copied_files": 295,
+  "shared_files": [
+    "vendor/vision_bundle.js",
+    "vendor/wasm/vision_wasm_internal.js",
+    "vendor/wasm/vision_wasm_internal.wasm",
+    "models/pose_landmarker_lite.task",
+    "models/face_landmarker.task"
+  ],
+  "omitted": [
+    {
+      "path": "01_손각시_몽달귀신/models/face_landmarker.task",
+      "shared": "shared/mediapipe/models/face_landmarker.task",
+      "bytes": 3758596
+    },
+    {
+      "path": "01_손각시_몽달귀신/models/pose_landmarker_lite.task",
+      "shared": "shared/mediapipe/models/pose_landmarker_lite.task",
+      "bytes": 5777746
+    },
+    {
+      "path": "01_손각시_몽달귀신/vendor/vision_bundle.js",
+      "shared": "shared/mediapipe/vendor/vision_bundle.js",
+      "bytes": 156016
+    },
+    {
+      "path": "01_손각시_몽달귀신/vendor/wasm/vision_wasm_internal.js",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.js",
+      "bytes": 336624
+    },
+    {
+      "path": "01_손각시_몽달귀신/vendor/wasm/vision_wasm_internal.wasm",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.wasm",
+      "bytes": 14665716
+    },
+    {
+      "path": "02_고관대면/models/pose_landmarker_lite.task",
+      "shared": "shared/mediapipe/models/pose_landmarker_lite.task",
+      "bytes": 5777746
+    },
+    {
+      "path": "02_고관대면/vendor/vision_bundle.js",
+      "shared": "shared/mediapipe/vendor/vision_bundle.js",
+      "bytes": 156016
+    },
+    {
+      "path": "02_고관대면/vendor/wasm/vision_wasm_internal.js",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.js",
+      "bytes": 336624
+    },
+    {
+      "path": "02_고관대면/vendor/wasm/vision_wasm_internal.wasm",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.wasm",
+      "bytes": 14665716
+    },
+    {
+      "path": "04_귀신의전화/ASSET_HASHES.json",
+      "reason": "new site manifest records rewritten asset locations"
+    },
+    {
+      "path": "05_화면속에만있는사람/ASSET_HASHES.json",
+      "reason": "new site manifest records rewritten asset locations"
+    },
+    {
+      "path": "05_화면속에만있는사람/models/face_landmarker.task",
+      "shared": "shared/mediapipe/models/face_landmarker.task",
+      "bytes": 3758596
+    },
+    {
+      "path": "05_화면속에만있는사람/models/pose_landmarker_lite.task",
+      "shared": "shared/mediapipe/models/pose_landmarker_lite.task",
+      "bytes": 5777746
+    },
+    {
+      "path": "05_화면속에만있는사람/vendor/vision_bundle.js",
+      "shared": "shared/mediapipe/vendor/vision_bundle.js",
+      "bytes": 156016
+    },
+    {
+      "path": "05_화면속에만있는사람/vendor/wasm/vision_wasm_internal.js",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.js",
+      "bytes": 336624
+    },
+    {
+      "path": "05_화면속에만있는사람/vendor/wasm/vision_wasm_internal.wasm",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.wasm",
+      "bytes": 14665716
+    },
+    {
+      "path": "06_금지된방송/ASSET_HASHES.json",
+      "reason": "new site manifest records rewritten asset locations"
+    },
+    {
+      "path": "06_금지된방송/models/pose_landmarker_lite.task",
+      "shared": "shared/mediapipe/models/pose_landmarker_lite.task",
+      "bytes": 5777746
+    },
+    {
+      "path": "06_금지된방송/vendor/vision_bundle.js",
+      "shared": "shared/mediapipe/vendor/vision_bundle.js",
+      "bytes": 156016
+    },
+    {
+      "path": "06_금지된방송/vendor/wasm/vision_wasm_internal.js",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.js",
+      "bytes": 336624
+    },
+    {
+      "path": "06_금지된방송/vendor/wasm/vision_wasm_internal.wasm",
+      "shared": "shared/mediapipe/vendor/wasm/vision_wasm_internal.wasm",
+      "bytes": 14665716
+    }
+  ],
+  "copied": [
+    {
+      "source": "01_손각시_몽달귀신/app.mjs",
+      "target": "works/wedding/app.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/characters/manifest.json",
+      "target": "works/wedding/assets/characters/manifest.json"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/characters/mongdal.webp",
+      "target": "works/wedding/assets/characters/mongdal.webp"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/characters/songaksi.webp",
+      "target": "works/wedding/assets/characters/songaksi.webp"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/manifest.json",
+      "target": "works/wedding/assets/film/manifest.json"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/mongdal_poster.webp",
+      "target": "works/wedding/assets/film/mongdal_poster.webp"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/mongdal_reveal.webm",
+      "target": "works/wedding/assets/film/mongdal_reveal.webm"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/mongdal_walk.webm",
+      "target": "works/wedding/assets/film/mongdal_walk.webm"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/songaksi_poster.webp",
+      "target": "works/wedding/assets/film/songaksi_poster.webp"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/songaksi_reveal.webm",
+      "target": "works/wedding/assets/film/songaksi_reveal.webm"
+    },
+    {
+      "source": "01_손각시_몽달귀신/assets/film/songaksi_walk.webm",
+      "target": "works/wedding/assets/film/songaksi_walk.webm"
+    },
+    {
+      "source": "01_손각시_몽달귀신/diagnostics.html",
+      "target": "works/wedding/diagnostics.html"
+    },
+    {
+      "source": "01_손각시_몽달귀신/diagnostics.mjs",
+      "target": "works/wedding/diagnostics.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/film-review.html",
+      "target": "works/wedding/film-review.html"
+    },
+    {
+      "source": "01_손각시_몽달귀신/film-review.mjs",
+      "target": "works/wedding/film-review.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/index.html",
+      "target": "works/wedding/index.html"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/camera.mjs",
+      "target": "works/wedding/lib/camera.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/config.mjs",
+      "target": "works/wedding/lib/config.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/interaction.mjs",
+      "target": "works/wedding/lib/interaction.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/metrics.mjs",
+      "target": "works/wedding/lib/metrics.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/paths.mjs",
+      "target": "works/wedding/lib/paths.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/scene-film.mjs",
+      "target": "works/wedding/lib/scene-film.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/scene.mjs",
+      "target": "works/wedding/lib/scene.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/seat.mjs",
+      "target": "works/wedding/lib/seat.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/lib/vision.mjs",
+      "target": "works/wedding/lib/vision.mjs"
+    },
+    {
+      "source": "01_손각시_몽달귀신/licenses/mediapipe-APACHE-2.0.txt",
+      "target": "works/wedding/licenses/mediapipe-APACHE-2.0.txt"
+    },
+    {
+      "source": "01_손각시_몽달귀신/licenses/models-and-vendor.json",
+      "target": "works/wedding/licenses/models-and-vendor.json"
+    },
+    {
+      "source": "01_손각시_몽달귀신/licenses/node-runtime.json",
+      "target": "works/wedding/licenses/node-runtime.json"
+    },
+    {
+      "source": "01_손각시_몽달귀신/licenses/pages-assets.json",
+      "target": "works/wedding/licenses/pages-assets.json"
+    },
+    {
+      "source": "01_손각시_몽달귀신/licenses/README.md",
+      "target": "works/wedding/licenses/README.md"
+    },
+    {
+      "source": "01_손각시_몽달귀신/style.css",
+      "target": "works/wedding/style.css"
+    },
+    {
+      "source": "01_손각시_몽달귀신/vision-worker.js",
+      "target": "works/wedding/vision-worker.js"
+    },
+    {
+      "source": "02_고관대면/.nojekyll",
+      "target": "works/portrait/.nojekyll"
+    },
+    {
+      "source": "02_고관대면/assets/eyes.json",
+      "target": "works/portrait/assets/eyes.json"
+    },
+    {
+      "source": "02_고관대면/assets/eye_left.png",
+      "target": "works/portrait/assets/eye_left.png"
+    },
+    {
+      "source": "02_고관대면/assets/eye_right.png",
+      "target": "works/portrait/assets/eye_right.png"
+    },
+    {
+      "source": "02_고관대면/assets/mask_left.png",
+      "target": "works/portrait/assets/mask_left.png"
+    },
+    {
+      "source": "02_고관대면/assets/mask_right.png",
+      "target": "works/portrait/assets/mask_right.png"
+    },
+    {
+      "source": "02_고관대면/assets/noise_overlay.png",
+      "target": "works/portrait/assets/noise_overlay.png"
+    },
+    {
+      "source": "02_고관대면/assets/portrait_base.png",
+      "target": "works/portrait/assets/portrait_base.png"
+    },
+    {
+      "source": "02_고관대면/assets/portrait_original.png",
+      "target": "works/portrait/assets/portrait_original.png"
+    },
+    {
+      "source": "02_고관대면/bootstrap.js",
+      "target": "works/portrait/bootstrap.js"
+    },
+    {
+      "source": "02_고관대면/index.html",
+      "target": "works/portrait/index.html"
+    },
+    {
+      "source": "02_고관대면/lib/ambient.js",
+      "target": "works/portrait/lib/ambient.js"
+    },
+    {
+      "source": "02_고관대면/lib/body-candidates.js",
+      "target": "works/portrait/lib/body-candidates.js"
+    },
+    {
+      "source": "02_고관대면/lib/camera-input.js",
+      "target": "works/portrait/lib/camera-input.js"
+    },
+    {
+      "source": "02_고관대면/lib/gaze.js",
+      "target": "works/portrait/lib/gaze.js"
+    },
+    {
+      "source": "02_고관대면/lib/viewer.js",
+      "target": "works/portrait/lib/viewer.js"
+    },
+    {
+      "source": "02_고관대면/licenses/mediapipe-APACHE-2.0.txt",
+      "target": "works/portrait/licenses/mediapipe-APACHE-2.0.txt"
+    },
+    {
+      "source": "02_고관대면/licenses/POSE_LITE.md",
+      "target": "works/portrait/licenses/POSE_LITE.md"
+    },
+    {
+      "source": "02_고관대면/licenses/README.md",
+      "target": "works/portrait/licenses/README.md"
+    },
+    {
+      "source": "02_고관대면/models/face_detector.tflite",
+      "target": "works/portrait/models/face_detector.tflite"
+    },
+    {
+      "source": "02_고관대면/script.js",
+      "target": "works/portrait/script.js"
+    },
+    {
+      "source": "02_고관대면/style.css",
+      "target": "works/portrait/style.css"
+    },
+    {
+      "source": "02_고관대면/tracking-worker.js",
+      "target": "works/portrait/tracking-worker.js"
+    },
+    {
+      "source": "03_창귀/.nojekyll",
+      "target": "works/chang-gwi/.nojekyll"
+    },
+    {
+      "source": "03_창귀/assets/demo/pose_1.mp4",
+      "target": "works/chang-gwi/assets/demo/pose_1.mp4"
+    },
+    {
+      "source": "03_창귀/assets/paper/hanji.png",
+      "target": "works/chang-gwi/assets/paper/hanji.png"
+    },
+    {
+      "source": "03_창귀/ASSET_HASHES.json",
+      "target": "works/chang-gwi/ASSET_HASHES.json"
+    },
+    {
+      "source": "03_창귀/index.html",
+      "target": "works/chang-gwi/index.html"
+    },
+    {
+      "source": "03_창귀/js/app.js",
+      "target": "works/chang-gwi/js/app.js"
+    },
+    {
+      "source": "03_창귀/js/awake.js",
+      "target": "works/chang-gwi/js/awake.js"
+    },
+    {
+      "source": "03_창귀/js/bootstrap.js",
+      "target": "works/chang-gwi/js/bootstrap.js"
+    },
+    {
+      "source": "03_창귀/js/camera-enhancement.js",
+      "target": "works/chang-gwi/js/camera-enhancement.js"
+    },
+    {
+      "source": "03_창귀/js/camera.js",
+      "target": "works/chang-gwi/js/camera.js"
+    },
+    {
+      "source": "03_창귀/js/core.js",
+      "target": "works/chang-gwi/js/core.js"
+    },
+    {
+      "source": "03_창귀/js/diagnostics.js",
+      "target": "works/chang-gwi/js/diagnostics.js"
+    },
+    {
+      "source": "03_창귀/js/dissolve-gpu.js",
+      "target": "works/chang-gwi/js/dissolve-gpu.js"
+    },
+    {
+      "source": "03_창귀/js/dissolve-motion.js",
+      "target": "works/chang-gwi/js/dissolve-motion.js"
+    },
+    {
+      "source": "03_창귀/js/effects.js",
+      "target": "works/chang-gwi/js/effects.js"
+    },
+    {
+      "source": "03_창귀/js/environment.js",
+      "target": "works/chang-gwi/js/environment.js"
+    },
+    {
+      "source": "03_창귀/js/foreground.js",
+      "target": "works/chang-gwi/js/foreground.js"
+    },
+    {
+      "source": "03_창귀/js/input.js",
+      "target": "works/chang-gwi/js/input.js"
+    },
+    {
+      "source": "03_창귀/js/live-status.js",
+      "target": "works/chang-gwi/js/live-status.js"
+    },
+    {
+      "source": "03_창귀/js/main.js",
+      "target": "works/chang-gwi/js/main.js"
+    },
+    {
+      "source": "03_창귀/js/mask.js",
+      "target": "works/chang-gwi/js/mask.js"
+    },
+    {
+      "source": "03_창귀/js/paper-gpu.js",
+      "target": "works/chang-gwi/js/paper-gpu.js"
+    },
+    {
+      "source": "03_창귀/js/paper-motion.js",
+      "target": "works/chang-gwi/js/paper-motion.js"
+    },
+    {
+      "source": "03_창귀/js/quality.js",
+      "target": "works/chang-gwi/js/quality.js"
+    },
+    {
+      "source": "03_창귀/js/sound.js",
+      "target": "works/chang-gwi/js/sound.js"
+    },
+    {
+      "source": "03_창귀/js/tracking.js",
+      "target": "works/chang-gwi/js/tracking.js"
+    },
+    {
+      "source": "03_창귀/js/vision-worker.js",
+      "target": "works/chang-gwi/js/vision-worker.js"
+    },
+    {
+      "source": "03_창귀/models/cpu/group1-shard1of1.bin",
+      "target": "works/chang-gwi/models/cpu/group1-shard1of1.bin"
+    },
+    {
+      "source": "03_창귀/models/cpu/model.json",
+      "target": "works/chang-gwi/models/cpu/model.json"
+    },
+    {
+      "source": "03_창귀/models/group1-shard10of12.bin",
+      "target": "works/chang-gwi/models/group1-shard10of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard11of12.bin",
+      "target": "works/chang-gwi/models/group1-shard11of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard12of12.bin",
+      "target": "works/chang-gwi/models/group1-shard12of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard1of12.bin",
+      "target": "works/chang-gwi/models/group1-shard1of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard2of12.bin",
+      "target": "works/chang-gwi/models/group1-shard2of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard3of12.bin",
+      "target": "works/chang-gwi/models/group1-shard3of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard4of12.bin",
+      "target": "works/chang-gwi/models/group1-shard4of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard5of12.bin",
+      "target": "works/chang-gwi/models/group1-shard5of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard6of12.bin",
+      "target": "works/chang-gwi/models/group1-shard6of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard7of12.bin",
+      "target": "works/chang-gwi/models/group1-shard7of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard8of12.bin",
+      "target": "works/chang-gwi/models/group1-shard8of12.bin"
+    },
+    {
+      "source": "03_창귀/models/group1-shard9of12.bin",
+      "target": "works/chang-gwi/models/group1-shard9of12.bin"
+    },
+    {
+      "source": "03_창귀/models/model.json",
+      "target": "works/chang-gwi/models/model.json"
+    },
+    {
+      "source": "03_창귀/models/UPSTREAM-README.md",
+      "target": "works/chang-gwi/models/UPSTREAM-README.md"
+    },
+    {
+      "source": "03_창귀/style.css",
+      "target": "works/chang-gwi/style.css"
+    },
+    {
+      "source": "03_창귀/THIRD_PARTY_NOTICES.md",
+      "target": "works/chang-gwi/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "source": "03_창귀/vendor/body-pix.min.js",
+      "target": "works/chang-gwi/vendor/body-pix.min.js"
+    },
+    {
+      "source": "03_창귀/vendor/LICENSE-bodypix.txt",
+      "target": "works/chang-gwi/vendor/LICENSE-bodypix.txt"
+    },
+    {
+      "source": "03_창귀/vendor/LICENSE-tfjs.txt",
+      "target": "works/chang-gwi/vendor/LICENSE-tfjs.txt"
+    },
+    {
+      "source": "03_창귀/vendor/tf.min.js",
+      "target": "works/chang-gwi/vendor/tf.min.js"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/LICENSE-tfjs.txt",
+      "target": "works/chang-gwi/vendor/wasm/LICENSE-tfjs.txt"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/LICENSE-XNNPACK.txt",
+      "target": "works/chang-gwi/vendor/wasm/LICENSE-XNNPACK.txt"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/tf-backend-wasm.min.js",
+      "target": "works/chang-gwi/vendor/wasm/tf-backend-wasm.min.js"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/tfjs-backend-wasm-simd.wasm",
+      "target": "works/chang-gwi/vendor/wasm/tfjs-backend-wasm-simd.wasm"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/tfjs-backend-wasm-threaded-simd.wasm",
+      "target": "works/chang-gwi/vendor/wasm/tfjs-backend-wasm-threaded-simd.wasm"
+    },
+    {
+      "source": "03_창귀/vendor/wasm/tfjs-backend-wasm.wasm",
+      "target": "works/chang-gwi/vendor/wasm/tfjs-backend-wasm.wasm"
+    },
+    {
+      "source": "04_귀신의전화/.nojekyll",
+      "target": "works/ghost-phone/.nojekyll"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/changgwi.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/changgwi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/CREDITS.md",
+      "target": "works/ghost-phone/assets/audio/cast/CREDITS.md"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/gogwandaemyeon.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/gogwandaemyeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/mongdal.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/mongdal.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/seongju.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/seongju.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/songaksi.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/songaksi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/cast/yeopjeon.mp3",
+      "target": "works/ghost-phone/assets/audio/cast/yeopjeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/decoder-probe.mp3",
+      "target": "works/ghost-phone/assets/audio/decoder-probe.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/00871fac45eacd6a4fbf8dfd.mp3",
+      "target": "works/ghost-phone/assets/audio/library/00871fac45eacd6a4fbf8dfd.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/05e82ae1cc8b8a9730fdfe54.mp3",
+      "target": "works/ghost-phone/assets/audio/library/05e82ae1cc8b8a9730fdfe54.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/1aa78ffed4ecd0c2dfa73223.mp3",
+      "target": "works/ghost-phone/assets/audio/library/1aa78ffed4ecd0c2dfa73223.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/1c8c50d592e07f45630ee706.mp3",
+      "target": "works/ghost-phone/assets/audio/library/1c8c50d592e07f45630ee706.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/1fd9db23afb0d016325d0357.mp3",
+      "target": "works/ghost-phone/assets/audio/library/1fd9db23afb0d016325d0357.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/24b44e50729c3c1e6f13434d.mp3",
+      "target": "works/ghost-phone/assets/audio/library/24b44e50729c3c1e6f13434d.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/2d0127d35d492332cae7d53a.mp3",
+      "target": "works/ghost-phone/assets/audio/library/2d0127d35d492332cae7d53a.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/3555dbc98f656938630f7714.mp3",
+      "target": "works/ghost-phone/assets/audio/library/3555dbc98f656938630f7714.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/45389f878c72782e48e9a6f8.mp3",
+      "target": "works/ghost-phone/assets/audio/library/45389f878c72782e48e9a6f8.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/4eb7a8e7d98079568db51533.mp3",
+      "target": "works/ghost-phone/assets/audio/library/4eb7a8e7d98079568db51533.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/50d3dcac8b39ab0a08c03b08.mp3",
+      "target": "works/ghost-phone/assets/audio/library/50d3dcac8b39ab0a08c03b08.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/5324a579511849a245764c6d.mp3",
+      "target": "works/ghost-phone/assets/audio/library/5324a579511849a245764c6d.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/542008638545a63c4b6b90be.mp3",
+      "target": "works/ghost-phone/assets/audio/library/542008638545a63c4b6b90be.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/55d874609bd629b5db6f3757.mp3",
+      "target": "works/ghost-phone/assets/audio/library/55d874609bd629b5db6f3757.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/56d937cef7f6b8bf0bfcc532.mp3",
+      "target": "works/ghost-phone/assets/audio/library/56d937cef7f6b8bf0bfcc532.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/5ae35b0713fc23e14cf55c08.mp3",
+      "target": "works/ghost-phone/assets/audio/library/5ae35b0713fc23e14cf55c08.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/6055431c6bc6b34cdde2c5d9.mp3",
+      "target": "works/ghost-phone/assets/audio/library/6055431c6bc6b34cdde2c5d9.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/68f6d36271f24ce132893537.mp3",
+      "target": "works/ghost-phone/assets/audio/library/68f6d36271f24ce132893537.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/6a6be72edbc3499cc3cbd256.mp3",
+      "target": "works/ghost-phone/assets/audio/library/6a6be72edbc3499cc3cbd256.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/6f1e610eb2808db0d596c934.mp3",
+      "target": "works/ghost-phone/assets/audio/library/6f1e610eb2808db0d596c934.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/734b2a04edf5de9462aad215.mp3",
+      "target": "works/ghost-phone/assets/audio/library/734b2a04edf5de9462aad215.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/745e0a61ffaf74e892f9edf9.mp3",
+      "target": "works/ghost-phone/assets/audio/library/745e0a61ffaf74e892f9edf9.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/7ce6a128cebd1fef5ef3e013.mp3",
+      "target": "works/ghost-phone/assets/audio/library/7ce6a128cebd1fef5ef3e013.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/8124266daedccfe0d99cd00e.mp3",
+      "target": "works/ghost-phone/assets/audio/library/8124266daedccfe0d99cd00e.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/81fc5e9114363a8477ca8484.mp3",
+      "target": "works/ghost-phone/assets/audio/library/81fc5e9114363a8477ca8484.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/a5962a8f1b273b97edc5d0b7.mp3",
+      "target": "works/ghost-phone/assets/audio/library/a5962a8f1b273b97edc5d0b7.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/a5ef521573e59323e7ae0561.mp3",
+      "target": "works/ghost-phone/assets/audio/library/a5ef521573e59323e7ae0561.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/b73dc660249700952a8f79d2.mp3",
+      "target": "works/ghost-phone/assets/audio/library/b73dc660249700952a8f79d2.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/bd7bc6472e8ed76dad34f953.mp3",
+      "target": "works/ghost-phone/assets/audio/library/bd7bc6472e8ed76dad34f953.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/c030e2623506c05111880454.mp3",
+      "target": "works/ghost-phone/assets/audio/library/c030e2623506c05111880454.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/c0690bddb81fc3504cd89db6.mp3",
+      "target": "works/ghost-phone/assets/audio/library/c0690bddb81fc3504cd89db6.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/c9041c6d45b1c78685fc5c3b.mp3",
+      "target": "works/ghost-phone/assets/audio/library/c9041c6d45b1c78685fc5c3b.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/cb9d3f5ef0d5fcaf2d5f6a00.mp3",
+      "target": "works/ghost-phone/assets/audio/library/cb9d3f5ef0d5fcaf2d5f6a00.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/CREDITS.md",
+      "target": "works/ghost-phone/assets/audio/library/CREDITS.md"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/db6008a1166c080f3912e8ec.mp3",
+      "target": "works/ghost-phone/assets/audio/library/db6008a1166c080f3912e8ec.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/e111b438cced0bc680fc791f.mp3",
+      "target": "works/ghost-phone/assets/audio/library/e111b438cced0bc680fc791f.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/f39ca96918f269924e4f50ce.mp3",
+      "target": "works/ghost-phone/assets/audio/library/f39ca96918f269924e4f50ce.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/f67eae3df7dc282242ac6561.mp3",
+      "target": "works/ghost-phone/assets/audio/library/f67eae3df7dc282242ac6561.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/f87cb2b509f6b1085e1d08ca.mp3",
+      "target": "works/ghost-phone/assets/audio/library/f87cb2b509f6b1085e1d08ca.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/library/fb6456a322ecd4b4e1557fe6.mp3",
+      "target": "works/ghost-phone/assets/audio/library/fb6456a322ecd4b4e1557fe6.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/CREDITS.md",
+      "target": "works/ghost-phone/assets/audio/night/CREDITS.md"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/h01.mp3",
+      "target": "works/ghost-phone/assets/audio/night/h01.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/h02.mp3",
+      "target": "works/ghost-phone/assets/audio/night/h02.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/n01.mp3",
+      "target": "works/ghost-phone/assets/audio/night/n01.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/n02.mp3",
+      "target": "works/ghost-phone/assets/audio/night/n02.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/n03.mp3",
+      "target": "works/ghost-phone/assets/audio/night/n03.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/night/n04.mp3",
+      "target": "works/ghost-phone/assets/audio/night/n04.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/README.txt",
+      "target": "works/ghost-phone/assets/audio/README.txt"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/CREDITS.md",
+      "target": "works/ghost-phone/assets/audio/signals/CREDITS.md"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s01.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s01.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s02.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s02.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s03.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s03.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s04.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s04.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s05.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s05.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s06.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s06.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s07.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s07.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s08.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s08.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s09.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s09.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s10.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s10.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s11.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s11.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s12.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s12.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s13.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s13.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s14.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s14.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s15.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s15.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s16.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s16.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s17.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s17.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s18.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s18.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s19.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s19.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/signals/s20.mp3",
+      "target": "works/ghost-phone/assets/audio/signals/s20.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/changgwi.mp3",
+      "target": "works/ghost-phone/assets/audio/source/changgwi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/gogwandaemyeon.mp3",
+      "target": "works/ghost-phone/assets/audio/source/gogwandaemyeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/mongdal.mp3",
+      "target": "works/ghost-phone/assets/audio/source/mongdal.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/seongju.mp3",
+      "target": "works/ghost-phone/assets/audio/source/seongju.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/songaksi.mp3",
+      "target": "works/ghost-phone/assets/audio/source/songaksi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/audio/source/yeopjeon.mp3",
+      "target": "works/ghost-phone/assets/audio/source/yeopjeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/phone.svg",
+      "target": "works/ghost-phone/assets/phone.svg"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/changgwi.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/changgwi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/gogwandaemyeon.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/gogwandaemyeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/mongdal.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/mongdal.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/seongju.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/seongju.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/songaksi.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/songaksi.mp3"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/SOURCES.json",
+      "target": "works/ghost-phone/assets/soundscapes/SOURCES.json"
+    },
+    {
+      "source": "04_귀신의전화/assets/soundscapes/yeopjeon.mp3",
+      "target": "works/ghost-phone/assets/soundscapes/yeopjeon.mp3"
+    },
+    {
+      "source": "04_귀신의전화/audition.html",
+      "target": "works/ghost-phone/audition.html"
+    },
+    {
+      "source": "04_귀신의전화/config/exhibition.json",
+      "target": "works/ghost-phone/config/exhibition.json"
+    },
+    {
+      "source": "04_귀신의전화/config/ghosts.json",
+      "target": "works/ghost-phone/config/ghosts.json"
+    },
+    {
+      "source": "04_귀신의전화/config/library.json",
+      "target": "works/ghost-phone/config/library.json"
+    },
+    {
+      "source": "04_귀신의전화/config/night-pack.json",
+      "target": "works/ghost-phone/config/night-pack.json"
+    },
+    {
+      "source": "04_귀신의전화/config/repertoire.json",
+      "target": "works/ghost-phone/config/repertoire.json"
+    },
+    {
+      "source": "04_귀신의전화/config/signals.json",
+      "target": "works/ghost-phone/config/signals.json"
+    },
+    {
+      "source": "04_귀신의전화/index.html",
+      "target": "works/ghost-phone/index.html"
+    },
+    {
+      "source": "04_귀신의전화/js/admin.js",
+      "target": "works/ghost-phone/js/admin.js"
+    },
+    {
+      "source": "04_귀신의전화/js/ambience.js",
+      "target": "works/ghost-phone/js/ambience.js"
+    },
+    {
+      "source": "04_귀신의전화/js/api.js",
+      "target": "works/ghost-phone/js/api.js"
+    },
+    {
+      "source": "04_귀신의전화/js/audio.js",
+      "target": "works/ghost-phone/js/audio.js"
+    },
+    {
+      "source": "04_귀신의전화/js/bank.js",
+      "target": "works/ghost-phone/js/bank.js"
+    },
+    {
+      "source": "04_귀신의전화/js/call-scene.js",
+      "target": "works/ghost-phone/js/call-scene.js"
+    },
+    {
+      "source": "04_귀신의전화/js/core.js",
+      "target": "works/ghost-phone/js/core.js"
+    },
+    {
+      "source": "04_귀신의전화/js/effects.js",
+      "target": "works/ghost-phone/js/effects.js"
+    },
+    {
+      "source": "04_귀신의전화/js/encounter.js",
+      "target": "works/ghost-phone/js/encounter.js"
+    },
+    {
+      "source": "04_귀신의전화/js/exhibition.js",
+      "target": "works/ghost-phone/js/exhibition.js"
+    },
+    {
+      "source": "04_귀신의전화/js/library-page.js",
+      "target": "works/ghost-phone/js/library-page.js"
+    },
+    {
+      "source": "04_귀신의전화/js/library.js",
+      "target": "works/ghost-phone/js/library.js"
+    },
+    {
+      "source": "04_귀신의전화/js/line-fault-worker.js",
+      "target": "works/ghost-phone/js/line-fault-worker.js"
+    },
+    {
+      "source": "04_귀신의전화/js/line-fault.js",
+      "target": "works/ghost-phone/js/line-fault.js"
+    },
+    {
+      "source": "04_귀신의전화/js/main.js",
+      "target": "works/ghost-phone/js/main.js"
+    },
+    {
+      "source": "04_귀신의전화/js/night-pack.js",
+      "target": "works/ghost-phone/js/night-pack.js"
+    },
+    {
+      "source": "04_귀신의전화/js/repertoire.js",
+      "target": "works/ghost-phone/js/repertoire.js"
+    },
+    {
+      "source": "04_귀신의전화/js/serial.js",
+      "target": "works/ghost-phone/js/serial.js"
+    },
+    {
+      "source": "04_귀신의전화/js/signals-gallery.js",
+      "target": "works/ghost-phone/js/signals-gallery.js"
+    },
+    {
+      "source": "04_귀신의전화/js/signals.js",
+      "target": "works/ghost-phone/js/signals.js"
+    },
+    {
+      "source": "04_귀신의전화/js/stream.js",
+      "target": "works/ghost-phone/js/stream.js"
+    },
+    {
+      "source": "04_귀신의전화/js/studio.js",
+      "target": "works/ghost-phone/js/studio.js"
+    },
+    {
+      "source": "04_귀신의전화/js/transfer.js",
+      "target": "works/ghost-phone/js/transfer.js"
+    },
+    {
+      "source": "04_귀신의전화/js/voices.js",
+      "target": "works/ghost-phone/js/voices.js"
+    },
+    {
+      "source": "04_귀신의전화/library.css",
+      "target": "works/ghost-phone/library.css"
+    },
+    {
+      "source": "04_귀신의전화/library.html",
+      "target": "works/ghost-phone/library.html"
+    },
+    {
+      "source": "04_귀신의전화/signals.html",
+      "target": "works/ghost-phone/signals.html"
+    },
+    {
+      "source": "04_귀신의전화/studio.css",
+      "target": "works/ghost-phone/studio.css"
+    },
+    {
+      "source": "04_귀신의전화/studio.html",
+      "target": "works/ghost-phone/studio.html"
+    },
+    {
+      "source": "04_귀신의전화/style.css",
+      "target": "works/ghost-phone/style.css"
+    },
+    {
+      "source": "04_귀신의전화/THIRD_PARTY_NOTICES.md",
+      "target": "works/ghost-phone/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "source": "05_화면속에만있는사람/.nojekyll",
+      "target": "works/only-on-screen/.nojekyll"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/demo/dark.mp4",
+      "target": "works/only-on-screen/assets/demo/dark.mp4"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/demo/multi.mp4",
+      "target": "works/only-on-screen/assets/demo/multi.mp4"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/demo/pose_1.mp4",
+      "target": "works/only-on-screen/assets/demo/pose_1.mp4"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/ghosts/manifest.json",
+      "target": "works/only-on-screen/assets/ghosts/manifest.json"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/ghosts/mongdal-look.webm",
+      "target": "works/only-on-screen/assets/ghosts/mongdal-look.webm"
+    },
+    {
+      "source": "05_화면속에만있는사람/assets/ghosts/mongdal-presence.webm",
+      "target": "works/only-on-screen/assets/ghosts/mongdal-presence.webm"
+    },
+    {
+      "source": "05_화면속에만있는사람/index.html",
+      "target": "works/only-on-screen/index.html"
+    },
+    {
+      "source": "05_화면속에만있는사람/licenses/mediapipe-APACHE-2.0.txt",
+      "target": "works/only-on-screen/licenses/mediapipe-APACHE-2.0.txt"
+    },
+    {
+      "source": "05_화면속에만있는사람/licenses/models-and-vendor.json",
+      "target": "works/only-on-screen/licenses/models-and-vendor.json"
+    },
+    {
+      "source": "05_화면속에만있는사람/licenses/README.md",
+      "target": "works/only-on-screen/licenses/README.md"
+    },
+    {
+      "source": "05_화면속에만있는사람/licenses/tfjs-models-APACHE-2.0.txt",
+      "target": "works/only-on-screen/licenses/tfjs-models-APACHE-2.0.txt"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/app.mjs",
+      "target": "works/only-on-screen/src/app.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/assets.mjs",
+      "target": "works/only-on-screen/src/assets.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/camera.mjs",
+      "target": "works/only-on-screen/src/camera.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/compositor.mjs",
+      "target": "works/only-on-screen/src/compositor.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/config.mjs",
+      "target": "works/only-on-screen/src/config.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/experience.mjs",
+      "target": "works/only-on-screen/src/experience.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/sound.mjs",
+      "target": "works/only-on-screen/src/sound.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/tracking.mjs",
+      "target": "works/only-on-screen/src/tracking.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/src/vision.mjs",
+      "target": "works/only-on-screen/src/vision.mjs"
+    },
+    {
+      "source": "05_화면속에만있는사람/style.css",
+      "target": "works/only-on-screen/style.css"
+    },
+    {
+      "source": "05_화면속에만있는사람/THIRD_PARTY_NOTICES.md",
+      "target": "works/only-on-screen/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "source": "05_화면속에만있는사람/vision-worker.js",
+      "target": "works/only-on-screen/vision-worker.js"
+    },
+    {
+      "source": "06_금지된방송/.nojekyll",
+      "target": "works/forbidden-broadcast/.nojekyll"
+    },
+    {
+      "source": "06_금지된방송/assets/demo/pose_1.mp4",
+      "target": "works/forbidden-broadcast/assets/demo/pose_1.mp4"
+    },
+    {
+      "source": "06_금지된방송/assets/ghosts/manifest.json",
+      "target": "works/forbidden-broadcast/assets/ghosts/manifest.json"
+    },
+    {
+      "source": "06_금지된방송/assets/ghosts/mongdal-look.webm",
+      "target": "works/forbidden-broadcast/assets/ghosts/mongdal-look.webm"
+    },
+    {
+      "source": "06_금지된방송/assets/ghosts/mongdal-presence.webm",
+      "target": "works/forbidden-broadcast/assets/ghosts/mongdal-presence.webm"
+    },
+    {
+      "source": "06_금지된방송/assets/news/interior.webp",
+      "target": "works/forbidden-broadcast/assets/news/interior.webp"
+    },
+    {
+      "source": "06_금지된방송/assets/news/relay.webp",
+      "target": "works/forbidden-broadcast/assets/news/relay.webp"
+    },
+    {
+      "source": "06_금지된방송/assets/news/village.webp",
+      "target": "works/forbidden-broadcast/assets/news/village.webp"
+    },
+    {
+      "source": "06_금지된방송/data/captions.json",
+      "target": "works/forbidden-broadcast/data/captions.json"
+    },
+    {
+      "source": "06_금지된방송/data/program.json",
+      "target": "works/forbidden-broadcast/data/program.json"
+    },
+    {
+      "source": "06_금지된방송/index.html",
+      "target": "works/forbidden-broadcast/index.html"
+    },
+    {
+      "source": "06_금지된방송/licenses/mediapipe-APACHE-2.0.txt",
+      "target": "works/forbidden-broadcast/licenses/mediapipe-APACHE-2.0.txt"
+    },
+    {
+      "source": "06_금지된방송/licenses/models-and-vendor.json",
+      "target": "works/forbidden-broadcast/licenses/models-and-vendor.json"
+    },
+    {
+      "source": "06_금지된방송/licenses/README.md",
+      "target": "works/forbidden-broadcast/licenses/README.md"
+    },
+    {
+      "source": "06_금지된방송/licenses/tfjs-models-APACHE-2.0.txt",
+      "target": "works/forbidden-broadcast/licenses/tfjs-models-APACHE-2.0.txt"
+    },
+    {
+      "source": "06_금지된방송/src/actions.mjs",
+      "target": "works/forbidden-broadcast/src/actions.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/app.mjs",
+      "target": "works/forbidden-broadcast/src/app.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/assets.mjs",
+      "target": "works/forbidden-broadcast/src/assets.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/camera.mjs",
+      "target": "works/forbidden-broadcast/src/camera.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/compositor.mjs",
+      "target": "works/forbidden-broadcast/src/compositor.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/config.mjs",
+      "target": "works/forbidden-broadcast/src/config.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/experience.mjs",
+      "target": "works/forbidden-broadcast/src/experience.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/renderer.mjs",
+      "target": "works/forbidden-broadcast/src/renderer.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/sound.mjs",
+      "target": "works/forbidden-broadcast/src/sound.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/timing.mjs",
+      "target": "works/forbidden-broadcast/src/timing.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/tracking.mjs",
+      "target": "works/forbidden-broadcast/src/tracking.mjs"
+    },
+    {
+      "source": "06_금지된방송/src/vision.mjs",
+      "target": "works/forbidden-broadcast/src/vision.mjs"
+    },
+    {
+      "source": "06_금지된방송/style.css",
+      "target": "works/forbidden-broadcast/style.css"
+    },
+    {
+      "source": "06_금지된방송/THIRD_PARTY_NOTICES.md",
+      "target": "works/forbidden-broadcast/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "source": "06_금지된방송/vision-worker.js",
+      "target": "works/forbidden-broadcast/vision-worker.js"
+    }
+  ],
+  "account_status": "browser account verification pending; connected GitHub still jingeosal-ui",
+  "published": false
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "wedding",
+    "title": "손각시 · 몽달귀신",
+    "tagline": "의자가 채워지면, 혼례가 시작된다.",
+    "description": "착석을 감지하면 두 귀신이 걸어 나와 얼굴을 드러냅니다.",
+    "input": "카메라 · 착석",
+    "entry": "works/wedding/index.html",
+    "extra": "works/wedding/film-review.html"
+  },
+  {
+    "id": "portrait",
+    "title": "고관대면",
+    "tagline": "움직이지 않는 초상, 따라오는 눈.",
+    "description": "가까운 관객의 좌우 움직임을 영정 속 눈동자가 따라갑니다.",
+    "input": "카메라 · 좌우 이동",
+    "entry": "works/portrait/index.html",
+    "extra": null
+  },
+  {
+    "id": "chang-gwi",
+    "title": "창귀",
+    "tagline": "네가 떠나도, 흔적은 남는다.",
+    "description": "실시간 거울 위에 한지와 먹의 잔상이 남았다 흩어집니다.",
+    "input": "카메라 · 몸의 움직임",
+    "entry": "works/chang-gwi/index.html",
+    "extra": null
+  },
+  {
+    "id": "ghost-phone",
+    "title": "귀신의 전화",
+    "tagline": "수화기 너머, 끊지 못한 이야기.",
+    "description": "귀신들의 통화와 83편의 음원을 한곳에서 들을 수 있습니다.",
+    "input": "오디오 · 화면 버튼",
+    "entry": "works/ghost-phone/index.html",
+    "extra": "works/ghost-phone/library.html"
+  },
+  {
+    "id": "only-on-screen",
+    "title": "화면 속에만 있는 사람",
+    "tagline": "시선을 돌린 사이, 한 걸음 더.",
+    "description": "관객의 고개 움직임에 따라 화면 속 존재의 거리가 달라집니다.",
+    "input": "카메라 · 고개",
+    "entry": "works/only-on-screen/index.html",
+    "extra": null
+  },
+  {
+    "id": "forbidden-broadcast",
+    "title": "금지된 방송",
+    "tagline": "방송은 지금, 당신을 보도한다.",
+    "description": "접근과 손동작을 낯선 지역방송이 실시간으로 보도합니다.",
+    "input": "카메라 · 손과 거리",
+    "entry": "works/forbidden-broadcast/index.html",
+    "extra": "media/news-loop-v2.mp4"
+  }
+]

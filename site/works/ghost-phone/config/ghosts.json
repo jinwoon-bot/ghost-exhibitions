@@ -1,0 +1,258 @@
+{
+  "version": 2,
+  "revision": "2026-11-14-studio-a",
+  "ghosts": [
+    {
+      "id": "songaksi",
+      "name": "손각시",
+      "subtitle": "오지 않은 혼례의 밤",
+      "enabled": true,
+      "mode": "browser",
+      "mp3": [],
+      "provider": "elevenlabs",
+      "model": "eleven_multilingual_v2",
+      "voiceId": "",
+      "style": "젊은 여성. 소리를 지르지 않는 차분한 속삭임. 억눌린 슬픔. 문장 사이에 짧은 침묵. 인물을 흉내 내지 않는다.",
+      "rate": 0.85,
+      "volume": 0.55,
+      "telephone": true,
+      "lines": [
+        {
+          "id": "s1",
+          "text": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요.",
+          "designText": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요. 문은 닫아 두었는데. 어떻게 들어오셨어요. 아니, 대답하지 마세요. 목소리를 기억하고 싶지 않아요. 이쪽은 아주 조용해요. 그런데 당신 뒤에서는, 누가 그렇게 숨을 쉬나요."
+        },
+        {
+          "id": "s2",
+          "text": "문은 닫아 두었는데. 어떻게 들어오셨어요. 아니, 대답하지 마세요. 목소리를 기억하고 싶지 않아요.",
+          "designText": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요. 문은 닫아 두었는데. 어떻게 들어오셨어요. 아니, 대답하지 마세요. 목소리를 기억하고 싶지 않아요. 이쪽은 아주 조용해요. 그런데 당신 뒤에서는, 누가 그렇게 숨을 쉬나요."
+        },
+        {
+          "id": "s3",
+          "text": "이쪽은 아주 조용해요. 그런데 당신 뒤에서는, 누가 그렇게 숨을 쉬나요.",
+          "designText": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요. 문은 닫아 두었는데. 어떻게 들어오셨어요. 아니, 대답하지 마세요. 목소리를 기억하고 싶지 않아요. 이쪽은 아주 조용해요. 그런데 당신 뒤에서는, 누가 그렇게 숨을 쉬나요."
+        }
+      ],
+      "candidates": [
+        {
+          "id": "songaksi-a",
+          "name": "A · 가까운 속삭임",
+          "provider": "elevenlabs",
+          "model": "eleven_v3",
+          "voiceId": "",
+          "style": "젊은 여성. 소리를 지르지 않는 차분한 속삭임. 억눌린 슬픔. 문장 사이에 짧은 침묵. 인물을 흉내 내지 않는다.",
+          "designPrompt": "An original young adult Korean woman speaking native Korean with clear, tired warmth. Intimate, restrained sadness, a quiet breath tremor and gentle near-whispers. Human and understated, never a monster, never imitating a real person. Keep consonants intelligible over an old telephone.",
+          "enabled": true,
+          "rate": 0.85,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "whisper"
+        },
+        {
+          "id": "songaksi-b",
+          "name": "B · 감정을 누른 목소리",
+          "provider": "elevenlabs",
+          "model": "eleven_multilingual_v2",
+          "voiceId": "",
+          "style": "젊은 여성. 소리를 지르지 않는 차분한 속삭임. 억눌린 슬픔. 문장 사이에 짧은 침묵. 인물을 흉내 내지 않는다.",
+          "designPrompt": "An original young adult Korean woman speaking native Korean with clear, tired warmth. Intimate, restrained sadness, a quiet breath tremor and gentle near-whispers. Human and understated, never a monster, never imitating a real person. Keep consonants intelligible over an old telephone.",
+          "enabled": true,
+          "rate": 0.9,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        },
+        {
+          "id": "songaksi-c",
+          "name": "C · Fish 비교 후보",
+          "provider": "fish",
+          "model": "s2.1-pro",
+          "voiceId": "",
+          "style": "젊은 여성. 소리를 지르지 않는 차분한 속삭임. 억눌린 슬픔. 문장 사이에 짧은 침묵. 인물을 흉내 내지 않는다.",
+          "designPrompt": "An original young adult Korean woman speaking native Korean with clear, tired warmth. Intimate, restrained sadness, a quiet breath tremor and gentle near-whispers. Human and understated, never a monster, never imitating a real person. Keep consonants intelligible over an old telephone.",
+          "enabled": true,
+          "rate": 1,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        }
+      ],
+      "preferred": "songaksi-a",
+      "mp3Order": "random"
+    },
+    {
+      "id": "mongdal",
+      "name": "몽달귀신",
+      "subtitle": "끊기지 않은 약속",
+      "enabled": true,
+      "mode": "browser",
+      "mp3": [],
+      "provider": "elevenlabs",
+      "model": "eleven_multilingual_v2",
+      "voiceId": "",
+      "style": "젊은 남성. 메마른 낮은 발성. 평평한 억양. 침묵을 서두르지 않는다. 비명이나 갑작스러운 큰 소리 없이 말한다.",
+      "rate": 0.8,
+      "volume": 0.5,
+      "telephone": true,
+      "lines": [
+        {
+          "id": "m1",
+          "text": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만…",
+          "designText": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만… 한 사람만 기다렸습니다. 당신이 아니라고 생각했는데. 수화기를 잡은 손이, 닮았군요. 내 쪽에서는 당신이 보입니다. 고개를 돌리지 마세요. 돌아보면, 서로 알아보게 됩니다."
+        },
+        {
+          "id": "m2",
+          "text": "한 사람만 기다렸습니다. 당신이 아니라고 생각했는데. 수화기를 잡은 손이, 닮았군요.",
+          "designText": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만… 한 사람만 기다렸습니다. 당신이 아니라고 생각했는데. 수화기를 잡은 손이, 닮았군요. 내 쪽에서는 당신이 보입니다. 고개를 돌리지 마세요. 돌아보면, 서로 알아보게 됩니다."
+        },
+        {
+          "id": "m3",
+          "text": "내 쪽에서는 당신이 보입니다. 고개를 돌리지 마세요. 돌아보면, 서로 알아보게 됩니다.",
+          "designText": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만… 한 사람만 기다렸습니다. 당신이 아니라고 생각했는데. 수화기를 잡은 손이, 닮았군요. 내 쪽에서는 당신이 보입니다. 고개를 돌리지 마세요. 돌아보면, 서로 알아보게 됩니다."
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mongdal-a",
+          "name": "A · 가까운 속삭임",
+          "provider": "elevenlabs",
+          "model": "eleven_v3",
+          "voiceId": "",
+          "style": "젊은 남성. 메마른 낮은 발성. 평평한 억양. 침묵을 서두르지 않는다. 비명이나 갑작스러운 큰 소리 없이 말한다.",
+          "designPrompt": "An original young adult Korean man, native Korean pronunciation, low dry voice with suppressed grief. Uneven breathing and unhurried pauses, understated and intimate. No theatrical projection, no growling or screaming, and no imitation of any real person. Intelligible telephone acting.",
+          "enabled": true,
+          "rate": 0.8,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        },
+        {
+          "id": "mongdal-b",
+          "name": "B · 감정을 누른 목소리",
+          "provider": "elevenlabs",
+          "model": "eleven_multilingual_v2",
+          "voiceId": "",
+          "style": "젊은 남성. 메마른 낮은 발성. 평평한 억양. 침묵을 서두르지 않는다. 비명이나 갑작스러운 큰 소리 없이 말한다.",
+          "designPrompt": "An original young adult Korean man, native Korean pronunciation, low dry voice with suppressed grief. Uneven breathing and unhurried pauses, understated and intimate. No theatrical projection, no growling or screaming, and no imitation of any real person. Intelligible telephone acting.",
+          "enabled": true,
+          "rate": 0.9,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        },
+        {
+          "id": "mongdal-c",
+          "name": "C · Fish 비교 후보",
+          "provider": "fish",
+          "model": "s2.1-pro",
+          "voiceId": "",
+          "style": "젊은 남성. 메마른 낮은 발성. 평평한 억양. 침묵을 서두르지 않는다. 비명이나 갑작스러운 큰 소리 없이 말한다.",
+          "designPrompt": "An original young adult Korean man, native Korean pronunciation, low dry voice with suppressed grief. Uneven breathing and unhurried pauses, understated and intimate. No theatrical projection, no growling or screaming, and no imitation of any real person. Intelligible telephone acting.",
+          "enabled": true,
+          "rate": 1,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        }
+      ],
+      "preferred": "mongdal-a",
+      "mp3Order": "random"
+    },
+    {
+      "id": "changgwi",
+      "name": "창귀",
+      "subtitle": "산에서 내려온 전화",
+      "enabled": true,
+      "mode": "browser",
+      "mp3": [],
+      "provider": "elevenlabs",
+      "model": "eleven_multilingual_v2",
+      "voiceId": "",
+      "style": "친절하고 평범한 성인 목소리로 시작한다. 끝으로 갈수록 감정이 사라진다. 다급한 외침이나 큰 소리 없이 나지막이 유인한다.",
+      "rate": 0.92,
+      "volume": 0.5,
+      "telephone": true,
+      "lines": [
+        {
+          "id": "c1",
+          "text": "여보세요… 다행이오. 이제야 받으셨군. 혹시 거기서 산으로 올라가는 길이 보이시오? …아니, 뒤를 돌아보진 마시오.",
+          "designText": "여보세요… 다행이오. 이제야 받으셨군. 혹시 거기서 산으로 올라가는 길이 보이시오? …아니, 뒤를 돌아보진 마시오. 이제 들리세요. 산 아래까지 내려왔어요. 발소리는 하나인데, 그림자가 자꾸 둘이 되네요. 전화 받아 주셔서 고마워요. 다른 사람들은 오래 기다렸거든요. 이제, 당신 차례예요."
+        },
+        {
+          "id": "c2",
+          "text": "이제 들리세요. 산 아래까지 내려왔어요. 발소리는 하나인데, 그림자가 자꾸 둘이 되네요.",
+          "designText": "여보세요… 다행이오. 이제야 받으셨군. 혹시 거기서 산으로 올라가는 길이 보이시오? …아니, 뒤를 돌아보진 마시오. 이제 들리세요. 산 아래까지 내려왔어요. 발소리는 하나인데, 그림자가 자꾸 둘이 되네요. 전화 받아 주셔서 고마워요. 다른 사람들은 오래 기다렸거든요. 이제, 당신 차례예요."
+        },
+        {
+          "id": "c3",
+          "text": "전화 받아 주셔서 고마워요. 다른 사람들은 오래 기다렸거든요. 이제, 당신 차례예요.",
+          "designText": "여보세요… 다행이오. 이제야 받으셨군. 혹시 거기서 산으로 올라가는 길이 보이시오? …아니, 뒤를 돌아보진 마시오. 이제 들리세요. 산 아래까지 내려왔어요. 발소리는 하나인데, 그림자가 자꾸 둘이 되네요. 전화 받아 주셔서 고마워요. 다른 사람들은 오래 기다렸거든요. 이제, 당신 차례예요."
+        }
+      ],
+      "candidates": [
+        {
+          "id": "changgwi-a",
+          "name": "A · 가까운 속삭임",
+          "provider": "elevenlabs",
+          "model": "eleven_v3",
+          "voiceId": "",
+          "style": "친절하고 평범한 성인 목소리로 시작한다. 끝으로 갈수록 감정이 사라진다. 다급한 외침이나 큰 소리 없이 나지막이 유인한다.",
+          "designPrompt": "An original Korean adult voice, friendly and reassuring at first, with a gradual withdrawal of warmth and unnaturally deliberate pauses. Native Korean diction, natural human acting, no monster effects or screams, no real-person imitation. Quiet, close telephone delivery.",
+          "enabled": true,
+          "rate": 0.92,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        },
+        {
+          "id": "changgwi-b",
+          "name": "B · 감정을 누른 목소리",
+          "provider": "elevenlabs",
+          "model": "eleven_multilingual_v2",
+          "voiceId": "",
+          "style": "친절하고 평범한 성인 목소리로 시작한다. 끝으로 갈수록 감정이 사라진다. 다급한 외침이나 큰 소리 없이 나지막이 유인한다.",
+          "designPrompt": "An original Korean adult voice, friendly and reassuring at first, with a gradual withdrawal of warmth and unnaturally deliberate pauses. Native Korean diction, natural human acting, no monster effects or screams, no real-person imitation. Quiet, close telephone delivery.",
+          "enabled": true,
+          "rate": 0.9,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        },
+        {
+          "id": "changgwi-c",
+          "name": "C · Fish 비교 후보",
+          "provider": "fish",
+          "model": "s2.1-pro",
+          "voiceId": "",
+          "style": "친절하고 평범한 성인 목소리로 시작한다. 끝으로 갈수록 감정이 사라진다. 다급한 외침이나 큰 소리 없이 나지막이 유인한다.",
+          "designPrompt": "An original Korean adult voice, friendly and reassuring at first, with a gradual withdrawal of warmth and unnaturally deliberate pauses. Native Korean diction, natural human acting, no monster effects or screams, no real-person imitation. Quiet, close telephone delivery.",
+          "enabled": true,
+          "rate": 1,
+          "stability": 0.5,
+          "similarity": 0.65,
+          "styleAmount": 0.08,
+          "streaming": false,
+          "delivery": "plain"
+        }
+      ],
+      "preferred": "changgwi-a",
+      "mp3Order": "random"
+    }
+  ]
+}

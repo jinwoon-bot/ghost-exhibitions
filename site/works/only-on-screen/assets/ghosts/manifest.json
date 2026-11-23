@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "artStatus": "reused-fictional-ai-footage",
+  "credit": "몽달귀신 · 사용자 프로젝트 제작 / Google Flow·Veo. 실촬영 아님. Veo 표시는 원본에 보존.",
+  "note": "새 고개 들기 촬영본이 아닌 기존 응시·고개 돌림 영상. 단일 카메라 2D 가상 깊이 합성.",
+  "ghost_far": {
+    "path": "assets/ghosts/mongdal-presence.webm",
+    "type": "video",
+    "loop": true,
+    "height": 0.25,
+    "opacity": 0.94,
+    "brightness": 1,
+    "blur": 0
+  },
+  "ghost_middle": {
+    "path": "assets/ghosts/mongdal-presence.webm",
+    "type": "video",
+    "loop": true,
+    "height": 0.51,
+    "opacity": 0.98,
+    "brightness": 1,
+    "blur": 0
+  },
+  "ghost_close": {
+    "path": "assets/ghosts/mongdal-presence.webm",
+    "type": "video",
+    "loop": true,
+    "height": 0.96,
+    "opacity": 1,
+    "brightness": 1,
+    "blur": 0
+  },
+  "ghost_face_reveal": {
+    "path": "assets/ghosts/mongdal-look.webm",
+    "type": "video",
+    "loop": false,
+    "height": 0.96,
+    "opacity": 1,
+    "brightness": 1,
+    "blur": 0
+  },
+  "geometry": {
+    "width": 432,
+    "height": 768,
+    "footX": 0.49,
+    "footY": 0.95,
+    "headY": 0.08,
+    "visibleLeft": 0.21,
+    "visibleRight": 0.76
+  }
+}

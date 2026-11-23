@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "note": "민속 소재를 바탕으로 만든 전시 창작 대사·연출. 대사는 전승 원문이 아니다. 연결된 실제 음원이 있어야 등장한다.",
+  "performers": [
+    {
+      "id": "songaksi",
+      "name": "손각시",
+      "role": "혼례를 기다리는 사람",
+      "voice": "가까운 성인 여성. 평범하게 묻다가 마지막 말에만 숨이 걸린다.",
+      "source": "https://encykorea.aks.ac.kr/Article/E0018792",
+      "adaptation": "혼례를 기다리는 전화와 반응은 전시 창작.",
+      "delay": {
+        "answer": 1200,
+        "hesitate": 2100,
+        "return": 450
+      },
+      "lines": {
+        "answer": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요.",
+        "hesitate": "왜 이렇게 늦게 받아요. 계속 기다렸는데.",
+        "return": "아직 제 말 안 끝났어요."
+      }
+    },
+    {
+      "id": "mongdal",
+      "name": "몽달귀신",
+      "role": "끊긴 약속에 집착하는 사람",
+      "voice": "성인 남성의 메마른 말소리. 억지 저음이나 괴물 발성을 쓰지 않는다.",
+      "source": "https://encykorea.aks.ac.kr/Article/E0018792",
+      "adaptation": "통화 중단과 재수신에 대한 집착은 전시 창작.",
+      "delay": {
+        "answer": 1000,
+        "hesitate": 700,
+        "return": 250
+      },
+      "lines": {
+        "answer": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만…",
+        "hesitate": "안 받는 줄 알았습니다. 아직 거기 계시는군요.",
+        "return": "아까… 왜 끊으셨습니까?"
+      }
+    },
+    {
+      "id": "changgwi",
+      "name": "창귀",
+      "role": "친절한 목소리로 유인하는 사람",
+      "voice": "익숙하고 다정한 성인 목소리. 강한 변조보다 지나친 친절함이 불편하게 들리게 한다.",
+      "source": "https://folkency.nfm.go.kr/api/file/download/dictionary/301",
+      "adaptation": "호랑이에 붙어 사람을 유인하는 설화 소재를 전화로 각색. 이동을 명령하지 않는다.",
+      "delay": {
+        "answer": 450,
+        "hesitate": 200,
+        "return": 900
+      },
+      "lines": {
+        "answer": "잘 들려요? 다른 소리는 듣지 말고, 제 목소리만 들어요.",
+        "hesitate": "못 들은 척하셔도, 저는 기다릴 수 있어요.",
+        "return": "다시 받을 줄 알았어요. 이번에는 끝까지 들어요."
+      }
+    },
+    {
+      "id": "gogwandaemyeon",
+      "name": "고관대면",
+      "role": "침묵으로 압박하는 낯선 존재",
+      "voice": "나이 든 성인의 낮고 또렷한 말소리. 느리게 늘이지 않고 문장 앞 침묵을 길게 둔다.",
+      "source": "https://www.wkorea.com/2018/07/31/%ED%98%B8%EB%9F%AC-%EC%8B%A0-%EC%8A%A4%ED%8B%B8%EB%9F%AC/",
+      "adaptation": "높은 관·큰 얼굴 소재의 2차 소개와 사용자 캐릭터를 참고. 목소리·이름을 묻는 전화는 창작이며 원전 직접 대조 미완료.",
+      "delay": {
+        "answer": 2000,
+        "hesitate": 2800,
+        "return": 1700
+      },
+      "lines": {
+        "answer": "누가… 이 전화를 받으라 하였느냐.",
+        "hesitate": "이제야 받는구나. 나는 네가 듣는지 알고 있었다.",
+        "return": "끝났다고 생각했느냐."
+      }
+    },
+    {
+      "id": "yeopjeon",
+      "name": "엽전사귀",
+      "role": "받은 것을 돌려달라는 존재",
+      "voice": "건조하고 작은 성인 목소리. 쇳소리는 말소리를 가리지 않게 별도 제작한다.",
+      "source": "https://folkency.nfm.go.kr/api/file/download/dictionary/31",
+      "adaptation": "사귀가 된 엽전 설화를 참고. 뱀 외형과 전화의 빚·반환 대사는 전시 창작이며 업신과 동일시하지 않는다.",
+      "delay": {
+        "answer": 1100,
+        "hesitate": 800,
+        "return": 350
+      },
+      "lines": {
+        "answer": "아직 가지고 있지요. 돌려줄 때가 됐는데.",
+        "hesitate": "오래 묻어 두면… 잊힐 줄 알았습니까.",
+        "return": "끊는다고 없어지는 것은 아닙니다."
+      }
+    },
+    {
+      "id": "seongju",
+      "name": "성주신",
+      "role": "집 안을 지키며 경고하는 존재",
+      "voice": "차분한 나이 든 성인. 위협하거나 비명을 지르지 않고 짧고 분명하게 경고한다.",
+      "source": "https://encykorea.aks.ac.kr/Article/E0000250",
+      "adaptation": "성주는 집의 수호신이며 악귀로 단정하지 않는다. 다른 발신자를 경계하는 전화 대사는 전시 창작.",
+      "delay": {
+        "answer": 700,
+        "hesitate": 500,
+        "return": 300
+      },
+      "lines": {
+        "answer": "이 집에 들어온 소리가… 네 목소리만은 아니구나.",
+        "hesitate": "다른 목소리가 먼저 말을 걸지는 않았느냐.",
+        "return": "다시 받았구나. 이번에는 내가 듣고 있다."
+      }
+    }
+  ]
+}

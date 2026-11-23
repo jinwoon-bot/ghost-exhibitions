@@ -1,0 +1,550 @@
+{
+  "version": 1,
+  "release": "signals-v4",
+  "newAudioFiles": 20,
+  "newVoiceActors": 0,
+  "newPaidGenerationRequests": 0,
+  "source": "기존6인 dark-cast 및 직접 합성한 잡음/금속/나무 울림. 실제 관객/사람 녹음 없음.",
+  "episodes": [
+    {
+      "id": "s01",
+      "title": "혼례 첫 마디",
+      "actorId": "songaksi",
+      "kind": "voice",
+      "description": "맨 앞 목소리가 종이 마찰 뒤로 천천히 드러난다.",
+      "design": "head",
+      "file": "assets/audio/signals/s01.mp3",
+      "bytes": 63117,
+      "sha256": "523408ffab2725ad654c4f4380df00ee758070b67f1100417c19fbbdde619a61",
+      "duration": 5.256,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 650,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 5.256,
+        "peakDbFS": -7.882433380559879,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -19.5,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s02",
+      "title": "신랑 대신 받은 선",
+      "actorId": "songaksi",
+      "kind": "voice",
+      "description": "손각시의 끝마디 뒤에 몽달의 낮은 잔재가 붙는다. 기존 녹음 교차 편집.",
+      "design": "cross",
+      "file": "assets/audio/signals/s02.mp3",
+      "bytes": 103725,
+      "sha256": "33022a2c6cc18670559af62ccb2324f4b3a7b19259fb73f63ee6d8173423f117",
+      "duration": 8.64,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 930,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 8.64,
+        "peakDbFS": -8.886982210563769,
+        "truePeakDbFS": -5.9,
+        "integratedLUFS": -21.9,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s03",
+      "title": "승강장 끝의 질문",
+      "actorId": "mongdal",
+      "kind": "voice",
+      "description": "멀리 있던 남자의 첫 구절이 가까워졌다가 끊긴다.",
+      "design": "head",
+      "file": "assets/audio/signals/s03.mp3",
+      "bytes": 73917,
+      "sha256": "72ca9a660792909321f2a5be0cf1f886920885cae19de5db9de3b555ed5da08c",
+      "duration": 6.156,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 1210,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 6.156,
+        "peakDbFS": -7.805582624745214,
+        "truePeakDbFS": -4.8,
+        "integratedLUFS": -20.6,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s04",
+      "title": "막차 뒤 남은 말",
+      "actorId": "mongdal",
+      "kind": "voice",
+      "description": "끝 구절과 긴 정적 뒤, 접점 소리 하나만 남는다.",
+      "design": "tail",
+      "file": "assets/audio/signals/s04.mp3",
+      "bytes": 86877,
+      "sha256": "d1b57463f9cff5877b6b57643867f15b5f2877c34e6dca41ed49f04e028ec9d2",
+      "duration": 7.236,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 1490,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 7.236,
+        "peakDbFS": -7.739676705865435,
+        "truePeakDbFS": -4.7,
+        "integratedLUFS": -20.2,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s05",
+      "title": "다른 소리는 듣지 말고",
+      "actorId": "changgwi",
+      "kind": "voice",
+      "description": "기존 유인 대사 중간에 회선이 끊겼다 다시 이어진다.",
+      "design": "broken",
+      "file": "assets/audio/signals/s05.mp3",
+      "bytes": 101565,
+      "sha256": "1d51935da0a781823c24d77cfa401222d34fe47a856d8e044d30a11ba990033f",
+      "duration": 8.46,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 650,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 8.46,
+        "peakDbFS": -7.871946953243365,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -21.6,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s06",
+      "title": "같은 자리에서 다시",
+      "actorId": "changgwi",
+      "kind": "voice",
+      "description": "짧은 목소리 조각과 다른 거리의 낮은 겹음.",
+      "design": "head",
+      "file": "assets/audio/signals/s06.mp3",
+      "bytes": 66573,
+      "sha256": "6cdb4bf2dd3f7a5266c213f468e8cbbf5d8e5cf1f9e98803d4a20904637157cb",
+      "duration": 5.544,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 930,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 5.544,
+        "peakDbFS": -7.857170012264277,
+        "truePeakDbFS": -4.8,
+        "integratedLUFS": -19.5,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s07",
+      "title": "대답이 늦는 사람",
+      "actorId": "gogwandaemyeon",
+      "kind": "voice",
+      "description": "소리 없는 대기 뒤에 고관의 짧은 대사가 놓인다.",
+      "design": "delayed",
+      "file": "assets/audio/signals/s07.mp3",
+      "bytes": 82125,
+      "sha256": "45c19dd5225a2e421d432f2d3cbc8419f5333ff7f9d61226498694b91357c7a7",
+      "duration": 6.84,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 1210,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 6.84,
+        "peakDbFS": -7.911278097580067,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -20.8,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s08",
+      "title": "두 번째 수신자",
+      "actorId": "gogwandaemyeon",
+      "kind": "voice",
+      "description": "고관의 대사 뒤 다른 남자의 잔재가 같은 선에 섞인다. 기존 녹음 교차 편집.",
+      "design": "cross",
+      "file": "assets/audio/signals/s08.mp3",
+      "bytes": 101565,
+      "sha256": "7f26ff9eeea4b0ad5f5e6e492bf15b75a6392ea1d2160994df7a9b6a32bb64b2",
+      "duration": 8.46,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 1490,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 8.46,
+        "peakDbFS": -7.86000463672009,
+        "truePeakDbFS": -4.8,
+        "integratedLUFS": -21.3,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s09",
+      "title": "재물 속의 첫 소리",
+      "actorId": "yeopjeon",
+      "kind": "voice",
+      "description": "짧은 말 조각이 작은 금속 떨림에 묻힌다.",
+      "design": "head",
+      "file": "assets/audio/signals/s09.mp3",
+      "bytes": 52317,
+      "sha256": "943e3911fd65ebee526424dd06872d321614b52e73f3f98bcd6f79f4743153b1",
+      "duration": 4.356,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 650,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 4.356,
+        "peakDbFS": -7.8790393084475285,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -19.8,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s10",
+      "title": "일곱 번의 셈",
+      "actorId": "yeopjeon",
+      "kind": "voice",
+      "description": "짧은 기존 대사와 불규칙한 일곱 금속성 접점.",
+      "design": "coins",
+      "file": "assets/audio/signals/s10.mp3",
+      "bytes": 86013,
+      "sha256": "881420b22d90623dfc5c4e99090f7facbacaff5916fc833abad7438604439b5e",
+      "duration": 7.164,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 930,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 7.164,
+        "peakDbFS": -7.872695335212118,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -20.5,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s11",
+      "title": "집 안쪽의 경고",
+      "actorId": "seongju",
+      "kind": "voice",
+      "description": "문틀 뒤에서 오는 짧은 목소리와 낮은 나무 울림.",
+      "design": "head",
+      "file": "assets/audio/signals/s11.mp3",
+      "bytes": 78669,
+      "sha256": "92e3bbd6c5b8340da2f29bd53e00f5987e761e24f7a7e08222badf99a934aac2",
+      "duration": 6.552,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 1210,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 6.552,
+        "peakDbFS": -7.8785321073505195,
+        "truePeakDbFS": -4.9,
+        "integratedLUFS": -19.2,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s12",
+      "title": "빈방에 남은 끝말",
+      "actorId": "seongju",
+      "kind": "voice",
+      "description": "끝 구절이 방의 공기 속으로 사라진다.",
+      "design": "tail",
+      "file": "assets/audio/signals/s12.mp3",
+      "bytes": 76077,
+      "sha256": "f3dcf408711ba420096b2d734f7f7b0977fc9151ecc62354b19fc36c020ffbe3",
+      "duration": 6.336,
+      "recording": "기존 가상 귀신 연기의 짧은 편집",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 1490,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 6.336,
+        "peakDbFS": -8.373449397041874,
+        "truePeakDbFS": -5.4,
+        "integratedLUFS": -20,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s13",
+      "title": "숨 쉬는 회벽",
+      "actorId": "changgwi",
+      "kind": "noise",
+      "description": "말은 없다. 숨결을 닮은 대역 잡음만 느리게 팽창한다. 실제 사람 호흡 녹음이 아님.",
+      "design": "breath",
+      "file": "assets/audio/signals/s13.mp3",
+      "bytes": 77373,
+      "sha256": "33d0e5b2d213f44622174fa005e6303606174b4d8da39f620fd1879e231b2418",
+      "duration": 6.444,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 650,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 6.444,
+        "peakDbFS": -10.073338147913983,
+        "truePeakDbFS": -7.1,
+        "integratedLUFS": -24.4,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s14",
+      "title": "빈 승강장",
+      "actorId": "mongdal",
+      "kind": "noise",
+      "description": "비어 있는 선로 같은 낮은 마찰음과 가느다란 금속 울림.",
+      "design": "platform",
+      "file": "assets/audio/signals/s14.mp3",
+      "bytes": 97677,
+      "sha256": "eeb717cc93a5c2c9d7938f22d7a14d17c3dfcf14e5a19365049d1fcdd575f4ae",
+      "duration": 8.136,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 930,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 8.136,
+        "peakDbFS": -15.055551950011225,
+        "truePeakDbFS": -12,
+        "integratedLUFS": -25.4,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s15",
+      "title": "한지 안쪽",
+      "actorId": "songaksi",
+      "kind": "noise",
+      "description": "크기와 간격이 다른 종이 마찰 조각이 가까이 흩어진다.",
+      "design": "paper",
+      "file": "assets/audio/signals/s15.mp3",
+      "bytes": 58365,
+      "sha256": "ed557f37f58490306282010588d13503918f689343968a7174dc47b2c6fb66ab",
+      "duration": 4.86,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 1210,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 4.86,
+        "peakDbFS": -9.141712830397923,
+        "truePeakDbFS": -6.1,
+        "integratedLUFS": -25.2,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s16",
+      "title": "동전이 멈춘 뒤",
+      "actorId": "yeopjeon",
+      "kind": "noise",
+      "description": "금속이 굴러가듯 접점 간격이 변하고, 마지막은 완전히 비워 둔다.",
+      "design": "coins",
+      "file": "assets/audio/signals/s16.mp3",
+      "bytes": 71325,
+      "sha256": "34de4020d7f1194bca8a64e1296c24da0c1a4a632152fe52eec538f1bbeb4c9f",
+      "duration": 5.94,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 1490,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 5.94,
+        "peakDbFS": -12.594141361735547,
+        "truePeakDbFS": -9.5,
+        "integratedLUFS": -25,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s17",
+      "title": "두 번씩 두드리는 문",
+      "actorId": "seongju",
+      "kind": "noise",
+      "description": "문 두드림을 닮은 합성 나무 울림이 불규칙한 간격으로 들린다.",
+      "design": "knock",
+      "file": "assets/audio/signals/s17.mp3",
+      "bytes": 82125,
+      "sha256": "7460ae8f099d41b62e03550b1401185826360c3efc56f6cf1e5cf9e368598e08",
+      "duration": 6.84,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 650,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 6.84,
+        "peakDbFS": -7.8456880872536985,
+        "truePeakDbFS": -4.8,
+        "integratedLUFS": -25.3,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s18",
+      "title": "다른 수신자가 있다",
+      "actorId": "gogwandaemyeon",
+      "kind": "noise",
+      "description": "낮은 반송파와 불완전한 호출이 겹치다가 선이 끊긴다.",
+      "design": "carrier",
+      "file": "assets/audio/signals/s18.mp3",
+      "bytes": 88173,
+      "sha256": "878a5d8df32180d335ab932751e72f4e3324f4f148b36e8b776692280dabacb6",
+      "duration": 7.344,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 650,
+        "listen": 930,
+        "after": 890
+      },
+      "metrics": {
+        "seconds": 7.344,
+        "peakDbFS": -14.706594180325121,
+        "truePeakDbFS": -11.7,
+        "integratedLUFS": -25.3,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s19",
+      "title": "전원이 꺼진 집",
+      "actorId": "seongju",
+      "kind": "noise",
+      "description": "전기 웅음, 작은 스위치, 길게 남는 빈집의 공기.",
+      "design": "mains",
+      "file": "assets/audio/signals/s19.mp3",
+      "bytes": 69165,
+      "sha256": "6c364e9471c1d2aaadc473d9bb5adefbb878413ffe9f06c0d7e4d1c48d0b6d64",
+      "duration": 5.76,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 350,
+        "listen": 1210,
+        "after": 450
+      },
+      "metrics": {
+        "seconds": 5.76,
+        "peakDbFS": -8.3480711679229,
+        "truePeakDbFS": -5.3,
+        "integratedLUFS": -25.1,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    },
+    {
+      "id": "s20",
+      "title": "거의 연결되었다",
+      "actorId": "mongdal",
+      "kind": "noise",
+      "description": "거의 들리지 않는 회선과 뒤늦은 접점 하나. 목소리는 끝내 오지 않는다.",
+      "design": "almost",
+      "file": "assets/audio/signals/s20.mp3",
+      "bytes": 54477,
+      "sha256": "0b5bc2b0e5f09561db58a2536fe45259b35bbef8e300d6b01175edbc8695e5af",
+      "duration": 4.536,
+      "recording": "직접 합성한 비음성 소리",
+      "transcriptVerified": false,
+      "timing": {
+        "arrival": 500,
+        "listen": 1490,
+        "after": 670
+      },
+      "metrics": {
+        "seconds": 4.536,
+        "peakDbFS": -7.85005649939367,
+        "truePeakDbFS": -4.8,
+        "integratedLUFS": -28,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      }
+    }
+  ]
+}

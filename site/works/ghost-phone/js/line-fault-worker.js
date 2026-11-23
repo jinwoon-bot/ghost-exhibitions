@@ -1,0 +1,2 @@
+import {renderLineFault} from './line-fault.js?v=4.2.0';
+self.onmessage=event=>{try{const {channels,rate,p,bed}=event.data,started=performance.now(),result=renderLineFault(channels,rate,p,bed);result.metadata.workerRenderMs=performance.now()-started;result.metadata.worker=true;self.postMessage(result,result.channels.map(c=>c.buffer));}catch{self.postMessage({error:'전화선 음원 처리 실패 · 짧은 대사 파일과 설정을 확인하세요.'});}};

@@ -1,0 +1,180 @@
+{
+  "date": "2026-11-15 Asia/Seoul",
+  "license": "CC0 1.0 source recordings; edited soundscapes",
+  "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sources": [
+    {
+      "id": "subway",
+      "page": "https://freesound.org/people/soundofsong/sounds/650570/",
+      "media": "https://cdn.freesound.org/previews/650/650570_9782868-hq.mp3",
+      "title": "Freesound - on train.wav by soundofsong",
+      "bytes": 1249685,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "25663efec2c1cac1dee9ac2f42f7c2aeabee0b7cecea94bb599f40a10e3c7c70"
+    },
+    {
+      "id": "wood",
+      "page": "https://freesound.org/people/Rudmer_Rotteveel/sounds/506663/",
+      "media": "https://cdn.freesound.org/previews/506/506663_4921277-hq.mp3",
+      "title": "Freesound - Wood Creak Single V8 by Rudmer_Rotteveel",
+      "bytes": 18263,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "ed2aefca5a6bf3096eebdf7d99de28b084aa4c28a698533889ba9b28d11f4e1e"
+    },
+    {
+      "id": "forest",
+      "page": "https://freesound.org/people/FilmmakersManual/sounds/524203/",
+      "media": "https://cdn.freesound.org/previews/524/524203_11355600-hq.mp3",
+      "title": "Freesound - Forest Wind 04.wav by FilmmakersManual",
+      "bytes": 1027305,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "88e8fcf6fd9e6b5d8a8f9c5b8329fbcd0d128a129f3a12062bf2e9969bc8fbbe"
+    },
+    {
+      "id": "room",
+      "page": "https://freesound.org/people/Kinoton/sounds/393574/",
+      "media": "https://cdn.freesound.org/previews/393/393574_2247456-hq.mp3",
+      "title": "Freesound - Room Tone, Soft Ventilation by Kinoton",
+      "bytes": 924480,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "a507fcae4684507d034ad190368dca040fe0c67a51e5fd743179f29851df9981"
+    },
+    {
+      "id": "rain",
+      "page": "https://freesound.org/people/dggrunzweig/sounds/342900/",
+      "media": "https://cdn.freesound.org/previews/342/342900_3229207-hq.mp3",
+      "title": "Freesound - Rain Window Open by dggrunzweig",
+      "bytes": 1461840,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "1c10cdfbb5921e5e358e33a8bb33d586df24a1a04a5fd6e2b7e564d81d0cc3ad"
+    },
+    {
+      "id": "coins",
+      "page": "https://freesound.org/people/Breviceps/sounds/458399/",
+      "media": "https://cdn.freesound.org/previews/458/458399_9159316-hq.mp3",
+      "title": "Freesound - Coin sounds by Breviceps",
+      "bytes": 547872,
+      "license": "CC0 1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "9793bea858e2e18e22a49a9f01e5298bd391bfc4d659909a5920199888461864"
+    }
+  ],
+  "scenes": {
+    "songaksi": {
+      "name": "닫힌 혼례방",
+      "sources": [
+        "room",
+        "wood"
+      ],
+      "url": "./assets/soundscapes/songaksi.mp3",
+      "bytes": 192514,
+      "sha256": "1eb67a31aeab5fee91b9559eb17eeac70899b47932f7f717c98afff41ed22daa",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -16.725726075549513,
+        "truePeakDbFS": -16.7,
+        "integratedLUFS": -28.7,
+        "clippedSamples": 0,
+        "monoRmsRatio": 0.9767122577715017
+      },
+      "graph": "[0:a]atrim=0:16,asetpts=PTS-STARTPTS,highpass=f=70,lowpass=f=2200[r];[1:a]asplit=2[a][b];[a]adelay=2900|2900,volume=0.10[a1];[b]adelay=10400|10400,volume=0.07[b1];[r][a1][b1]amix=inputs=3:normalize=0:duration=first[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    },
+    "mongdal": {
+      "name": "지나가는 지하철",
+      "sources": [
+        "subway"
+      ],
+      "url": "./assets/soundscapes/mongdal.mp3",
+      "bytes": 192514,
+      "sha256": "0045f2f45de390d22418604c13ec8403a5c85e5b6af7595f6fc0e946c2956370",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -14.198568713335257,
+        "truePeakDbFS": -14.2,
+        "integratedLUFS": -29.6,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      },
+      "graph": "[0:a]atrim=3:19,asetpts=PTS-STARTPTS,highpass=f=65,lowpass=f=1000[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    },
+    "changgwi": {
+      "name": "숲 안쪽의 바람",
+      "sources": [
+        "forest"
+      ],
+      "url": "./assets/soundscapes/changgwi.mp3",
+      "bytes": 192514,
+      "sha256": "42379c530a08710fc978808ead655e2f01b5b079e5960e2f73b77d4fa29f5666",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -18.147792150563852,
+        "truePeakDbFS": -18.1,
+        "integratedLUFS": -28.4,
+        "clippedSamples": 0,
+        "monoRmsRatio": 1
+      },
+      "graph": "[0:a]atrim=2:18,asetpts=PTS-STARTPTS,highpass=f=140,lowpass=f=3300[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    },
+    "gogwandaemyeon": {
+      "name": "큰 방의 낮은 공기",
+      "sources": [
+        "room"
+      ],
+      "url": "./assets/soundscapes/gogwandaemyeon.mp3",
+      "bytes": 192514,
+      "sha256": "0e71446aeac7f7812830567286217dc6c900adc84bc58f31b1a2667951bbd9f5",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -15.28389789890916,
+        "truePeakDbFS": -15.3,
+        "integratedLUFS": -28.2,
+        "clippedSamples": 0,
+        "monoRmsRatio": 0.8651100836488029
+      },
+      "graph": "[0:a]atrim=8:24,asetpts=PTS-STARTPTS,highpass=f=45,lowpass=f=1200,rubberband=pitch=0.793700526:tempo=1:formant=preserved,aecho=0.6:0.5:171|379:0.12|0.06,atrim=0:16[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    },
+    "yeopjeon": {
+      "name": "묻힌 금속의 떨림",
+      "sources": [
+        "coins",
+        "room"
+      ],
+      "url": "./assets/soundscapes/yeopjeon.mp3",
+      "bytes": 192514,
+      "sha256": "9a7eb75490be81f28587eff16ea9af2deb36cbd9bdb6d52ddff0b14c5b9609e6",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -8.778793212707868,
+        "truePeakDbFS": -8.7,
+        "integratedLUFS": -29.4,
+        "clippedSamples": 0,
+        "monoRmsRatio": 0.9098080807512791
+      },
+      "graph": "[0:a]atrim=1:17,asetpts=PTS-STARTPTS,lowpass=f=3600,rubberband=pitch=0.890898718:tempo=1,volume=0.18[c];[1:a]atrim=0:16,asetpts=PTS-STARTPTS,lowpass=f=1300,volume=0.7[r];[r][c]amix=inputs=2:normalize=0:duration=first[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    },
+    "seongju": {
+      "name": "처마 밖의 비",
+      "sources": [
+        "rain",
+        "room"
+      ],
+      "url": "./assets/soundscapes/seongju.mp3",
+      "bytes": 192514,
+      "sha256": "4432e166f608da4541c8ecf48ec0f2b3b2fc3034e3eff540216c865de725623f",
+      "metrics": {
+        "seconds": 16.0391875,
+        "peakDbFS": -13.899890588999181,
+        "truePeakDbFS": -13.9,
+        "integratedLUFS": -28.5,
+        "clippedSamples": 0,
+        "monoRmsRatio": 0.9302893294840352
+      },
+      "graph": "[0:a]atrim=1:17,asetpts=PTS-STARTPTS,highpass=f=180,lowpass=f=2500,volume=.6[r];[1:a]atrim=4:20,asetpts=PTS-STARTPTS,lowpass=f=1600,volume=.3[a];[r][a]amix=inputs=2:normalize=0:duration=first[m];[m]loudnorm=I=-28:TP=-9:LRA=6,aresample=44100,aformat=channel_layouts=stereo[out]"
+    }
+  }
+}

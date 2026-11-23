@@ -1,0 +1,5 @@
+export class RoomSound {
+  async start(){if(this.context){await this.context.resume();return;}const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const c=this.context=new A();this.gain=c.createGain();this.gain.gain.value=0;this.gain.connect(c.destination);const noise=c.createBuffer(1,c.sampleRate*5,c.sampleRate),d=noise.getChannelData(0);let last=0;for(let i=0;i<d.length;i++){last=(last+(.02*(Math.random()*2-1)))/1.02;d[i]=last*2.5;}const source=c.createBufferSource();source.buffer=noise;source.loop=true;const filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=340;source.connect(filter).connect(this.gain);source.start();this.source=source;this.osc=c.createOscillator();this.osc.type='sine';this.osc.frequency.value=56;const hum=c.createGain();hum.gain.value=.075;this.osc.connect(hum).connect(this.gain);this.osc.start();}
+  set(enabled,volume,stage){if(this.context)this.gain.gain.setTargetAtTime(enabled?volume*(.13+.025*stage):0,this.context.currentTime,.7);}
+  async stop(){if(this.context){await this.context.close();this.context=null;}}
+}

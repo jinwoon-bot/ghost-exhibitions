@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "release": "exhibition-v3",
+  "actors": [
+    {
+      "id": "songaksi",
+      "name": "손각시",
+      "role": "혼례를 기다리는 사람",
+      "voice": "assets/audio/cast/songaksi.mp3",
+      "world": "assets/soundscapes/songaksi.mp3",
+      "bytes": 173229,
+      "sha256": "b2e8218bf93f5fde3088e04699fb827f991e45fcc1dffc4121400b5fd687e62f",
+      "spokenText": "여보세요… 저기… 신랑은 아직 안 왔나요? 저 오늘 혼례를 올려야 하는데… 아무도 오질 않아요.",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/songaksi.mp3",
+        "bytes": 151344,
+        "sha256": "c56e17576dd062830e80af7823d849d5fae2a101817d1c001ece3eb83cedc673"
+      }
+    },
+    {
+      "id": "mongdal",
+      "name": "몽달귀신",
+      "role": "끊긴 약속에 집착하는 사람",
+      "voice": "assets/audio/cast/mongdal.mp3",
+      "world": "assets/soundscapes/mongdal.mp3",
+      "bytes": 137517,
+      "sha256": "e0462d9cc64f67162c40985d9b0ac496f240e9b20a52a7a98ac905516b6db57b",
+      "spokenText": "그 사람… 아직 거기 있습니까? 한 번만… 목소리라도 들려주시오… 한 번만…",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/mongdal.mp3",
+        "bytes": 117907,
+        "sha256": "764dad194f936a4d0cd08f0535c776a7e3399d4b94329978f93be81680dbd21f"
+      }
+    },
+    {
+      "id": "changgwi",
+      "name": "창귀",
+      "role": "친절한 목소리로 유인하는 사람",
+      "voice": "assets/audio/cast/changgwi.mp3",
+      "world": "assets/soundscapes/changgwi.mp3",
+      "bytes": 87981,
+      "sha256": "cb172530baf80e9fea35b1c11d0f8bc50f13a8e2f0b1575230992777bd44c7b1",
+      "spokenText": "잘 들려요? 다른 소리는 듣지 말고, 제 목소리만 들어요.",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/changgwi.mp3",
+        "bytes": 94124,
+        "sha256": "408f6eaa5462b07f7b83a343c73b8fa9df1882eb20ba6874b981e20a8475d561"
+      }
+    },
+    {
+      "id": "gogwandaemyeon",
+      "name": "고관대면",
+      "role": "침묵으로 압박하는 낯선 존재",
+      "voice": "assets/audio/cast/gogwandaemyeon.mp3",
+      "world": "assets/soundscapes/gogwandaemyeon.mp3",
+      "bytes": 48429,
+      "sha256": "e95cca81dc11bc7cc67179c358d51fa1242957f6828d2ed7cff3ce835f9935e9",
+      "spokenText": "누가… 이 전화를 받으라 하였느냐.",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/gogwandaemyeon.mp3",
+        "bytes": 46124,
+        "sha256": "fe2ba57b39218705c5da247ec1f1f6bab361c30fdd84a60e052421429298b667"
+      }
+    },
+    {
+      "id": "yeopjeon",
+      "name": "엽전사귀",
+      "role": "받은 것을 돌려달라는 존재",
+      "voice": "assets/audio/cast/yeopjeon.mp3",
+      "world": "assets/soundscapes/yeopjeon.mp3",
+      "bytes": 54189,
+      "sha256": "c3e23ee795dad4625c606e9f4c1914ebc766e275081432ddba4d40ba1996caf5",
+      "spokenText": "아직 가지고 있지요. 돌려줄 때가 됐는데.",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/yeopjeon.mp3",
+        "bytes": 56204,
+        "sha256": "56fa8bc3d17a8175dd3fb0e34b8ae51e39e34c191a7546ed913a9f7d40cb357a"
+      }
+    },
+    {
+      "id": "seongju",
+      "name": "성주신",
+      "role": "집 안을 지키며 경고하는 존재",
+      "voice": "assets/audio/cast/seongju.mp3",
+      "world": "assets/soundscapes/seongju.mp3",
+      "bytes": 107181,
+      "sha256": "f3cc76d8fe10239794d0c3dc776f779bc6aea56d0fcfdf1ccf7bc99d70964bfc",
+      "spokenText": "이 집에 들어온 소리가… 네 목소리만은 아니구나.",
+      "recordedLines": 1,
+      "treatment": "dark-cast-v3",
+      "original": {
+        "voice": "assets/audio/source/seongju.mp3",
+        "bytes": 113804,
+        "sha256": "cb0fda470973898a34680b757c3b9c0ac42a5978f0ae0eb0b52b1e40278621f9"
+      }
+    }
+  ],
+  "credit": "AI 음성: ElevenLabs / 기존 무료 플랜 제작. 비상업적 이용·출처 표시 조건. 실제 사람 녹음이 아님.",
+  "publicVoiceApproval": "사용자 2026-11-15 공개 GitHub 음원 포함 승인",
+  "note": "각 인물 첫 대사 1편. 빠른/늦은/재수신은 같은 대사의 전화선 연출이며 새 대사·음성 인식이 아님. 어두운 음색 강한 후보정 적용. 원음은 로컬 보존, 손각시/몽달 원음 비교 포함."
+}

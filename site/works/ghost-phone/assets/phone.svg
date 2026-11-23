@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="560" viewBox="0 0 780 560">
+<defs>
+<linearGradient id="body" x2=".2" y2="1"><stop stop-color="#4b5142"/><stop offset=".25" stop-color="#252d24"/><stop offset=".75" stop-color="#141c17"/><stop offset="1" stop-color="#32392b"/></linearGradient>
+<linearGradient id="handle" x2=".2" y2="1"><stop stop-color="#525747"/><stop offset=".2" stop-color="#303a2c"/><stop offset=".6" stop-color="#121c17"/><stop offset="1" stop-color="#303a2e"/></linearGradient>
+<radialGradient id="dial"><stop stop-color="#87866a"/><stop offset=".5" stop-color="#6c7259"/><stop offset=".85" stop-color="#343e2d"/><stop offset="1" stop-color="#879076"/></radialGradient>
+<radialGradient id="hole"><stop stop-color="#0b130f"/><stop offset=".75" stop-color="#172016"/><stop offset="1" stop-color="#59664a"/></radialGradient>
+<filter id="texture"><feTurbulence baseFrequency=".35" numOctaves="2" seed="7" result="noise"/><feComposite in="noise" in2="SourceGraphic" operator="in" result="n"/><feBlend in="SourceGraphic" in2="n" mode="soft-light"/></filter>
+</defs>
+<g fill="none" stroke="#242f24" stroke-width="9"><path d="M565 164c85 11 146 30 136 77s-70 13-70 56 69 16 63 60-81 15-76 56 41 40 85 45"/><path d="M615 202q-9 27 9 27m1-24q-9 27 9 27m1-24q-9 27 9 27m1-24q-9 27 9 27m1-24q-9 27 9 27m1-24q-9 27 9 27" stroke="#44503c" stroke-width="2"/></g>
+<g filter="url(#texture)"><path d="M189 270q10-43 58-52h287q45 10 60 52l69 156q7 31-21 42H140q-30-10-20-41z" fill="url(#body)" stroke="#66745a" stroke-opacity=".4" stroke-width="2"/><path d="M120 425q255 40 542 0v26q-4 19-25 20H143q-26-4-23-25z" fill="#121b15"/><path d="M160 424q215 30 463 0" stroke="#858f6b" stroke-opacity=".25" fill="none"/>
+<path d="M237 265l8-75q5-14 23-10t19 24l-5 47m214 14-4-75q-5-14-23-10t-19 24l5 47" fill="#1b271d" stroke="#6c7c5c" stroke-width="3"/>
+<path d="M163 189q-9-58 35-85 174-60 365 0 45 27 35 85l-61 18-27-45q-124-37-247 0l-26 45z" fill="url(#handle)" stroke="#637357" stroke-width="2"/>
+<ellipse cx="196" cy="203" rx="61" ry="24" fill="#152218" stroke="#657456" stroke-width="3"/><ellipse cx="564" cy="203" rx="61" ry="24" fill="#152218" stroke="#657456" stroke-width="3"/>
+<path d="M181 122q193-58 388 1" fill="none" stroke="#a1a285" stroke-opacity=".22" stroke-width="4"/>
+</g>
+<ellipse cx="391" cy="335" rx="137" ry="91" fill="#101a13" stroke="#7c8760" stroke-width="3"/><ellipse cx="391" cy="332" rx="128" ry="82" fill="url(#dial)" stroke="#9a9c78" stroke-width="1"/>
+<g fill="url(#hole)" stroke="#8f9672" stroke-width="1.7"><ellipse cx="292" cy="321" rx="17" ry="12"/><ellipse cx="311" cy="286" rx="17" ry="12"/><ellipse cx="353" cy="265" rx="17" ry="12"/><ellipse cx="402" cy="259" rx="17" ry="12"/><ellipse cx="450" cy="272" rx="17" ry="12"/><ellipse cx="483" cy="296" rx="17" ry="12"/><ellipse cx="494" cy="330" rx="17" ry="12"/><ellipse cx="476" cy="364" rx="17" ry="12"/><ellipse cx="436" cy="387" rx="17" ry="12"/><ellipse cx="386" cy="396" rx="17" ry="12"/></g>
+<ellipse cx="391" cy="328" rx="56" ry="40" fill="#b1ac88" stroke="#444d35" stroke-width="3"/><ellipse cx="391" cy="328" rx="47" ry="32" fill="#a6a084" stroke="#635f49"/>
+<text x="391" y="326" text-anchor="middle" fill="#363c2d" font-family="serif" font-size="10" letter-spacing="2">돌아오지 않는</text><text x="391" y="340" text-anchor="middle" fill="#363c2d" font-family="serif" font-size="10" letter-spacing="2">전화</text>
+<path d="M329 398q-2-25 19-38l16 14q-12 10-13 25z" fill="#3c4934" stroke="#a1aa7d" stroke-width="2"/>
+<g fill="#aaa98a" opacity=".6" font-family="serif" font-size="10"><text x="262" y="322">1</text><text x="281" y="282">2</text><text x="332" y="246">3</text><text x="400" y="241">4</text><text x="463" y="252">5</text><text x="504" y="280">6</text><text x="520" y="326">7</text><text x="506" y="375">8</text><text x="453" y="414">9</text><text x="381" y="427">0</text></g>
+<path d="M164 461h46v13h-46zm405 0h46v13h-46z" fill="#0b100d"/>
+</svg>

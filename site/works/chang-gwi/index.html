@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#080b0d" />
+    <title>창귀 — 네 뒤에 남은 것</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main aria-label="실시간 인터랙티브 작품">
+      <canvas id="stage" aria-label="관객과 과거 자세의 잔상"></canvas>
+      <div class="vignette"></div>
+      <div id="caption">
+        <span class="seal">殘</span>
+        <div>창귀<span class="subtitle">네 뒤에 남은 것</span></div>
+        <span class="edition">CHANG-GWI · A CONTINUOUS PRESENCE</span>
+      </div>
+      <span id="demoBadge" hidden>실제 인물 영상 점검 · AI 추출 · 웹캠 라이브 아님</span
+      ><output id="fps" hidden></output>
+      <output id="connectionNotice" hidden role="status"></output>
+    </main>
+    <section id="setup" role="dialog" aria-labelledby="setupTitle">
+      <div class="setup-inner">
+        <p class="eyebrow">OPERATOR SETUP / 전시 운영자</p>
+        <h1 id="setupTitle">창귀<span>네 뒤에 남은 것</span></h1>
+        <p class="intro">움직임은 지나가고,<br />형상은 그 자리에 남는다.</p>
+        <p class="note">
+          카메라 권한을 한 번 허용하면 관객은 조작 없이 참여합니다.<br />영상은 이 기기 안에서만
+          처리되며 저장되지 않습니다.
+        </p>
+        <label class="note">잔상 표현 <select id="startEffect" aria-label="잔상 표현"><option value="hanji">한지 흩어짐 (기존)</option><option value="ink">먹 용해 · 참고 영상형</option></select></label>
+        <label class="note">사용할 카메라 <select id="startDevice" aria-label="사용할 카메라"><option value="">이 PC의 기본 카메라</option></select></label>
+        <p class="startup-hint">Chrome에서 열고 카메라를 허용하세요. USB 카메라는 위 목록 또는 운영 설정에서 선택할 수 있습니다.</p>
+        <div class="actions">
+          <button id="startCamera" disabled class="primary">카메라 연결</button
+          ><button id="startDemo" disabled>실제 인물 영상으로 점검</button>
+          <button id="startSample" disabled>샘플 영상으로 효과 점검</button>
+          <button id="setupCheck" disabled>시스템 진단</button>
+          <button id="startFullscreen">전체화면</button>
+          <button id="startOperator">운영 설정</button>
+          <button id="cancelStart" hidden>연결 취소</button>
+        </div>
+        <p id="setupStatus" role="status">D 운영자 패널 · F 전체화면</p>
+        <details id="cameraHelp"><summary>카메라가 열리지 않을 때</summary><p>전시 실행은 일반 Chrome을 권장합니다. 카메라 접근이 거부되면 Chrome 주소 왼쪽 사이트 설정에서 카메라를 허용한 뒤 다시 연결하세요. Windows 설정 → 개인정보 및 보안 → 카메라에서도 Chrome의 접근을 확인하세요. 다른 카메라 앱이 사용 중이면 종료한 뒤 다시 연결하세요.</p><p>영상이 먼저 표시되고 인물 분리는 잠시 뒤 준비됩니다. 연결된 카메라가 없으면 샘플 영상으로 바뀌지 않으며 오류를 표시합니다.</p></details>
+      </div>
+      <div class="setup-mark" aria-hidden="true">殘</div>
+    </section>
+    <aside id="panel" hidden aria-label="전시 운영자 패널">
+      <header>
+        <div>
+          <small>EXHIBITION CONTROL</small>
+          <h2>운영자 패널</h2>
+        </div>
+        <button id="closePanel" aria-label="패널 닫기">×</button>
+      </header>
+      <output id="status" aria-live="polite">대기 중</output>
+      <div id="liveChecks" class="live-checks" aria-live="polite"></div>
+      <div id="controls"></div>
+      <canvas id="cameraPreview" width="320" height="180" hidden aria-label="운영자 카메라 미리보기"></canvas>
+      <div class="panel-actions">
+        <button id="fullscreen">전체화면</button><button id="retry">카메라 재연결</button
+        ><button id="reset">설정 초기화</button>
+        <button id="refreshCameras">카메라 목록 새로고침</button>
+        <button id="stopCamera">카메라 끄기</button>
+        <button id="systemCheck">시스템 진단</button>
+        <button id="exportDiagnostics">진단 기록 저장</button>
+        <button id="resetMetrics">성능 측정 다시 시작</button>
+        <button id="retryAI">인물 분리 다시 시작</button>
+      </div>
+      <section id="diagnostics" hidden><h3>시스템 진단</h3><ol id="diagnosticList"></ol><details><summary>현재 수치 자세히</summary><pre id="technicalStats"></pre></details></section>
+      <p class="panel-note">
+        D 닫기 · F 전체화면<br />분신은 각자의 수명으로 소멸합니다. 체험 종료나 강제 초기화는
+        없습니다.
+      </p>
+    </aside>
+    <video id="camera" playsinline muted hidden></video>
+    <input id="testVideo" type="file" accept="video/*" hidden />
+    <script src="./js/bootstrap.js" defer></script>
+    <noscript>JavaScript가 꺼져 있습니다. Chrome 사이트 설정에서 허용한 뒤 다시 여세요.</noscript>
+  </body>
+</html>

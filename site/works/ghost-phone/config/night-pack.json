@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "release": "night-pack-v4.2",
+  "hiddenProbability": 0.02,
+  "minimumCallsBetweenHidden": 8,
+  "clips": [
+    {
+      "id": "n01",
+      "actorId": "songaksi",
+      "kind": "voice",
+      "hidden": false,
+      "title": "수화기를 내려놔도",
+      "spokenText": "수화기는 내려놔도 돼요. 이제는… 옆에서 말할 테니까.",
+      "file": "assets/audio/night/n01.mp3",
+      "bytes": 130605,
+      "sha256": "55575d36d4e42f963d686adc5a321e200e9d4e74f59c350461ffb34bdab7782b",
+      "duration": 8.16,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    },
+    {
+      "id": "n02",
+      "actorId": "mongdal",
+      "kind": "voice",
+      "hidden": false,
+      "title": "아직 전화 안에",
+      "spokenText": "뒤에 있는 건 내가 아니오. 나는… 아직 전화 안에 있소.",
+      "file": "assets/audio/night/n02.mp3",
+      "bytes": 138285,
+      "sha256": "97e8bc2e2d8bfc912cb9b384ecffe45a45c532a35c59e786db595f6cbca729b1",
+      "duration": 8.64,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    },
+    {
+      "id": "n03",
+      "actorId": "songaksi",
+      "kind": "laughter",
+      "hidden": false,
+      "title": "신부의 웃음",
+      "spokenText": "말 없는 웃음이 점차 제어되지 않는 웃음으로 변한다.",
+      "file": "assets/audio/night/n03.mp3",
+      "bytes": 75309,
+      "sha256": "741bca95087096581bf826ddb6385b7d2254e4bc3e3d78a9fbc26f43f9e17bd0",
+      "duration": 4.704,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    },
+    {
+      "id": "n04",
+      "actorId": "mongdal",
+      "kind": "laughter",
+      "hidden": false,
+      "title": "신랑의 웃음",
+      "spokenText": "낮게 시작해 숨이 끊길 듯 이어지는 웃음.",
+      "file": "assets/audio/night/n04.mp3",
+      "bytes": 95661,
+      "sha256": "bc6e061a113820fa687540a93df9db96c157016eed2947ab27705866c2b65d1f",
+      "duration": 5.976,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    },
+    {
+      "id": "h01",
+      "actorId": "songaksi",
+      "kind": "voice",
+      "hidden": true,
+      "title": "손각시 · 크리스마스 히든",
+      "spokenText": "너도 나랑 같구나. 크리스마스에도… 혼자구나. (웃음) 이제… 둘이네.",
+      "file": "assets/audio/night/h01.mp3",
+      "bytes": 241581,
+      "sha256": "9278585d4268c2a401f6108531c790422894f735714ea2753668740e9759bc56",
+      "duration": 15.096,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    },
+    {
+      "id": "h02",
+      "actorId": "mongdal",
+      "kind": "voice",
+      "hidden": true,
+      "title": "몽달귀신 · 크리스마스 히든",
+      "spokenText": "너도 나랑 같구나. 크리스마스… 결국 아무도 안 왔구나. (웃음) 나는 왔는데.",
+      "file": "assets/audio/night/h02.mp3",
+      "bytes": 265389,
+      "sha256": "525040eb3a77bb379411d16512ce0b951be9a33e9594b8a500b67495aef1a947",
+      "duration": 16.584,
+      "timing": {
+        "arrival": 450,
+        "listen": 700,
+        "after": 500
+      }
+    }
+  ],
+  "credit": "AI 음성: ElevenLabs · 비상업적 이용·출처 표시 조건 유지",
+  "publicAudioApproved": true,
+  "production": {
+    "uiSubmissions": 6,
+    "successfulGenerations": 5,
+    "existingCreditsUsed": 350,
+    "additionalPurchases": 0,
+    "derivedLaughClips": 1
+  }
+}
