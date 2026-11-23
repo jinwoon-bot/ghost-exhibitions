@@ -4,7 +4,7 @@ const run=(args)=>execFileSync('git',args,{cwd:repo,windowsHide:true,encoding:'u
 const actual=run(['rev-parse','--show-toplevel']);if(path.resolve(actual).toLowerCase()!==repo.toLowerCase())throw Error('Refusing parent repository');
 const target='https://github.com/jinwoon-bot/ghost-exhibitions.git';
 if(process.argv.includes('--prepare')){
- run(['config','--local','user.name','jinwoon-bot']);run(['config','--local','user.email','359047697+jinwoon-bot@users.noreply.github.com']);run(['config','--local','credential.username','jinwoon-bot']);run(['config','--local','credential.useHttpPath','true']);
+ run(['config','--local','user.name','jinwoon-bot']);run(['config','--local','user.email','359047697+jinwoon-bot@users.noreply.github.com']);run(['config','--local','credential.username','jinwoon-bot']);run(['config','--local','credential.useHttpPath','false']);
  let existing='';try{existing=run(['remote','get-url','origin']);}catch{}
  if(existing&&existing!==target)throw Error('Unexpected origin');if(!existing)run(['remote','add','origin',target]);
  run(['add','--','site','tools','docs','README.md','.github','.gitignore']);
