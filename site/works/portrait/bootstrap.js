@@ -13,7 +13,7 @@
   },12000);
   document.addEventListener('gogwan-app-ready',()=>{ready=true;clearTimeout(timer);},{once:true});
   const script = document.createElement('script');
-  script.type='module';script.src='./script.js?v=2.0.0';
+  script.type='module';script.src='./script.js?v=2.1.0';
   script.onerror=()=>{clearTimeout(timer);fail('전시 코드가 없습니다. index.html과 script.js, lib 폴더를 함께 복사하고 실행 파일로 다시 열어주세요.');};
   document.body.append(script);
 })();

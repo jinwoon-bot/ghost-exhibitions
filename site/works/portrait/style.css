@@ -55,7 +55,7 @@ button:disabled {
   background-image: url("./assets/noise_overlay.png");
   pointer-events: none;
 }
-#memorial {
+.memorial {
   margin: 0;
   position: relative;
   width: min(92vw, calc(87dvh * .75));
@@ -99,21 +99,21 @@ button:disabled {
   box-shadow: inset 0 0 8px #0a100ca6;
   border: 2px solid #111710;
 }
-#photograph {
+.photograph {
   position: relative;
   width: 100%;
   aspect-ratio: 3/4;
   overflow: hidden;
   background: #121711;
 }
-#portrait {
+.photograph img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
 }
-#photograph canvas {
+.photograph canvas {
   position: absolute;
   pointer-events: none;
 }
@@ -167,6 +167,29 @@ figcaption span {
 body.started figcaption,
 body.started #operatorHandle {
   display: none;
+}
+.group #portraits {
+  width: min(94vw, 207dvh);
+  display: grid;
+  grid-template-columns: minmax(0, .89fr) minmax(0, 1fr) minmax(0, .89fr);
+  align-items: center;
+  gap: clamp(7px, 2.2vw, 48px);
+}
+.group .memorial {
+  width: 100%;
+}
+.group .memorial[data-position="left"],
+.group .memorial[data-position="right"] {
+  margin-top: min(3dvh, 1.65vw);
+}
+.group .frame {
+  padding: clamp(4px, 1.1vw, 22px);
+}
+.group .inner-frame {
+  padding: clamp(2px, .45vw, 10px);
+}
+.group .frame:after {
+  inset: clamp(2px, .45vw, 8px);
 }
 #startScreen {
   position: absolute;
@@ -230,6 +253,14 @@ h1 {
   text-decoration: underline;
   text-underline-offset: 4px;
   color: #91a087;
+}
+.version-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px;
+  color: #a6ac94;
+  font-size: 12px;
+  text-underline-offset: 4px;
 }
 #startupStatus {
   font-size: 11px;
@@ -375,6 +406,9 @@ body.started button {
   }
   h1 {
     font-size: 34px;
+  }
+  .group .ribbon {
+    top: 3px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

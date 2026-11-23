@@ -6,15 +6,16 @@
     <meta name="theme-color" content="#080b0a" />
     <title>고관대면 · 당신을 보는 영정</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./style.css?v=2.0.0" />
+    <link rel="stylesheet" href="./style.css?v=2.1.0" />
   </head>
   <body>
     <main id="exhibition" aria-label="고관대면 영정사진 인터랙티브">
       <div class="wall-grain" aria-hidden="true"></div>
-      <figure id="memorial">
+      <div id="portraits">
+      <figure id="memorial" class="memorial" data-position="center">
         <div class="frame">
           <div class="inner-frame">
-            <div id="photograph">
+            <div id="photograph" class="photograph">
               <img
                 id="portrait"
                 src="./assets/portrait-v2.webp"
@@ -29,10 +30,11 @@
         </div>
         <figcaption>고관대면<span>당신을 보는 영정</span></figcaption>
       </figure>
+      </div>
       <section id="startScreen" aria-label="작품 시작">
         <div class="start-content">
           <p class="eyebrow">당신을 보는 영정</p>
-          <h1>고관대면</h1>
+          <h1 id="workTitle">고관대면</h1>
           <p class="start-hint">화면을 터치하거나 클릭하여 시작</p>
             <button id="startCamera" class="start-primary" disabled>전시 시작</button>
             <button id="cancelStart" hidden>카메라 시작 취소</button>
@@ -43,6 +45,7 @@
               <button id="startDemo" disabled>마우스 시연</button
             ><button id="startFullscreen">전체화면</button>
           </div>
+          <a id="switchVersion" class="version-link" href="?version=group">세 영정 버전</a>
             <p id="startupStatus" role="status">전시를 준비하고 있습니다.</p>
         </div>
       </section>
@@ -104,7 +107,7 @@
         </fieldset>
         <fieldset>
           <legend>카메라·입력</legend>
-            <p class="help">가장 가까운 관객 한 명만 선택합니다. 얼굴이 작으면 어깨·엉덩이를 함께 찾습니다. 얼굴/몸통 크기로 거리를 추정하며, 비슷한 거리에서는 기존 관객을 유지합니다.</p>
+            <p id="viewerHelp" class="help">가장 가까운 관객 한 명만 선택합니다. 얼굴이 작으면 어깨·엉덩이를 함께 찾습니다. 얼굴/몸통 크기로 거리를 추정하며, 비슷한 거리에서는 기존 관객을 유지합니다.</p>
             <label>관객 선택
               <select data-setting="viewerPolicy">
                 <option value="nearest">가까운 한 명</option>
@@ -112,8 +115,8 @@
               </select>
             </label>
             <label>최소 얼굴 너비 비율 · 전신은 자동 보완<input data-setting="viewerMinWidth" type="range" min="0.025" max="0.2" step="0.005"><output id="viewerMinWidthValue"></output></label>
-            <label>관객 교체 크기 차이 (면적 배율)<input data-setting="viewerSwitchRatio" type="range" min="1.05" max="2" step="0.05"><output id="viewerSwitchRatioValue"></output></label>
-            <label>다른 관객으로 전환하기 전 대기 (초)<input data-setting="viewerSwitchDelay" type="range" min="0.2" max="2" step="0.05"><output id="viewerSwitchDelayValue"></output></label>
+            <label data-handoff>관객 교체 크기 차이 (면적 배율)<input data-setting="viewerSwitchRatio" type="range" min="1.05" max="2" step="0.05"><output id="viewerSwitchRatioValue"></output></label>
+            <label data-handoff>다른 관객으로 전환하기 전 대기 (초)<input data-setting="viewerSwitchDelay" type="range" min="0.2" max="2" step="0.05"><output id="viewerSwitchDelayValue"></output></label>
           <label
             >카메라<select id="cameraSelect">
               <option value="">기본 카메라</option>
@@ -155,6 +158,6 @@
         </fieldset>
       </aside>
     </main>
-    <script src="./bootstrap.js?v=2.0.0" defer></script>
+    <script src="./bootstrap.js?v=2.1.0" defer></script>
   </body>
 </html>

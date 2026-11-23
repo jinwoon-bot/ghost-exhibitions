@@ -21,6 +21,7 @@ export class NearestViewer {
     this.switchMs = (config.viewerSwitchDelay ?? .65) * 1000;
     this.lostMs = (config.viewerLostGrace ?? .65) * 1000;
     this.center = config.viewerPolicy === "center";
+    this.lockTarget = config.lockTarget ?? false;
     this.centerX = config.mirror ? 1 - (config.cameraCenter ?? .5) : (config.cameraCenter ?? .5);
   }
   reset() { this.current = null; this.pending = null; this.count = 0; this.switches = 0; this.reason = '대기'; }
@@ -54,6 +55,7 @@ export class NearestViewer {
       if (now - this.current.at < this.lostMs) { this.reason = '선택 관객 잠시 가림'; return null; }
       return this.accept(preferred, now, '관객 재선택', true);
     }
+    if (this.lockTarget) return this.accept(incumbent, now, '선택 관객 유지');
     // 비슷한 크기의 옆 사람으로 흔들리지 않는다. 확실히 큰 얼굴이 지속되면 변경한다.
     const stableDifference = this.center
       ? centerDistance(incumbent) - centerDistance(preferred) >= .09

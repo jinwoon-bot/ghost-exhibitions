@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { Gaze } from '../site/works/portrait/lib/gaze.js';
 import { NearestViewer } from '../site/works/portrait/lib/viewer.js';
 import { sourceX } from '../site/works/portrait/lib/eye-composite.mjs';
+import { portraitShift, updateAttention } from '../site/works/portrait/lib/group-gaze.mjs';
 
 test('the gaze steadies, holds on exit, and returns to the original neutral', () => {
   for (const fps of [30, 60, 144]) {
@@ -65,11 +66,42 @@ test('eye mapping holds both lid endpoints and never reverses direction in narro
 });
 
 test('both eye regions are inside the native portrait coordinate space', async () => {
-  const path = new URL('../site/works/portrait/assets/portrait-v2-eyes.json', import.meta.url);
-  const photo = JSON.parse(await readFile(path, 'utf8'));
-  assert.deepEqual(photo.eyes.map(eye => eye.id), ['left', 'right']);
-  for (const { bounds: [x, y, width, height], centerX, irisRadius } of photo.eyes) {
-    assert.ok(x > 0 && y > 0 && x + width < photo.width && y + height < photo.height);
-    assert.ok(centerX - irisRadius > x && centerX + irisRadius < x + width);
+  for (const id of ['v2', 'group-left', 'group-right']) {
+    const path = new URL(`../site/works/portrait/assets/portrait-${id}-eyes.json`, import.meta.url);
+    const photo = JSON.parse(await readFile(path, 'utf8'));
+    assert.deepEqual(photo.eyes.map(eye => eye.id), ['left', 'right']);
+    for (const { bounds: [x, y, width, height], centerX, irisRadius } of photo.eyes) {
+      assert.ok(x > 0 && y > 0 && x + width < photo.width && y + height < photo.height);
+      assert.ok(centerX - irisRadius > x && centerX + irisRadius < x + width);
+    }
   }
+});
+
+test('three frames converge toward one position and settle forward after release', () => {
+  const shifts = (position, attention) =>
+    [-1, 0, 1].map(frame => portraitShift(position, attention, frame, 10));
+  assert.deepEqual(shifts(0, 0), [0, 0, 0]);
+  const [left, center, right] = shifts(0, 1);
+  assert.ok(left > 0 && center === 0 && right < 0);
+  assert.ok(shifts(-.95, 1).every(value => value < 0));
+  assert.ok(shifts(.95, 1).every(value => value > 0));
+  let attention = 0;
+  for (let i = 0; i < 110; i++) attention = updateAttention(attention, true, .42, 1 / 60);
+  assert.equal(attention, 1);
+  for (let i = 0; i < 180; i++) attention = updateAttention(attention, false, 1.6, 1 / 60);
+  assert.equal(attention, 0);
+});
+
+test('a closer bystander cannot steal the group gaze from the tracked guest', () => {
+  const face = (x, w) => ({ x, y: .4, w, h: w * 1.2, score: .97, kind: 'face' });
+  const first = face(.24, .15);
+  const bystander = face(.8, .29);
+  const viewer = new NearestViewer({ lockTarget: true, viewerLostGrace: 1 });
+  assert.equal(viewer.update([first], 0).x, first.x);
+  for (const now of [100, 600, 900]) {
+    assert.equal(viewer.update([first, bystander], now).x, first.x);
+  }
+  assert.equal(viewer.update([bystander], 1850), null);
+  assert.equal(viewer.update([bystander], 1950).x, bystander.x);
+  assert.equal(viewer.switches, 1);
 });
