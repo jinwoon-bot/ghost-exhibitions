@@ -15,7 +15,8 @@
     "description": "가까운 관객의 좌우 움직임을 영정 속 눈동자가 따라갑니다.",
     "input": "카메라 · 좌우 이동",
     "entry": "works/portrait/index.html",
-    "extra": null
+    "extra": "works/dokkaebi/index.html",
+    "extraLabel": "귀면 도깨비 열기"
   },
   {
     "id": "chang-gwi",
