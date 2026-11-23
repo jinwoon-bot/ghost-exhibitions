@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#080b0a" />
     <title>고관대면 · 당신을 보는 영정</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./style.css?v=2.2.0" />
+    <link rel="stylesheet" href="./style.css?v=2.3.0" />
   </head>
   <body>
     <main id="exhibition" aria-label="고관대면 영정사진 인터랙티브">
@@ -45,7 +45,12 @@
               <button id="startDemo" disabled>마우스 시연</button
             ><button id="startFullscreen">전체화면</button>
           </div>
-          <a id="switchVersion" class="version-link" href="?version=family">가족사진 버전</a>
+          <nav class="version-links" aria-label="다른 버전">
+            <a data-version="single" class="version-link" href="./" hidden>고관대면</a>
+            <a data-version="family" id="switchVersion" class="version-link" href="?version=family">가족사진</a>
+            <a data-version="ink" class="version-link" href="?version=ink">먹그림 손각시</a>
+            <a data-version="dokkaebi" class="version-link" href="?version=dokkaebi">귀면 도깨비</a>
+          </nav>
             <p id="startupStatus" role="status">전시를 준비하고 있습니다.</p>
         </div>
       </section>
@@ -158,6 +163,6 @@
         </fieldset>
       </aside>
     </main>
-    <script src="./bootstrap.js?v=2.2.0" defer></script>
+    <script src="./bootstrap.js?v=2.3.0" defer></script>
   </body>
 </html>

@@ -207,6 +207,45 @@ body.started #operatorHandle {
 .family .ribbon-right {
   right: -.6%;
 }
+.drawing #exhibition {
+  background: radial-gradient(ellipse at 50% 36%, #21211c, #0e0e0c 49%, #070807 78%);
+}
+.drawing .memorial {
+  width: min(91vw, 66dvh);
+}
+.drawing .frame {
+  padding: clamp(7px, 1.2vh, 17px) clamp(10px, 1.9vw, 34px);
+  border: 1px solid #383029;
+  background: repeating-linear-gradient(90deg, #221f1b 0 2px, #29241d 2px 3px, #1b1916 4px 7px);
+}
+.drawing .frame::before,
+.drawing .frame::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: auto -2.2%;
+  height: clamp(7px, 1dvh, 18px);
+  opacity: 1;
+  border: 1px solid #3b3027;
+  border-radius: 2px;
+  background: linear-gradient(#100e0c, #332a24 32%, #231d18 50%, #100e0c);
+  box-shadow: 0 3px 5px #0009;
+  pointer-events: none;
+}
+.drawing .frame::before {
+  top: 0;
+}
+.drawing .frame::after {
+  bottom: 0;
+}
+.drawing .inner-frame {
+  padding: 0;
+  border: 1px solid #5a4e3d;
+}
+.drawing .ribbon,
+.drawing .photo-grain {
+  display: none;
+}
 #startScreen {
   position: absolute;
   inset: 0;
@@ -277,6 +316,12 @@ h1 {
   color: #a6ac94;
   font-size: 12px;
   text-underline-offset: 4px;
+}
+.version-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 3px;
 }
 #startupStatus {
   font-size: 11px;

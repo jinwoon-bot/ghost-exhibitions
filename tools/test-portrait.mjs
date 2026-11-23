@@ -66,7 +66,7 @@ test('eye mapping holds both lid endpoints and never reverses direction in narro
 });
 
 test('both eye regions are inside the native portrait coordinate space', async () => {
-  for (const id of ['v2', 'group-left', 'group-right']) {
+  for (const id of ['v2', 'group-left', 'group-right', 'ink', 'dokkaebi']) {
     const path = new URL(`../site/works/portrait/assets/portrait-${id}-eyes.json`, import.meta.url);
     const photo = JSON.parse(await readFile(path, 'utf8'));
     assert.deepEqual(photo.eyes.map(eye => eye.id), ['left', 'right']);

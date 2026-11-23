@@ -23,7 +23,7 @@ export class EyeComposite {
     const [x, y, w, h] = spec.bounds;
     const horizontal = photo.naturalWidth / design.width;
     const vertical = photo.naturalHeight / design.height;
-    const pitch = Math.min(2, horizontal, vertical);
+    const pitch = Math.min(spec.rasterScale ?? 2, horizontal, vertical);
     this.width = canvas.width = Math.round(w * pitch);
     this.height = canvas.height = Math.round(h * pitch);
     this.pitch = this.width / w;
