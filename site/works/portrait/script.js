@@ -1,10 +1,11 @@
-import { Gaze, defaults, sanitize } from "./lib/gaze.js?v=1.2.0";
+import { Gaze, defaults, sanitize } from "./lib/gaze.js?v=2.0.0";
 import { Ambient } from "./lib/ambient.js";
-import { NearestViewer } from "./lib/viewer.js?v=1.2.0";
+import { NearestViewer } from "./lib/viewer.js?v=2.0.0";
+import { EyeComposite } from "./lib/eye-composite.mjs?v=2.0.0";
 const $ = (id) => document.getElementById(id),
   video = $("camera"),
   ambient = new Ambient(),
-  key = "gogwandaemyeon-portrait-v1";
+  key = "gogwandaemyeon-portrait-v2";
 let config;
 try {
   config = sanitize(JSON.parse(localStorage.getItem(key) || "{}"));
@@ -13,8 +14,7 @@ try {
 }
 const gaze = new Gaze(config);
 const viewer = new NearestViewer(config);
-let assets = null,
-  eyeAssets = [],
+let eyeAssets = [],
   started = false,
   mode = "idle",
   cameraState = "off",
@@ -26,6 +26,7 @@ let assets = null,
   lastPost = -Infinity,
   lastFrameAt = -Infinity,
   lastVideoTime = -1,
+  lastAnalyzedFrame = -1,
   frameCount = 0,
   videoCallback = null,
   cameraSettings = null,
@@ -55,13 +56,6 @@ const event = (type, detail = {}) => {
   events.push({ type, at: performance.now(), ...detail });
   if (events.length > 150) events.shift();
 };
-const image = (src) =>
-  new Promise((resolve, reject) => {
-    const im = new Image();
-    im.onload = () => resolve(im);
-    im.onerror = () => reject(Error("이미지 에셋을 읽지 못했습니다."));
-    im.src = src;
-  });
 const showNotice = (message, ms = 6500) => {
   clearTimeout(noticeTimer);
   $("notice").textContent = message;
@@ -90,58 +84,21 @@ function fillPanel() {
   $("debugCanvas").hidden = !config.debug;
 }
 async function loadAssets() {
-  try {
-    const r = await fetch("./assets/eyes.json");
-    if (!r.ok) throw Error();
-    assets = await r.json();
-  } catch {
-    assets = {
-      width: 1086,
-      height: 1448,
-      eyes: [
-        {
-          id: "left",
-          bounds: [411, 695, 90, 29],
-          center: [453, 704],
-          radius: 14,
-        },
-        {
-          id: "right",
-          bounds: [596, 693, 96, 32],
-          center: [643, 702],
-          radius: 14,
-        },
-      ],
-    };
-  }
-  for (const spec of assets.eyes) {
-    const [iris, mask] = await Promise.all([
-        image("./assets/eye_" + spec.id + ".png"),
-        image("./assets/mask_" + spec.id + ".png"),
-      ]),
-      canvas = $(spec.id === "left" ? "eyeLeft" : "eyeRight"),
-      [x, y, w, h] = spec.bounds;
-    canvas.width = w;
-    canvas.height = h;
-    canvas.style.cssText = `left:${(x / assets.width) * 100}%;top:${(y / assets.height) * 100}%;width:${(w / assets.width) * 100}%;height:${(h / assets.height) * 100}%`;
-    eyeAssets.push({ spec, iris, mask, ctx: canvas.getContext("2d"), canvas });
-  }
+  const photo = $("portrait");
+  const [response] = await Promise.all([
+    fetch("./assets/portrait-v2-eyes.json"),
+    photo.decode(),
+  ]);
+  if (!response.ok) throw new Error("영정의 눈 영역 파일을 읽지 못했습니다.");
+  const design = await response.json();
+  eyeAssets = design.eyes.map(spec => new EyeComposite(
+    $(spec.id === "left" ? "eyeLeft" : "eyeRight"), photo, spec, design,
+  ));
   drawEyes(0);
   event("assets-ready");
 }
 function drawEyes(value) {
-  for (const { spec, iris, mask, ctx, canvas } of eyeAssets) {
-    const [x, y] = spec.bounds,
-      [cx, cy] = spec.center,
-      r = spec.radius,
-      delta = value * config.maxMovement * (spec.id === "right" ? 0.97 : 1);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = "source-over";
-    ctx.drawImage(iris, cx - x - r + delta, cy - y - r);
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.drawImage(mask, 0, 0);
-    ctx.globalCompositeOperation = "source-over";
-  }
+  for (const eye of eyeAssets) eye.draw(value * config.maxMovement);
   lastDraw = value;
   renderedFrames++;
 }
@@ -183,6 +140,7 @@ function demo(reason = "operator") {
   stopCamera();
   if(reason==='operator'){clearTimeout(noticeTimer);$("notice").hidden=true;}
   mode = "demo";
+  pointerInside = false;
   gaze.reset();
   enter();
   event("demo", { reason });
@@ -295,6 +253,7 @@ async function camera() {
       { once: true },
     );
     await devices();
+    if (token !== generation) return;
     workerState = "loading";
     $("startupStatus").textContent =
       "카메라 프레임 수신 · 로컬 얼굴·전신 감지 준비 중";
@@ -320,19 +279,13 @@ async function camera() {
       };
       fault(names[e.name] || e.message);
     }
-  } finally {
-    if(token === generation) $("startCamera").disabled = false;
   }
 }
 function workerMessage(m, token) {
   if (token !== generation) return;
   if (m.type === "ready") {
-    clearTimeout(workerTimeout);
-    workerState = "ready";
-    $("cancelStart").hidden = true;
-    gaze.reset();
-    enter();
-    event("tracking-ready");
+    workerState = "warming";
+    $("startupStatus").textContent = "카메라 연결됨 · 첫 프레임 분석 중";
     return;
   }
   busy = false;
@@ -341,6 +294,15 @@ function workerMessage(m, token) {
     return;
   }
   if (m.type !== "result") return;
+  if (workerState === "warming") {
+    clearTimeout(workerTimeout);
+    workerState = "ready";
+    $("startCamera").disabled = false;
+    $("cancelStart").hidden = true;
+    gaze.reset();
+    enter();
+    event("tracking-ready");
+  }
   trackResults++;
   inferTotal.count++;
   inferTotal.totalMs += m.inferenceMs;
@@ -362,14 +324,16 @@ async function analyze(now) {
   if (
     busy ||
     mode !== "camera" ||
-    workerState !== "ready" ||
+    (workerState !== "ready" && workerState !== "warming") ||
     cameraState !== "live" ||
     document.hidden ||
     video.readyState < 2 ||
+    frameCount === lastAnalyzedFrame ||
     now - lastPost < 1000 / config.fps
   )
     return;
   busy = true;
+  lastAnalyzedFrame = frameCount;
   lastPost = now;
   const token = generation;
   try {
@@ -386,9 +350,10 @@ async function analyze(now) {
     }
     worker.postMessage({ type: "frame", bitmap, sourceMs: now }, [bitmap]);
   } catch (e) {
-    busy = false;
-    if (token === generation)
+    if (token === generation) {
+      busy = false;
       fault("카메라 프레임을 분석용으로 읽지 못했어요.");
+    }
   }
 }
 function allFrameStats() {
@@ -437,7 +402,9 @@ function panel(now) {
       추적방식: lastFace?.kind || "미감지",
       관객:
         lastFace && now - lastFace.at < 700 ? (lastFace.kind?.includes('body')?'전신 관객 감지':'얼굴 관객 감지') : "미감지/정면 복귀",
-      선택방식: "가까운 관객 한 명 · 얼굴/몸통 크기 기준",
+      선택방식: config.viewerPolicy === "center"
+        ? "중앙에 있는 관객 한 명"
+        : "가까운 관객 한 명 · 얼굴/몸통 크기 기준",
       감지인원: viewer.count,
       선택상태: viewer.reason,
       관객변경: viewer.switches,
@@ -528,7 +495,7 @@ function loop(now) {
   const value = gaze.step(now, dt);
   if (
     eyeAssets.length &&
-    (lastDraw === Infinity || Math.abs(value - lastDraw) > 0.0008)
+    (lastDraw === Infinity || (value === 0 && lastDraw !== 0) || Math.abs(value - lastDraw) > 0.0008)
   )
     drawEyes(value);
   if (now - lastPanel > 250) {
@@ -553,7 +520,11 @@ async function fullscreen() {
 document.addEventListener(
   "pointermove",
   (e) => {
-    if (mode !== "demo" || !started || e.target.closest("#operator")) return;
+    if (mode !== "demo" || !started) return;
+    if (e.target.closest("#operator")) {
+      pointerInside = false;
+      return;
+    }
     pointerX = e.clientX / window.innerWidth;
     pointerInside = true;
     gaze.observe(pointerX, performance.now());
@@ -592,7 +563,8 @@ $("demoMode").onchange = (e) => {
 for (const el of document.querySelectorAll("[data-setting]"))
   el.addEventListener("input", () => {
     config[el.dataset.setting] =
-      el.type === "checkbox" ? el.checked : Number(el.value);
+      el.type === "checkbox" ? el.checked :
+        el.type === "select-one" ? el.value : Number(el.value);
     save();
     if (el.dataset.setting === "sound")
       ambient
@@ -639,7 +611,7 @@ $("exportLog").onclick = () => {
           : null,
       },
       tracking: { worker: workerState, results: trackResults, faceResults },
-      selection: {policy:"nearest-face-or-body-size",count:viewer.count,switches:viewer.switches,reason:viewer.reason},
+      selection: {policy:config.viewerPolicy,count:viewer.count,switches:viewer.switches,reason:viewer.reason},
       render: frameStats(),
       renderAll: allFrameStats(),
       inferenceAll: {
@@ -685,9 +657,9 @@ window.addEventListener("beforeunload", () => {
 fillPanel();
 loadAssets().then(()=>{
   $("startCamera").disabled = $("startDemo").disabled = false;
-  $("startupStatus").textContent = "가장 가까운 관객 한 명만 따라봅니다.";
+  $("startupStatus").textContent = "관객 한 명의 좌우 움직임을 따라봅니다.";
 }).catch((e) => {
-  $("startupStatus").textContent = e.message;
+  $("startupStatus").textContent = `영정을 준비하지 못했습니다. ${e.message}`;
   $("startCamera").disabled = $("startDemo").disabled = true;
 });
 requestAnimationFrame(loop);
