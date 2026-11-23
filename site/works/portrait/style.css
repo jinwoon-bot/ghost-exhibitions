@@ -191,6 +191,22 @@ body.started #operatorHandle {
 .group .frame:after {
   inset: clamp(2px, .45vw, 8px);
 }
+.family .memorial {
+  width: min(96vw, 141dvh);
+}
+.family .photograph {
+  aspect-ratio: 3 / 2;
+}
+.family .ribbon {
+  top: 2%;
+  width: 8.5%;
+}
+.family .ribbon-left {
+  left: -.6%;
+}
+.family .ribbon-right {
+  right: -.6%;
+}
 #startScreen {
   position: absolute;
   inset: 0;
@@ -409,6 +425,12 @@ body.started button {
   }
   .group .ribbon {
     top: 3px;
+  }
+  .family .frame {
+    padding: 7px;
+  }
+  .family .inner-frame {
+    padding: 4px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

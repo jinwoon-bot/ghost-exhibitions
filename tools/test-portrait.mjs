@@ -105,3 +105,16 @@ test('a closer bystander cannot steal the group gaze from the tracked guest', ()
   assert.equal(viewer.update([bystander], 1950).x, bystander.x);
   assert.equal(viewer.switches, 1);
 });
+
+test('the family photograph has three calibrated eye pairs inside one image', async () => {
+  const path = new URL('../site/works/portrait/assets/portrait-family-eyes.json', import.meta.url);
+  const photo = JSON.parse(await readFile(path, 'utf8'));
+  assert.equal(photo.width / photo.height, 1.5);
+  assert.deepEqual(photo.eyes.map(eye => eye.position), [-1, -1, 0, 0, 1, 1]);
+  let previous = 0;
+  for (const { bounds: [x, y, width, height], centerX, irisRadius } of photo.eyes) {
+    assert.ok(x > previous && y > 0 && x + width < photo.width && y + height < photo.height);
+    assert.ok(centerX - irisRadius > x && centerX + irisRadius < x + width);
+    previous = x + width;
+  }
+});

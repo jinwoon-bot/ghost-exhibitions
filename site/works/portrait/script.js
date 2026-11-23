@@ -1,4 +1,4 @@
-import { Gaze, defaults, sanitize } from "./lib/gaze.js?v=2.0.0";
+import { Gaze, defaults, sanitize } from "./lib/gaze.js?v=2.2.0";
 import { Ambient } from "./lib/ambient.js";
 import { NearestViewer } from "./lib/viewer.js?v=2.1.0";
 import { EyeComposite } from "./lib/eye-composite.mjs?v=2.0.0";
@@ -6,9 +6,12 @@ import { portraitShift, updateAttention } from "./lib/group-gaze.mjs?v=2.1.0";
 const $ = (id) => document.getElementById(id),
   video = $("camera"),
   ambient = new Ambient(),
-  group = new URLSearchParams(location.search).get("version") === "group",
-  key = group ? "gogwandaemyeon-portrait-group" : "gogwandaemyeon-portrait-v2",
-  initialConfig = group ? { ...defaults, maxMovement: 10 } : defaults;
+  version = new URLSearchParams(location.search).get("version"),
+  family = version === "family",
+  group = version === "group",
+  sharedTarget = family || group,
+  key = `gogwandaemyeon-portrait-${sharedTarget ? version : "v2"}`,
+  initialConfig = sharedTarget ? { ...defaults, maxMovement: family ? 16 : 10 } : defaults;
 let config;
 try {
   config = sanitize({ ...initialConfig, ...JSON.parse(localStorage.getItem(key) || "{}") });
@@ -16,11 +19,11 @@ try {
   config = { ...initialConfig };
 }
 const gaze = new Gaze(config);
-const viewerConfig = () => group
+const viewerConfig = () => sharedTarget
   ? { ...config, lockTarget: true, viewerLostGrace: config.hold }
   : config;
 const viewer = new NearestViewer(viewerConfig());
-let portraits = [],
+let eyes = [],
   attention = 0,
   started = false,
   mode = "idle",
@@ -96,23 +99,41 @@ async function loadPortrait(figure, imageName, position) {
   ]);
   if (!response.ok) throw new Error("영정의 눈 영역 파일을 읽지 못했습니다.");
   const design = await response.json();
-  const canvases = figure.querySelectorAll("canvas");
-  const eyes = design.eyes.map((spec, index) => new EyeComposite(
-    canvases[index], photo, spec, design,
-  ));
-  return { position, eyes, lastShift: Infinity };
+  const picture = photo.parentElement;
+  const canvases = [...picture.querySelectorAll("canvas")];
+  return design.eyes.map((spec, index) => {
+    let canvas = canvases[index];
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.setAttribute("aria-hidden", "true");
+      picture.querySelector(".photo-grain").before(canvas);
+    }
+    return {
+      position: spec.position ?? position,
+      renderer: new EyeComposite(canvas, photo, spec, design),
+      lastShift: Infinity,
+    };
+  });
 }
 async function loadAssets() {
   const center = $("memorial");
-  const loading = [loadPortrait(center, "portrait-v2", 0)];
-  if (group) {
-    document.body.classList.add("group");
-    document.title = "당신을 보는 영정 · 세 영정";
-    $("workTitle").textContent = "세 영정";
+  if (sharedTarget) {
+    document.body.classList.add(version);
+    $("workTitle").textContent = family ? "가족사진" : "세 영정";
+    document.title = `당신을 보는 영정 · ${$("workTitle").textContent}`;
     $("switchVersion").textContent = "고관대면 한 장 버전";
     $("switchVersion").href = location.pathname;
-    $("viewerHelp").textContent = "처음 선택한 관객 한 명에게 세 영정의 시선이 모입니다. 그 사람이 화면을 떠나면 다음 관객을 선택합니다.";
+    $("viewerHelp").textContent = "처음 선택한 관객 한 명에게 세 사람의 시선이 모입니다. 그 사람이 화면을 떠나면 다음 관객을 선택합니다.";
     for (const label of document.querySelectorAll("[data-handoff]")) label.hidden = true;
+  }
+  if (family) {
+    $("portrait").src = "./assets/portrait-family.webp";
+    $("portrait").alt = "가운데 고관대면과 양옆 두 사람이 정면을 바라보는 오래된 가족사진";
+    document.querySelector('[data-setting="maxMovement"]').max = "18";
+    fillPanel();
+  }
+  const loading = [loadPortrait(center, family ? "portrait-family" : "portrait-v2", 0)];
+  if (group) {
     for (const [name, position, alt] of [
       ["left", -1, "짙은 저고리를 입은 노년 여성의 영정사진"],
       ["right", 1, "검은 망건을 쓴 남성의 영정사진"],
@@ -131,17 +152,16 @@ async function loadAssets() {
       loading.push(loadPortrait(figure, imageName, position));
     }
   }
-  portraits = await Promise.all(loading);
-  event("assets-ready", { portraits: portraits.length });
+  eyes = (await Promise.all(loading)).flat();
+  event("assets-ready", { eyes: eyes.length });
 }
 function drawEyes(value) {
   let dirty = false;
-  for (const portrait of portraits) {
-    const shift = portraitShift(value, attention, portrait.position, config.maxMovement);
-    if (Math.abs(shift - portrait.lastShift) < .008 && shift !== 0) continue;
-    if (shift === portrait.lastShift) continue;
-    for (const eye of portrait.eyes) eye.draw(shift);
-    portrait.lastShift = shift;
+  for (const eye of eyes) {
+    const shift = portraitShift(value, attention, eye.position, config.maxMovement);
+    if (shift === eye.lastShift || (shift !== 0 && Math.abs(shift - eye.lastShift) < .008)) continue;
+    eye.renderer.draw(shift);
+    eye.lastShift = shift;
     dirty = true;
   }
   if (dirty) renderedFrames++;
@@ -450,7 +470,7 @@ function panel(now) {
       추적방식: lastFace?.kind || "미감지",
       관객:
         lastFace && now - lastFace.at < 700 ? (lastFace.kind?.includes('body')?'전신 관객 감지':'얼굴 관객 감지') : "미감지/정면 복귀",
-      영정: group ? "3장 · 동일 관객" : "1장",
+      영정: family ? "가족사진 1장 · 시선 3쌍" : group ? "3장 · 동일 관객" : "1장",
       선택방식: config.viewerPolicy === "center"
         ? "중앙에 있는 관객 한 명"
         : "가까운 관객 한 명 · 얼굴/몸통 크기 기준",
@@ -542,7 +562,7 @@ function loop(now) {
   }
   analyze(now);
   const value = gaze.step(now, dt);
-  if (group) {
+  if (sharedTarget) {
     const present = gaze.mode === "follow" || gaze.mode === "hold";
     attention = updateAttention(attention, present, present ? config.smoothing : config.returnTime, dt);
   }
@@ -660,8 +680,9 @@ $("exportLog").onclick = () => {
           : null,
       },
       tracking: { worker: workerState, results: trackResults, faceResults },
-      portraitCount: portraits.length,
-      selection: {policy:config.viewerPolicy,lockTarget:group,count:viewer.count,switches:viewer.switches,reason:viewer.reason},
+      variant: family ? "family" : group ? "group" : "single",
+      eyeCount: eyes.length,
+      selection: {policy:config.viewerPolicy,lockTarget:sharedTarget,count:viewer.count,switches:viewer.switches,reason:viewer.reason},
       render: frameStats(),
       renderAll: allFrameStats(),
       inferenceAll: {
@@ -707,8 +728,8 @@ window.addEventListener("beforeunload", () => {
 fillPanel();
 loadAssets().then(()=>{
   $("startCamera").disabled = $("startDemo").disabled = false;
-  $("startupStatus").textContent = group
-    ? "세 영정이 관객 한 명을 함께 바라봅니다."
+  $("startupStatus").textContent = sharedTarget
+    ? "사진 속 세 사람이 관객 한 명을 바라봅니다."
     : "관객 한 명의 좌우 움직임을 따라봅니다.";
 }).catch((e) => {
   $("startupStatus").textContent = `영정을 준비하지 못했습니다. ${e.message}`;

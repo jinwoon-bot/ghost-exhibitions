@@ -24,7 +24,7 @@ export function sanitize(o = {}) {
   for (const [k, a, b] of [
     ["sensitivity", 0.25, 2.5],
     ["smoothing", 0.04, 1.2],
-    ["maxMovement", 1, 10],
+    ["maxMovement", 1, 18],
     ["hold", 0.2, 3],
     ["returnTime", 0.4, 5],
     ["deadband", 0.004, 0.05],
