@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.wasm binary
+*.bin binary
+*.task binary
+*.tflite binary
+*.webm binary
+*.mp4 binary
+*.mp3 binary
+*.png binary
+*.jpg binary
+*.webp binary

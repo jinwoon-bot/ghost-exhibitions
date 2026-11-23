@@ -7,7 +7,7 @@ if(process.argv.includes('--prepare')){
  run(['config','--local','user.name','jinwoon-bot']);run(['config','--local','user.email','359047697+jinwoon-bot@users.noreply.github.com']);run(['config','--local','credential.username','jinwoon-bot']);run(['config','--local','credential.useHttpPath','false']);
  let existing='';try{existing=run(['remote','get-url','origin']);}catch{}
  if(existing&&existing!==target)throw Error('Unexpected origin');if(!existing)run(['remote','add','origin',target]);
- run(['add','--','site','tools','docs','README.md','.github','.gitignore']);
+ run(['add','--','site','tools','docs','README.md','.github','.gitignore','.gitattributes']);
  const status=run(['diff','--cached','--name-only']);if(!status){console.log('No new staged changes');process.exit(0);}
  console.log(run(['commit','-m','Collect six exhibitions with shared local models and a single public entrance']));console.log(run(['rev-parse','HEAD']));
 }else if(process.argv.includes('--push')){

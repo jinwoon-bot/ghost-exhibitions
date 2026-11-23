@@ -1,0 +1,19 @@
+{
+ "verified_date_kst":"2026-11-24",
+ "account":"jinwoon-bot",
+ "repository":"https://github.com/jinwoon-bot/ghost-exhibitions",
+ "public_site":"https://jinwoon-bot.github.io/ghost-exhibitions/",
+ "deployed_commit":"0e33a3979d7e0d3070323cf724d3888016e832eb",
+ "workflow_run":45219977474,
+ "workflow_result":"success",
+ "anonymous_main_status":200,
+ "anonymous_asset_check":{"files":301,"pass":true,"failures":0,"cookie_sent":false,"authorization_header":false,"report":"PUBLIC_ACCESS_VALIDATION.json"},
+ "browser":{"all_six_start_buttons_ready":true,"one_iframe_per_work":true,"iframe_count_after_return":0,"console_errors":0},
+ "public_model_probe":{"physical_camera":false,"pass":true,"results":[{"work":"wedding","frames":3,"elapsed_ms":8070,"pass":true},{"work":"portrait","frames":3,"elapsed_ms":4014,"pass":true},{"work":"only-on-screen","frames":3,"elapsed_ms":3059,"pass":true},{"work":"forbidden-broadcast","frames":3,"elapsed_ms":3345,"pass":true}]},
+ "runtime_bytes":116589585,
+ "earlier_six_work_bytes":182984800,
+ "other_repositories_modified":false,
+ "education_settings_modified":false,
+ "limitations":["No physical second-PC verification in this session","No new real-webcam audience accuracy or long-duration test","No guarantee of future external GitHub service availability"],
+ "first_hash_check_note":"All HTTP responses were 200. Eight text hashes initially differed because Git committed LF instead of local CRLF. The final checker accepts only exact committed Git bytes after verifying the sole working-copy difference is CRLF-to-LF. Original first check is preserved."
+}
