@@ -19,6 +19,13 @@ export const defaults = {
   viewerPolicy: "nearest",
 };
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const shoulder = .78;
+const span = 1 - shoulder;
+function easeLimit(value) {
+  const magnitude = Math.abs(value);
+  if (magnitude <= shoulder) return value;
+  return Math.sign(value) * (shoulder + span * -Math.expm1(-(magnitude - shoulder) / span));
+}
 export function sanitize(o = {}) {
   const c = { ...defaults };
   for (const [k, a, b] of [
@@ -65,11 +72,7 @@ export class Gaze {
       Math.abs(x - this.acceptedX) >= this.config.deadband
     ) {
       this.acceptedX = x;
-      this.target = clamp(
-        (x - this.config.cameraCenter) * 2 * this.config.sensitivity,
-        -1,
-        1,
-      );
+      this.target = easeLimit((x - this.config.cameraCenter) * 2 * this.config.sensitivity);
     }
   }
   step(now, dt) {
