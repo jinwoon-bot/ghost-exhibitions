@@ -1,6 +1,6 @@
 # 〈당신을 보는 영정〉 · 인물 영정
 
-오래된 한국 흑백사진 속 한 사람의 눈만 관객을 따라 움직이는 시안입니다. 귀면 도깨비 확정판은 별도 태그와 공개 주소에 보존했습니다. [귀면 도깨비 확정본](https://github.com/jinwoon-bot/ghost-exhibitions/tree/dokkaebi-final-v1)
+오래된 한국 흑백사진 속 한 사람의 눈만 관객을 따라 움직이는 작품입니다. 통합 전시 목록에서 **인물 영정**을 고르거나 [공개 작품 주소](https://jinwoon-bot.github.io/ghost-exhibitions/works/human-portrait/)를 엽니다. 이전 영정 주소도 이 작품으로 연결됩니다. [귀면 도깨비 확정본](https://github.com/jinwoon-bot/ghost-exhibitions/tree/dokkaebi-final-v1)
 
 ## 실행
 

@@ -1,6 +1,6 @@
 # 귀면 도깨비
 
-통합 전시 목록의 고관대면 카드에서 **귀면 도깨비 열기**를 선택하거나 [작품 주소](https://jinwoon-bot.github.io/ghost-exhibitions/works/dokkaebi/)를 엽니다.
+통합 전시 목록의 인물 영정 카드에서 **귀면 도깨비 열기**를 선택하거나 [작품 주소](https://jinwoon-bot.github.io/ghost-exhibitions/works/dokkaebi/)를 엽니다.
 
 - **전시 시작**을 누르고 브라우저에서 카메라를 허용합니다. 그림의 눈동자가 처음 선택한 관객 한 명을 따라갑니다.
 - **마우스 시연**으로 카메라 없이 눈동자의 좌우 움직임을 볼 수 있습니다.

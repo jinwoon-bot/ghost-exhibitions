@@ -10,11 +10,11 @@
   },
   {
     "id": "portrait",
-    "title": "고관대면",
+    "title": "인물 영정",
     "tagline": "움직이지 않는 초상, 따라오는 눈.",
-    "description": "가까운 관객의 좌우 움직임을 영정 속 눈동자가 따라갑니다.",
+    "description": "오래된 흑백 초상의 눈동자가 관객 한 명의 좌우 움직임을 따라갑니다.",
     "input": "카메라 · 좌우 이동",
-    "entry": "works/portrait/index.html",
+    "entry": "works/human-portrait/index.html",
     "extra": "works/dokkaebi/index.html",
     "extraLabel": "귀면 도깨비 열기"
   },
