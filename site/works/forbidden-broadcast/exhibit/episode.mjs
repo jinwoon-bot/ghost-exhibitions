@@ -35,7 +35,7 @@ export class Proximity {
     const hold = now - this.lastSeen < 640;
     let target = hold ? clamp((this.raw - far) / (near - far)) : 0;
     if (override !== null) target = override;
-    this.filtered = approach(this.filtered, target, dt, target > this.filtered ? .26 : .47);
+    this.filtered = approach(this.filtered, target, dt, target > this.filtered ? .20 : .47);
     if (this.filtered < .002) this.filtered = 0;
     return this.filtered;
   }
@@ -47,11 +47,10 @@ export class Episode {
   reset() {
     this.phase = 'normal';
     this.age = 0;
-    this.introTime = 0;
     this.dossierTime = 0;
     this.nearTime = 0;
     this.leaveTime = 0;
-    this.alpha = { intro: 0, notice: 0, reveal: 0 };
+    this.alpha = { notice: 0, reveal: 0 };
   }
 
   enter(phase) {
@@ -59,18 +58,13 @@ export class Episode {
     this.age = 0;
   }
 
-  update(dt, p, lockPortrait) {
+  update(dt, p) {
     this.age += dt;
     this.leaveTime = p < .21 ? this.leaveTime + dt : 0;
     this.nearTime = p >= .76 ? this.nearTime + dt : 0;
 
-    if (this.phase === 'normal' && p >= .34) this.enter('intro');
-    if (this.phase === 'intro' && p >= .24) this.introTime += dt;
-
-    if (this.phase === 'intro' && this.introTime >= 2.45 && p >= .55 && lockPortrait()) {
-      this.enter('notice');
-    }
-    if (this.phase === 'notice' && p >= .36) {
+    if (this.phase === 'normal' && p >= .34) this.enter('notice');
+    if (this.phase === 'notice' && p >= .28) {
       this.dossierTime += dt * (.84 + p * .2);
       if (this.dossierTime >= READ_TIME && this.nearTime >= .31) this.enter('reveal');
     }
@@ -78,12 +72,9 @@ export class Episode {
 
     if (!['normal', 'leaving'].includes(this.phase) && this.leaveTime >= .49) this.enter('leaving');
 
-    const envelope = smooth(.19, .53, p);
-    const intro = this.phase === 'intro' ? envelope : 0;
-    const notice = this.phase === 'notice' ? envelope : 0;
+    const notice = this.phase === 'notice' ? smooth(.15, .34, p) : 0;
     const reveal = this.phase === 'reveal' ? smooth(.24, .68, p) : 0;
-    this.alpha.intro = approach(this.alpha.intro, intro, dt, intro ? .19 : .28);
-    this.alpha.notice = approach(this.alpha.notice, notice, dt, notice ? .20 : .25);
+    this.alpha.notice = approach(this.alpha.notice, notice, dt, notice ? .045 : .25);
     this.alpha.reveal = approach(this.alpha.reveal, reveal, dt, reveal ? .065 : .36);
 
     return this.phase === 'leaving' && Math.max(...Object.values(this.alpha)) < .025;

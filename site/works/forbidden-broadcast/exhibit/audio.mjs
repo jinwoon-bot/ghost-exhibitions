@@ -104,14 +104,14 @@ export class BroadcastAudio {
     return (this.context.currentTime - at + offset) % duration;
   }
 
-  update(volume, stress, overlay, reveal) {
+  update(volume, stress, overlay, reveal, burst = 0) {
     if (!this.started) return;
     const ctx = this.context;
     gainAt(this.master.gain, ctx, this.enabled ? volume : 0, .095);
     gainAt(this.voice.gain, ctx, .78 * (1 - overlay * .97));
     gainAt(this.speech.frequency, ctx, 5200 - stress * 2100);
     gainAt(this.echo.gain, ctx, stress * .052 * (1 - overlay * .6));
-    gainAt(this.tape.gain, ctx, .012 + stress ** 2 * .21 + reveal * .09, .08);
+    gainAt(this.tape.gain, ctx, .012 + stress ** 2 * .21 + reveal * .09 + burst * .38, .032);
     gainAt(this.room.gain, ctx, .019 + stress * .036);
     gainAt(this.basement.gain, ctx, stress ** 2 * .14 + reveal * .05, .2);
   }
@@ -132,7 +132,6 @@ export class BroadcastAudio {
     source.onended = () => { source.disconnect(); gain.disconnect(); };
   }
 
-  tuning() { this.tone(370, 365, .29, .075, 'triangle'); }
   shutter() { this.tone(92, 46, .62, .17, 'triangle'); }
 
   type() {

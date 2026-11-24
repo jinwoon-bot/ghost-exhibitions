@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>금지된 방송 · 실종 접수</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=signal-cut">
 </head>
 <body>
   <main id="screen" aria-label="동남 지역방송 화면">
@@ -14,28 +14,15 @@
       <div id="clock" class="clock"></div>
       <div class="lower"><b>지역</b><span id="headline">생활 소식</span></div>
     </section>
-    <section id="intro" class="layer scene" aria-label="공익방송 안내" aria-hidden="true">
-      <img class="feed" src="assets/campus.jpg" alt="">
-      <img id="hall" class="feed" src="assets/hall-day.jpg" alt="">
-      <div class="intro-shade"></div>
-      <div class="station"><b>동남</b><span>공익방송</span></div>
-      <div class="intro-copy">
-        <svg class="emblem" width="70" height="64" viewBox="0 0 70 64" aria-hidden="true">
-          <path d="M9 34c12-18 23-19 32-8l7 8-8 7-9-8c-4-3-8-1-13 5M61 30C49 48 38 49 29 38l-7-8 8-7 9 8c4 3 8 1 13-5" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-          <circle cx="35" cy="12" r="4" fill="currentColor"/><circle cx="35" cy="52" r="4" fill="currentColor"/>
-        </svg>
-        <p class="location">부산 남구 · 동명대학교</p>
-        <h1>지역 실종 안내</h1>
-        <p>동남 기록방송 · 전시용 가상 방송</p>
-      </div>
-    </section>
     <section id="notice" class="layer scene" aria-label="실종자 공지" aria-hidden="true">
       <img class="feed document-bg" src="assets/hall-day.jpg" alt="">
+      <img id="notice-campus" class="feed document-bg" src="assets/campus.jpg" alt="">
       <div class="document-veil"></div>
       <header class="dispatch"><h2>실종자를 찾습니다</h2><span>동남 기록방송</span></header>
       <div class="record">
         <figure class="portrait-frame">
           <canvas id="portrait" width="360" height="450"></canvas>
+          <span class="pending-photo">사진 수신 중</span>
           <figcaption>접수 사진</figcaption>
         </figure>
         <div class="record-text">
@@ -98,6 +85,6 @@
       </section>
     </div>
   </dialog>
-  <script type="module" src="app.mjs?v=camera-entry"></script>
+  <script type="module" src="app.mjs?v=signal-cut"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { clamp } from './episode.mjs';
+import { clamp } from './episode.mjs?v=signal-cut';
 
 export function loadImage(source) {
   const image = new Image();
@@ -103,11 +103,11 @@ export class SignalPicture {
     this.tick = 0;
   }
 
-  draw(now, intensity, reveal, reduced) {
-    if (now - this.tick < (reduced ? 230 : 88)) return;
+  draw(now, intensity, reveal, reduced, burst = 0) {
+    if (now - this.tick < (reduced ? 230 : burst > .04 ? 39 : 88)) return;
     this.tick = now;
     const { width, height, ctx, pixels } = this;
-    const amount = 6 + intensity ** 1.9 * (reduced ? 13 : 35);
+    const amount = 6 + intensity ** 1.9 * (reduced ? 13 : 35) + burst * (reduced ? 37 : 171);
     for (let i = 0; i < pixels.data.length; i += 4) {
       const value = Math.random();
       pixels.data[i] = 181;
@@ -116,6 +116,21 @@ export class SignalPicture {
       pixels.data[i + 3] = value > .44 ? (value - .44) * amount : 0;
     }
     ctx.putImageData(pixels, 0, 0);
+    if (burst > .015 && !reduced) {
+      const bands = [height * .24, height * .55, height * .79];
+      for (const [i, base] of bands.entries()) {
+        const y = Math.floor(base + (Math.random() - .5) * 14);
+        const bandHeight = 4 + i * 3;
+        const glow = ctx.createLinearGradient(0, y, 0, y + bandHeight);
+        glow.addColorStop(0, 'rgba(222,226,207,0)');
+        glow.addColorStop(.20, 'rgba(222,226,207,' + (burst * .72) + ')');
+        glow.addColorStop(1, 'rgba(222,226,207,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, y, width, bandHeight);
+        ctx.fillStyle = 'rgba(222,226,207,' + (burst * .22) + ')';
+        ctx.fillRect(0, y + bandHeight + 2, width * (.45 + Math.random() * .55), 1);
+      }
+    }
     if (intensity > .29 && !reduced) {
       const row = (now / (30 - intensity * 11)) % height;
       const gradient = ctx.createLinearGradient(0, row, 0, row + 13);

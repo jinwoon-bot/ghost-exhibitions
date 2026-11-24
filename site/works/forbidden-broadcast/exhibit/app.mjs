@@ -1,8 +1,8 @@
 import { Camera } from '../src/camera.mjs';
 import { FaceInput } from './detector.mjs';
-import { COPY, Episode, Proximity, clamp, smooth } from './episode.mjs';
-import { BroadcastAudio } from './audio.mjs';
-import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs';
+import { COPY, Episode, Proximity, clamp, smooth } from './episode.mjs?v=signal-cut';
+import { BroadcastAudio } from './audio.mjs?v=signal-cut';
+import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs?v=signal-cut';
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -119,7 +119,7 @@ function resetEpisode() {
     node.textContent = '';
     node.classList.remove('typing');
   }
-  for (const id of ['intro', 'notice', 'final-shot']) scene(id, 0);
+  for (const id of ['notice', 'final-shot']) scene(id, 0);
   screen.dataset.phase = 'normal';
 }
 
@@ -132,7 +132,7 @@ function scene(id, alpha) {
 }
 
 function lockPortrait(now, p) {
-  if (portraitLocked) return true;
+  if (portraitLocked) return;
   const canUseFace = mode === 'camera' && !manual && $('allow-face').checked;
   let image = fallback;
   let kind = 'fallback';
@@ -140,15 +140,15 @@ function lockPortrait(now, p) {
     portraitAt ||= now;
     const stable = latest?.kind === 'face' && now - latest.now < 335 &&
       latest.now - stableAt >= 195 && video.readyState >= 2 && camera.healthy(now);
-    if (stable && p >= .55) {
+    if (stable && p >= .32) {
       try {
         image = webcamPortrait(video, latest, settings.mirror, settings.lowLight ? luma : 95);
         kind = 'audience';
       } catch {}
     }
-    if (kind !== 'audience' && faceKind !== 'person' && now - portraitAt < 740) return false;
+    if (kind !== 'audience' && faceKind !== 'person' && now - portraitAt < 590) return;
   }
-  if (!image) return false;
+  if (!image) return;
   const photo = portrait.getContext('2d');
   photo.filter = 'saturate(.66) contrast(1.07)';
   drawCover(photo, image, portrait.width, portrait.height);
@@ -158,7 +158,6 @@ function lockPortrait(now, p) {
   if (kind === 'audience') clearPhoto(image);
   portraitLocked = true;
   screen.dataset.portrait = kind;
-  return true;
 }
 
 function type(t) {
@@ -328,10 +327,9 @@ function frame(now) {
 
   const override = manual ? .98 : mode === 'demo' ? demo : null;
   intensity = prox.update(now, step, settings.far, settings.near, override);
-  if (episode.update(step, intensity, () => lockPortrait(now, intensity))) resetEpisode();
-  const { phase, alpha } = episode;
+  if (episode.update(step, intensity)) resetEpisode();
+  const { phase, age, alpha } = episode;
   if (phase !== lastPhase) {
-    if (phase === 'intro') audio.tuning();
     if (phase === 'reveal') audio.shutter();
     if (phase === 'cooldown' && manual) manual = false;
     lastPhase = phase;
@@ -339,23 +337,26 @@ function frame(now) {
   }
 
   const t = programTime(now);
-  const overlay = Math.max(alpha.intro, alpha.notice, alpha.reveal);
+  const burst = phase === 'notice' ? 1 - smooth(.035, .56, age) : 0;
+  const overlay = Math.max(alpha.notice, alpha.reveal);
   const stress = phase === 'normal' || phase === 'cooldown' ? 0 : intensity * smooth(.12, .55, intensity);
   const voice = program.envelope[Math.floor(t * program.envelopeRate)] / 255 || 0;
   if (overlay < .994) {
     if (!syncFilm(t)) news.draw(t, voice, stress * .55, reduced.matches);
     setHeadline(t);
   }
-  const hallOpacity = smooth(1.25, 1.89, episode.introTime).toFixed(3);
-  if ($('hall').style.opacity !== hallOpacity) $('hall').style.opacity = hallOpacity;
-  scene('intro', alpha.intro);
   scene('notice', alpha.notice);
   scene('final-shot', alpha.reveal);
-  if (phase === 'notice') type(episode.dossierTime);
-  signal.draw(now, stress, alpha.reveal, reduced.matches);
+  if (phase === 'notice') {
+    lockPortrait(now, intensity);
+    const campusOpacity = (1 - smooth(.64, 2.15, episode.dossierTime)).toFixed(3);
+    if ($('notice-campus').style.opacity !== campusOpacity) $('notice-campus').style.opacity = campusOpacity;
+    type(episode.dossierTime);
+  }
+  signal.draw(now, stress, alpha.reveal, reduced.matches, burst);
   if (now - lastAudio >= 57) {
     lastAudio = now;
-    audio.update(settings.volume, stress, overlay, alpha.reveal);
+    audio.update(settings.volume, stress, overlay, alpha.reveal, reduced.matches ? burst * .35 : burst);
   }
 
   if (panel.open && now - lastStatus >= 580) {
