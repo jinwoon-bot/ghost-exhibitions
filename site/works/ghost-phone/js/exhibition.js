@@ -4,7 +4,8 @@ import {EncounterDirector} from './encounter.js?v=4.2.0';
 import {AmbientBus} from './ambience.js?v=4.2.0';
 import {runCallScene,callProfiles} from './call-scene.js?v=4.2.0';
 import {playFault} from './line-fault.js?v=4.2.0';
-import {abortError} from './audio.js?v=4.2.0';
+import {abortError,wait} from './audio.js?v=5.0.0';
+import {PROGRESSIVE_HAUNT} from './progressive.js?v=5.0.0';
 const root=new URL('../',import.meta.url);
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,Number(x)||0));
 // Fixed local performances. No API, microphone or audience recording.
@@ -18,6 +19,30 @@ export class ExhibitionProgram {
  close(){const call=this.director.current,episode=this.currentEpisode;this.stop();this.director.close();if(call)this.episodeMemory=call.started&&!call.finished?episode:null;this.currentEpisode=null;}
  reset(){this.close();this.director.reset();this.episodeMemory=null;}
  nextVisitor(){this.close();this.director.unfinished=null;this.episodeMemory=null;}
+ async runProgressive({call,settings,signal,end}){
+  this.phase='arrival';
+  this.status({phase:'arrival',episode:call.id,episodeTitle:call.title,episodeKind:PROGRESSIVE_HAUNT,text:'회선 연결 중'});
+  const ticket=++this.session;
+  const check=()=>{if(signal.aborted||ticket!==this.session)throw abortError();};
+  let bytes=this.progressiveBytes?.id===call.id?this.progressiveBytes.buffer:null;
+  await wait(165,signal);
+  if(!bytes){
+   const response=await this.fetcher(new URL(call.file,root),{signal:AbortSignal.any([signal,AbortSignal.timeout(15000)])});
+   if(!response.ok)throw Error('대표 통화 원음 읽기 실패 '+response.status);
+   bytes=await response.arrayBuffer();
+   if(!bytes.byteLength||bytes.byteLength>3*1024*1024)throw Error('대표 통화 원음 크기 오류');
+   check();
+   this.progressiveBytes={id:call.id,buffer:bytes};
+  }
+  check();
+  await this.desk.play(bytes,{signal,volume:settings.progressiveVolume,
+   progressive:{start:settings.progressiveStart,speed:settings.progressiveSpeed,max:settings.progressiveMax,noise:settings.progressiveNoise},
+   onStart:()=>{this.phase='speech';this.status({phase:'speech',playbackStarted:true,actor:call.actor,scene:call.title,text:'통화 연결'});}});
+  check();
+  this.phase='remote_end';
+  this.status({phase:'remote_end',lineEvent:'disconnected',text:'상대방 종료'});
+  end();
+ }
  async run({settings,allowed,signal,end,episodeChoice='auto'}){
   if(signal.aborted)throw abortError();await this.prepare();if(signal.aborted)throw abortError();
   const ids=allowed.filter(id=>this.bytes.has(id));
@@ -55,5 +80,5 @@ export class ExhibitionProgram {
    return {actor:actor.id,scene:call.scene,episode:selected.id};
   }finally{if(ticket===this.session)ambient.stop();}
  }
- dispose(){this.close();this.ambient?.dispose();this.bytes.clear();this.signals.clear();this.night.clear();this.deck.clear();}
+ dispose(){this.close();this.ambient?.dispose();this.bytes.clear();this.progressiveBytes=null;this.signals.clear();this.night.clear();this.deck.clear();}
 }

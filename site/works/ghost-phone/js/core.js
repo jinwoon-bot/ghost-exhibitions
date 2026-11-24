@@ -1,11 +1,15 @@
 export const EVENTS = new Set(['visitor_enter','visitor_leave','handset_lifted','handset_replaced']);
-export const defaults = Object.freeze({mode:'browser',ghost:'random',ringVolume:0.25,handsetVolume:0.45,noise:0.018,delayMs:900,cooldownMs:5000,ringTimeoutMs:30000,callTimeoutMs:75000,cache:true,endpoint:'',effect:true,effectPreset:'old',fallbackMP3:true,allowBrowserFallback:false,output:'',ringOutput:'',repeatOnLift:true,directed:true,ambientVolume:.045,lineNoise:.35,lineGap:1.15,expandedScenes:true});
+export const defaults = Object.freeze({mode:'browser',ghost:'random',ringVolume:0.25,handsetVolume:0.45,noise:0.018,delayMs:900,cooldownMs:5000,ringTimeoutMs:30000,callTimeoutMs:75000,cache:true,endpoint:'',effect:true,effectPreset:'old',fallbackMP3:true,allowBrowserFallback:false,output:'',ringOutput:'',repeatOnLift:true,directed:true,ambientVolume:.045,lineNoise:.35,lineGap:1.15,expandedScenes:true,progressiveEnabled:true,progressiveMax:1,progressiveStart:7,progressiveSpeed:1,progressiveNoise:.36,progressiveVolume:.45,progressiveCall:'changgwi-crossing'});
 export const clamp=(v,a,b)=>Math.min(b,Math.max(a,Number(v)||0));
 export function normalizeSettings(s={}) {
   return {...defaults,...Object.fromEntries(Object.keys(defaults).filter(k=>k in s).map(k=>[k,s[k]])),mode:['mp3','ai','hybrid','random','browser'].includes(s.mode)?s.mode:defaults.mode,
     ringVolume:clamp(s.ringVolume??defaults.ringVolume,0,0.5),handsetVolume:clamp(s.handsetVolume??defaults.handsetVolume,0,0.65),noise:clamp(s.noise??defaults.noise,0,0.04),
     delayMs:clamp(s.delayMs??defaults.delayMs,0,6000),cooldownMs:clamp(s.cooldownMs??defaults.cooldownMs,1000,60000),
-    ringTimeoutMs:clamp(s.ringTimeoutMs??defaults.ringTimeoutMs,5000,90000),callTimeoutMs:clamp(s.callTimeoutMs??defaults.callTimeoutMs,5000,180000),repeatOnLift:typeof s.repeatOnLift==='boolean'?s.repeatOnLift:true,directed:s.directed!==false,expandedScenes:s.expandedScenes!==false,ambientVolume:clamp(s.ambientVolume??.045,0,.15),lineNoise:clamp(s.lineNoise??.35,0,1),lineGap:clamp(s.lineGap??1.15,.6,4)};
+    ringTimeoutMs:clamp(s.ringTimeoutMs??defaults.ringTimeoutMs,5000,90000),callTimeoutMs:clamp(s.callTimeoutMs??defaults.callTimeoutMs,5000,180000),repeatOnLift:typeof s.repeatOnLift==='boolean'?s.repeatOnLift:true,directed:s.directed!==false,expandedScenes:s.expandedScenes!==false,ambientVolume:clamp(s.ambientVolume??.045,0,.15),lineNoise:clamp(s.lineNoise??.35,0,1),lineGap:clamp(s.lineGap??1.15,.6,4),
+    progressiveEnabled:s.progressiveEnabled!==false,progressiveMax:clamp(s.progressiveMax??1,0,1),
+    progressiveStart:clamp(s.progressiveStart??defaults.progressiveStart,5,14),progressiveSpeed:clamp(s.progressiveSpeed??1,.65,1.6),
+    progressiveNoise:clamp(s.progressiveNoise??.36,0,1),progressiveVolume:clamp(s.progressiveVolume??.45,0,.65),
+    progressiveCall:typeof s.progressiveCall==='string'?s.progressiveCall:defaults.progressiveCall};
 }
 export function validateGhosts(config) {
   if(!config||!Array.isArray(config.ghosts)||!config.ghosts.length||config.ghosts.length>30)throw Error('귀신 설정은 1~30개가 필요합니다.');

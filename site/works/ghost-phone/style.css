@@ -2,3 +2,6 @@
 /* 관객 화면은 정적 상태로 유지. 조작부는 장비 없는 시연에서만 표시한다. */
 #previewControls{position:fixed;z-index:5;left:50%;bottom:5vh;transform:translateX(-50%);width:min(540px,94vw);padding:14px 16px;border:1px solid #94856766;background:#11150ff2;box-shadow:0 10px 40px #0009;text-align:center;font:12px system-ui;color:#c8c1aa}
 #previewControls[hidden]{display:none}#previewControls span{display:block;margin-bottom:10px;font-size:11px;color:#adac99}#previewControls label{display:block;margin-bottom:10px}#previewControls select{background:#1d251b;border:1px solid #70765c;color:#e4dcc7;padding:6px;font:12px system-ui}#previewControls div{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}#previewControls button{background:#293025;border:1px solid #70765c;color:#e4dcc7;padding:10px 14px;font:12px system-ui;cursor:pointer}#previewControls button:disabled{opacity:.35;cursor:default}body[data-preview=true] .art-footer{bottom:2vh}body[data-phase=response_gap] .line-status{opacity:.22}
+.setup-card a, #progressiveControls a { color: #d1c49f; text-underline-offset: .2em; }
+#progressiveControls { border: 1px solid #697b5155; margin: 16px 0; padding: 0 12px 12px; }
+#progressiveControls legend { color: #d1c49f; font-size: 12px; padding: 0 5px; }

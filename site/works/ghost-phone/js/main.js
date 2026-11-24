@@ -1,17 +1,22 @@
-import {ExhibitionProgram} from './exhibition.js?v=4.2.0';
+import {ExhibitionProgram} from './exhibition.js?v=5.0.0';
 import {migrateVoices} from './voices.js?v=4.2.0';
 import {AdminLock} from './admin.js?v=4.2.0';
 import {VoiceBank} from './bank.js?v=4.2.0';
-import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=4.2.0';
-import {SoundDesk,VoiceService,wait} from './audio.js?v=4.2.0';
+import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=5.0.0';
+import {SoundDesk,VoiceService,wait} from './audio.js?v=5.0.0';
+import {PROGRESSIVE_HAUNT,progressiveCalls} from './progressive.js?v=5.0.0';
 import {SerialInput} from './serial.js?v=4.2.0';
-const $=id=>document.getElementById(id),version='4.2.0';
+const $=id=>document.getElementById(id),version='5.0.0';
+const params=new URLSearchParams(location.search);
+const classicEdition=params.get('edition')==='classic'||Boolean(params.get('actor'));
+const progressiveFields=['progressiveEnabled','progressiveMax','progressiveStart','progressiveSpeed','progressiveNoise','progressiveVolume','progressiveCall'];
+document.body.dataset.edition=classicEdition?'classic':'progressive';
 let settings=normalizeSettings(),config,ready=false,controller=null,testController=null,ringTestTimer=null,logs=[],lastVoice='없음',serialReady=false,firstSnapshot=true,wakeLock=null,externalDirty=false;
 const choice=new NoRepeat(),desk=new SoundDesk(),adminLock=new AdminLock(),voiceBank=new VoiceBank();
 function log(message){const text=String(message).slice(0,350);logs.push({at:new Date().toLocaleTimeString('ko-KR'),text});if(logs.length>70)logs.shift();$('log').replaceChildren(...logs.slice().reverse().map(x=>{const li=document.createElement('li');li.textContent=x.at+' · '+x.text;return li;}));$('logCount').textContent=logs.length;}
 function notice(s){if(s.error){$('voiceError').textContent=s.error;log('음성 대체/오류: '+s.error);}if(s.text){$('voiceState').textContent=s.text;lastVoice=s.text;}if(s.mode)$('voiceState').dataset.mode=s.mode;}
 const voices=new VoiceService({desk,status:notice}); voices.bank=voiceBank;
-let preview=false,lastPhoneState='IDLE',starting=false;
+let preview=false,lastPhoneState='IDLE',starting=false,playingProgressive=false;
 const program=new ExhibitionProgram({desk,status:s=>{if(s.phase)document.body.dataset.phase=s.phase;if(s.episode)document.body.dataset.episode=s.episode;if(s.episodeKind)document.body.dataset.episodeKind=s.episodeKind;if(s.episodeTitle)document.body.dataset.episodeTitle=s.episodeTitle;if(s.scene)document.body.dataset.scene=s.scene;if(s.actor)document.body.dataset.actor=s.actor;if(s.playbackStarted){document.body.dataset.audio='playing';log('실제 음원 재생 · '+s.actor+' · '+s.scene);}if(s.lineEvent)document.body.dataset.line=s.lineEvent;if(s.text)notice({text:s.text});if(s.warning)log(s.warning);}});
 const phone=new Telephone({settings,onChange:changed});
 function stopEverything(){controller?.abort();controller=null;testController?.abort();testController=null;clearTimeout(ringTestTimer);desk.stop();program.stop();}
@@ -22,10 +27,29 @@ function refresh(){const s=phone.snapshot();$('state').textContent=s.state;$('st
 }
 function chosen(){const enabled=config.ghosts.filter(g=>g.enabled);if(!enabled.length)throw Error('사용 중인 귀신이 없습니다. 목소리 설정에서 활성화하세요.');const selected=enabled.find(g=>g.id===settings.ghost);return selected||choice.pick(enabled,'ghost');}
 function reloadSharedSettings(){try{const saved=localStorage.getItem('ghost-phone:config:v1');if(saved){config=migrateVoices(JSON.parse(saved));fillGhostMenus();}settings=normalizeSettings(JSON.parse(localStorage.getItem('ghost-phone:settings:v1')||'{}'));phone.settings=settings;syncUI();externalDirty=false;}catch(e){log('다른 창 설정 동기화 실패');}}
-function changed(snapshot){const previous=lastPhoneState;lastPhoneState=snapshot.state;stopEverything();document.body.dataset.phase='idle';document.body.dataset.line='idle';document.body.dataset.audio='idle';if(previous==='CONNECTED'&&snapshot.state!=='CONNECTED')program.close();if(snapshot.state==='RINGING')program.ring();if(snapshot.state==='IDLE'&&externalDirty)reloadSharedSettings();refresh();log(snapshot.state+' · '+snapshot.reason);$('voiceError').textContent='';
+function selectedProgressive(){
+  if(classicEdition)return null;
+  const requested=preview?$('previewEpisode').value:settings.progressiveEnabled&&settings.mode==='mp3'?settings.progressiveCall:null;
+  return progressiveCalls.find(call=>call.id===requested)||(!preview&&requested?progressiveCalls[0]:null);
+}
+function changed(snapshot){const previous=lastPhoneState,wasProgressive=playingProgressive;playingProgressive=false;lastPhoneState=snapshot.state;stopEverything();document.body.dataset.phase='idle';document.body.dataset.line='idle';document.body.dataset.audio='idle';if(previous==='CONNECTED'&&snapshot.state!=='CONNECTED')program.close();if(snapshot.state==='RINGING')program.ring();if(snapshot.state==='IDLE'&&externalDirty)reloadSharedSettings();refresh();log(snapshot.state+' · '+snapshot.reason);$('voiceError').textContent='';
   if(snapshot.state==='RINGING'){try{desk.startRing(settings.ringVolume);notice({text:'전화벨 재생 중 · 수화기 대기'});}catch(e){notice({error:e.message,text:'벨 재생 실패'});}}
   else if(snapshot.state==='CONNECTED'){
-    const current=new AbortController();controller=current;let ghost;try{ghost=chosen();}catch(e){phone.endCall('음성 설정 오류 · 재시도 대기');notice({error:e.message});return;}
+    const current=new AbortController();controller=current;const progressive=selectedProgressive();
+    if(progressive){
+      playingProgressive=true;
+      const callSettings=settings;
+      notice({text:'대표 통화 연결 중',mode:PROGRESSIVE_HAUNT});
+      (async()=>{try{
+        await wait(callSettings.delayMs,current.signal);desk.cue(false,callSettings.progressiveVolume);
+        await program.runProgressive({call:progressive,settings:callSettings,signal:current.signal,end:()=>phone.endCall('상대방이 전화를 끊었습니다')});
+      }catch(error){if(!current.signal.aborted){
+        phone.endCall('대표 통화 실패 · 재시도 대기');
+        notice({text:'대표 통화를 재생할 수 없습니다.',error:error.message});
+      }}})();
+      return;
+    }
+    let ghost;try{ghost=chosen();}catch(e){phone.endCall('음성 설정 오류 · 재시도 대기');notice({error:e.message});return;}
     notice({text:ghost.name+' 연결 · '+settings.delayMs+'ms 후 음성 시작'});
     (async()=>{try{await wait(settings.delayMs,current.signal);desk.cue(false,settings.handsetVolume);if((preview||settings.directed&&settings.mode==='mp3')&&program.catalog?.actors.some(a=>a.id===ghost.id)){
       const episodeChoice=preview?$('previewEpisode').value:settings.expandedScenes===false?'classic':'auto';
@@ -34,7 +58,10 @@ function changed(snapshot){const previous=lastPhoneState;lastPhoneState=snapshot
       await program.run({settings,allowed,episodeChoice,signal:current.signal,end:()=>phone.endCall('상대방이 통화를 마쳤습니다')});
     }else await voices.run(ghost,settings,{signal:current.signal,revision:config.revision});if(!current.signal.aborted){notice({text:'음성 종료 · 수화기를 내려놓고 다시 들면 새 통화'});log(ghost.name+' 음성 종료');}}
     catch(e){if(e.name!=='AbortError'&&!current.signal.aborted){phone.endCall('음성 실패 · 재시도 대기');notice({text:'음성 오류 · 수화기를 내려놓고 다시 들어 재시도하세요.',error:e.message});}}})();
-  }else if(snapshot.state==='COOLDOWN'){desk.cue(true,settings.handsetVolume);notice({text:'통화 중단 · 다음 호출 준비 중'});}
+  }else if(snapshot.state==='COOLDOWN'){
+    if(!wasProgressive||snapshot.reason!=='수화기 내려놓음')desk.cue(true,wasProgressive?settings.progressiveVolume:settings.handsetVolume);
+    notice({text:'통화 중단 · 다음 호출 준비 중'});
+  }
   else notice({text:ready?'오디오 준비 · 다음 관객 대기':'오디오 활성화 전'});
 }
 function dispatch(event,source='가상 센서'){
@@ -50,7 +77,7 @@ const serial=new SerialInput({event:e=>{if(serialReady)dispatch(e,'ESP32');else 
 function persist(){try{localStorage.setItem('ghost-phone:settings:v1',JSON.stringify(settings));localStorage.setItem('ghost-phone:config:v1',JSON.stringify(config));}catch(e){log('설정 저장 불가 · 현재 탭만 사용');}}
 function fillGhostMenus(){const old=$('editGhost').value;$('ghost').replaceChildren(new Option('회차마다 다른 귀신','random'),...config.ghosts.filter(g=>g.enabled).map(g=>new Option(g.name,g.id)));$('ghost').value=settings.ghost;if(!$('ghost').value){settings.ghost='random';$('ghost').value='random';}$('editGhost').replaceChildren(...config.ghosts.map(g=>new Option(g.name,g.id)));$('editGhost').value=config.ghosts.some(g=>g.id===old)?old:config.ghosts[0].id;editGhost();}
 function editGhost(){const g=config.ghosts.find(g=>g.id===$('editGhost').value);if(!g)return;$('ghostName').value=g.name;$('ghostMode').value=g.mode;$('enabled').checked=g.enabled;$('provider').value=g.provider;$('model').value=g.model;$('voiceId').value=g.voiceId;$('style').value=g.style;$('rate').value=g.rate;$('ghostVolume').value=g.volume;$('telephone').checked=g.telephone;$('lines').value=g.lines.map(l=>l.text).join('\n');$('mp3Paths').value=g.mp3.join('\n');$('fileNote').textContent='이 탭에 가져온 파일: '+((voices.files.get(g.id)||[]).map(f=>f.name).join(', ')||'없음')+' · 파일은 탭을 닫으면 해제됩니다.';}
-function syncUI(){for(const k of ['mode','ghost','ringVolume','handsetVolume','noise','delayMs','cooldownMs','ringTimeoutMs','callTimeoutMs','endpoint','output','ringOutput','ambientVolume','lineNoise','lineGap'])if($(k))$(k).value=settings[k];for(const k of ['cache','effect','directed','expandedScenes'])$(k).checked=settings[k];for(const k of ['ringVolume','handsetVolume','noise'])$(k+'Value').textContent=settings[k].toFixed(3);}
+function syncUI(){for(const k of ['mode','ghost','ringVolume','handsetVolume','noise','delayMs','cooldownMs','ringTimeoutMs','callTimeoutMs','endpoint','output','ringOutput','ambientVolume','lineNoise','lineGap',...progressiveFields.slice(1)])if($(k))$(k).value=settings[k];for(const k of ['cache','effect','directed','expandedScenes','progressiveEnabled'])$(k).checked=settings[k];for(const k of ['ringVolume','handsetVolume','noise'])$(k+'Value').textContent=settings[k].toFixed(3);}
 async function panel(open){if(open&&!await adminLock.ensure())return;$('panel').hidden=!open;if(open)refresh();}
 async function start(){if(starting)return false;starting=true;try{$('start').disabled=$('previewStart').disabled=true;await desk.unlock();await outputs();for(const [kind,id] of [['voice',settings.output],['ring',settings.ringOutput]])try{await desk.setOutput(kind,id);}catch(e){log(e.message);}
     await program.prepare();ready=true;$('setup').hidden=true;phone.reset('운영 시작 · 가상 센서로 시험 가능');$('setupError').textContent='';try{if(!wakeLock||wakeLock.released)wakeLock=await navigator.wakeLock?.request('screen');}catch{}log('오디오 활성화 · 실제 전화기/ESP32 없음');
@@ -76,15 +103,26 @@ async function init(){
     }}catch{settings.mode='mp3';}
     $('previewGhost').replaceChildren(new Option('회차마다 다른 귀신','random'),...program.catalog.actors.map(a=>new Option(a.name,a.id)));
     $('previewEpisode').replaceChildren(new Option('자동 선택 · 기존26+신규4 · 희귀 히든2','auto'),new Option('기존 여섯 귀신 전체 대사','classic'),...program.signals.episodes.map(e=>new Option(e.title+' · '+(e.kind==='voice'?'짧은 음성':'잡음만'),e.id)),...program.night.episodes.map(e=>new Option(e.title+' · '+(e.hidden?'히든 대사':e.kind==='laughter'?'웃음':'새 대사'),e.id)));
-    const requested=new URLSearchParams(location.search).get('episode');if(program.getEpisode(requested)){$('previewEpisode').value=requested;$('previewGhost').value=program.getEpisode(requested).actorId;}
-    $('previewEpisode').onchange=()=>{const e=program.getEpisode($('previewEpisode').value);if(e)$('previewGhost').value=e.actorId;};
-    $('previewGhost').onchange=()=>{const e=program.getEpisode($('previewEpisode').value);if(e&&$('previewGhost').value!==e.actorId)$('previewEpisode').value='auto';};
+    const requested=params.get('episode');
+    $('progressiveCall').replaceChildren(...progressiveCalls.map(call=>new Option(call.title,call.id)));
+    if(!progressiveCalls.some(call=>call.id===settings.progressiveCall))settings.progressiveCall=progressiveCalls[0].id;
+    if(!classicEdition)$('previewEpisode').prepend(...progressiveCalls.map(call=>new Option(call.title+' · 점진적 변조',call.id)));
+    if(program.getEpisode(requested)){$('previewEpisode').value=requested;$('previewGhost').value=program.getEpisode(requested).actorId;}
+    else if(!classicEdition)$('previewEpisode').value=progressiveCalls.some(call=>call.id===requested)?requested:settings.progressiveEnabled?settings.progressiveCall:'auto';
+    const requestedActor=params.get('actor');if(classicEdition&&program.catalog.actors.some(actor=>actor.id===requestedActor)){
+      $('previewEpisode').value='classic';$('previewGhost').value=requestedActor;
+    }
+    const previewActor=()=>{const id=$('previewEpisode').value;return (program.getEpisode(id)||progressiveCalls.find(call=>call.id===id))?.actorId;};
+    $('previewEpisode').onchange=()=>{const actor=previewActor();if(actor)$('previewGhost').value=actor;};
+    $('previewGhost').onchange=()=>{const actor=previewActor();if(actor&&$('previewGhost').value!==actor)$('previewEpisode').value='auto';};
+    $('previewEpisode').onchange();
     phone.settings=settings;fillGhostMenus();syncUI();browserVoices();}
   catch(e){$('setupError').textContent='초기화 실패: '+e.message+' · file:// 대신 localhost 또는 GitHub Pages로 실행하세요.';$('start').disabled=true;return;}
   $('start').onclick=start;$('previewStart').onclick=previewCall;$('previewAnswer').onclick=()=>dispatch('handset_lifted');$('previewHangup').onclick=()=>dispatch('handset_replaced');$('previewNext').onclick=previewCall;$('previewExit').onclick=()=>{preview=false;document.body.dataset.preview='false';$('previewControls').hidden=true;dispatch('handset_replaced');dispatch('visitor_leave');};$('openSetup').onclick=()=>panel(true);$('operatorHandle').onclick=()=>panel(true);$('closePanel').onclick=()=>panel(false);
+  if(classicEdition){$('progressiveControls').hidden=true;$('editionLink').href='./';$('editionLink').textContent='새 전시판';$('operatorVersion').textContent='이전판';}
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('[data-pane]').forEach(x=>x.hidden=x.dataset.pane!==b.dataset.tab);});
   document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>dispatch(b.dataset.event));
-  for(const k of ['mode','ghost','ringVolume','handsetVolume','noise','delayMs','cooldownMs','ringTimeoutMs','callTimeoutMs','endpoint','cache','effect','directed','ambientVolume','lineNoise','lineGap','expandedScenes'])$(k).addEventListener('change',()=>{const v=$(k).type==='checkbox'?$(k).checked:$(k).value;settings=normalizeSettings({...settings,[k]:v});phone.settings=settings;persist();syncUI();log('설정 변경 · '+k+' · 다음 재생에 적용');});
+  for(const k of ['mode','ghost','ringVolume','handsetVolume','noise','delayMs','cooldownMs','ringTimeoutMs','callTimeoutMs','endpoint','cache','effect','directed','ambientVolume','lineNoise','lineGap','expandedScenes',...progressiveFields])$(k).addEventListener('change',()=>{const v=$(k).type==='checkbox'?$(k).checked:$(k).value;settings=normalizeSettings({...settings,[k]:v});phone.settings=settings;persist();syncUI();log('설정 변경 · '+k+' · 다음 재생에 적용');});
   $('ghost').onchange=()=>{const g=config.ghosts.find(g=>g.id===settings.ghost);if(g){settings.mode=g.mode;syncUI();persist();}};
   $('editGhost').onchange=editGhost;
   $('saveGhost').onclick=()=>{try{const clone=structuredClone(config),g=clone.ghosts.find(g=>g.id===$('editGhost').value),texts=$('lines').value.split('\n').map(t=>t.trim()).filter(Boolean);Object.assign(g,{name:$('ghostName').value,mode:$('ghostMode').value,enabled:$('enabled').checked,provider:$('provider').value,model:$('model').value.trim(),voiceId:$('voiceId').value.trim(),style:$('style').value,rate:Number($('rate').value),volume:Number($('ghostVolume').value),telephone:$('telephone').checked,mp3:$('mp3Paths').value.split('\n').map(t=>t.trim()).filter(Boolean),lines:texts.map((text,i)=>({id:g.lines[i]?.id||('line'+(i+1)),text}))});clone.revision='operator-'+Date.now();config=validateGhosts(clone);voices.cache.clear();persist();fillGhostMenus();log('귀신 설정 저장 · AI는 백엔드 허용 목록 재배포 필요');}catch(e){notice({error:e.message});}};

@@ -3,6 +3,7 @@ import {EffectChain} from './effects.js?v=4.2.0';
 import {effectPresets,sourceFor} from './voices.js?v=4.2.0';
 import {boundedBytes} from './api.js?v=4.2.0';
 import {clamp,NoRepeat} from './core.js?v=4.2.0';
+import {ProgressiveHaunt} from './progressive.js?v=5.0.0';
 export const abortError=()=>new DOMException('취소됨','AbortError');
 export function wait(ms,signal){return new Promise((resolve,reject)=>{if(signal?.aborted)return reject(abortError());const cancel=()=>{clearTimeout(timer);reject(abortError());};const timer=setTimeout(()=>{signal?.removeEventListener('abort',cancel);resolve();},ms);signal?.addEventListener('abort',cancel,{once:true});});}
 export class AudioMemory {
@@ -40,12 +41,13 @@ export class SoundDesk {
   stopRing(){clearInterval(this.ringTimer);this.ringTimer=null;for(const n of this.ringNodes)try{n.stop();}catch{}this.ringNodes=[];}
   cue(end=false,volume=.3){if(!this.unlocked)return;this.tone(this.voice,end?300:420,this.voice.currentTime,.12,clamp(volume,0,.5)*.06);}
   setEffect(preset){this.activeFX?.set(preset);}
-  async play(bytes,{signal,volume=.45,telephone=true,noise,rate=1,effectPreset,onStart}={}){
+  async play(bytes,{signal,volume=.45,telephone=true,noise,rate=1,effectPreset,onStart,progressive}={}){
     if(signal?.aborted)throw abortError();const ctx=this.voice;
     if(ctx?.state==='suspended'&&this.unlocked){let timer;try{await Promise.race([ctx.resume(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('오디오 재개가 지연됩니다. 시작 버튼을 다시 눌러 주세요.')),3000);})]);}finally{clearTimeout(timer);}}
     if(signal?.aborted)throw abortError();if(!ctx||ctx.state!=='running')throw Error('오디오가 잠겨 있습니다. 시작 버튼으로 활성화하세요.');
-    const buffer=await ctx.decodeAudioData(bytes.slice(0));if(signal?.aborted)throw abortError();const name=effectPreset||(telephone?'old':'clean'),p=effectPresets[name]||effectPresets.old;
+    const buffer=await ctx.decodeAudioData(bytes.slice(0));if(signal?.aborted)throw abortError();const name=effectPreset||(telephone?'old':'clean'),p=progressive?{before:0,after:0}:effectPresets[name]||effectPresets.old;
     await wait(p.before,signal);if(signal?.aborted)throw abortError();
+    if(progressive)return this.playProgressive(buffer,{signal,volume,options:progressive,onStart});
     const source=ctx.createBufferSource(),fade=ctx.createGain(),chain=new EffectChain(ctx,ctx.destination,{volume,preset:name,noise});source.buffer=buffer;source.playbackRate.value=clamp(rate,.6,1.2);source.connect(fade).connect(chain.input);this.activeFX=chain;
     const t=ctx.currentTime,duration=buffer.duration/source.playbackRate.value;fade.gain.setValueAtTime(0,t);fade.gain.linearRampToValueAtTime(1,t+.02);fade.gain.setValueAtTime(1,t+Math.max(.02,duration-.035));fade.gain.linearRampToValueAtTime(0,t+duration);
     return new Promise((resolve,reject)=>{let settled=false,tailTimer;const finish=(error)=>{if(settled)return;settled=true;clearTimeout(tailTimer);signal?.removeEventListener('abort',cancel);try{source.stop();}catch{}source.disconnect();fade.disconnect();chain.dispose();if(this.activeFX===chain)this.activeFX=null;if(this.activeStop===cancel)this.activeStop=null;error?reject(error):resolve();};const cancel=()=>finish(abortError());this.activeStop=cancel;signal?.addEventListener('abort',cancel,{once:true});source.onended=()=>{tailTimer=setTimeout(()=>finish(),p.after);};source.start();onStart?.(buffer.duration);
@@ -57,6 +59,41 @@ export class SoundDesk {
     return new Promise((resolve,reject)=>{const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';u.voice=voice;u.rate=clamp(rate,.6,1.2);u.volume=clamp(volume,0,.65);let settled=false;
       const finish=e=>{if(settled)return;settled=true;signal?.removeEventListener('abort',cancel);if(this.activeStop===cancel)this.activeStop=null;e?reject(e):resolve();};
       const cancel=()=>{speechSynthesis.cancel();finish(abortError());};u.onend=()=>finish();u.onerror=e=>finish(Error('브라우저 음성: '+e.error));this.activeStop=cancel;signal?.addEventListener('abort',cancel,{once:true});speechSynthesis.speak(u);
+    });
+  }
+  playProgressive(buffer,{signal,volume,options,onStart}){
+    if(signal?.aborted)throw abortError();
+    const ctx=this.voice,start=ctx.currentTime+.035;
+    if(buffer.duration<.2)throw Error('점진적 변조 원음이 너무 짧습니다.');
+    const source=ctx.createBufferSource();source.buffer=buffer;
+    const chain=new ProgressiveHaunt(ctx,ctx.destination,volume,options,start,buffer.duration);
+    source.connect(chain.input);
+    return new Promise((resolve,reject)=>{
+      let settled=false;
+      const finish=error=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(stopTimer);
+        signal?.removeEventListener('abort',cancel);
+        if(this.activeStop===cancel)this.activeStop=null;
+        source.disconnect();chain.dispose();
+        error?reject(error):resolve();
+      };
+      const cancel=()=>{
+        if(settled||finishCallWithAbort)return;
+        finishCallWithAbort=true;
+        const t=ctx.currentTime;
+        chain.master.cancelAndHoldAtTime(t);
+        chain.master.setTargetAtTime(0,t,.002);
+        try{source.stop(t+.012);}catch{}
+        stopTimer=setTimeout(()=>finish(abortError()),24);
+      };
+      let finishCallWithAbort=false,stopTimer;
+      this.activeStop=cancel;
+      signal?.addEventListener('abort',cancel,{once:true});
+      source.onended=()=>finish(finishCallWithAbort?abortError():null);
+      source.start(start);
+      onStart?.(buffer.duration);
     });
   }
   stop(){this.activeStop?.();this.stopRing();}
