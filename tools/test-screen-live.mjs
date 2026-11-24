@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { geometry, splitMasks } from "../site/works/only-on-screen-live/masks.mjs";
 import { Tracks } from "../site/works/only-on-screen-live/tracks.mjs";
+import { ShadowHold } from "../site/works/only-on-screen-live/shadow-hold.mjs";
 import { blendDetail, projectMask, projectPose, subjectCrop } from "../site/works/only-on-screen-live/subject-detail.mjs";
 
 const width = 120, height = 90;
@@ -144,4 +145,29 @@ test("a slow inference can reconnect the same visitor without showing a stale ma
   assert.equal(afterWarmup.id, first.id);
   assert.deepEqual(tracks.update([], 850, 3, 570), []);
   assert.notEqual(tracks.update([obs(.52)], 1900, 3, 570)[0].id, first.id);
+});
+test('only one shadow retains its raised arm and releases it after that person lowers the arm', () => {
+  const beat = new ShadowHold();
+  const pose = (id, x, wristY) => ({id, shape:{center:{x,y:.46},height:.65,wrists:[{x,y:wristY},null]}});
+  const person = pose(1,.27,.28), neighbor = pose(2,.65,.63);
+  beat.update([person,neighbor],0,p => p);
+  beat.update([person,neighbor],210,p => p);
+  beat.update([pose(1,.27,.62),neighbor],320,p => p);
+  assert.equal(beat.hold.id,1);
+  assert.equal(beat.hold.pose.shape.wrists[0].y,.28);
+  assert.equal(beat.blend(570),1);
+  assert.ok(beat.blend(760)>0 && beat.blend(760)<1);
+  assert.equal(beat.blend(830),0);
+  assert.equal(beat.hold,null);
+
+  beat.update([person,neighbor],3400,p => p);
+  beat.update([person,neighbor],3600,p => p);
+  beat.update([neighbor],3700,p => p);
+  assert.equal(beat.hold,null);
+
+  beat.update([person,neighbor],4200,p => p);
+  beat.update([person,neighbor],4400,p => p);
+  beat.update([pose(1,.27,.43),neighbor],4800,p => p);
+  beat.update([pose(1,.27,.62),neighbor],5300,p => p);
+  assert.equal(beat.hold,null);
 });

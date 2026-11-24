@@ -31,6 +31,7 @@ export class EyeComposite {
     const rowPitch = this.height / h;
     this.center = (spec.centerX - x) * this.pitch;
     this.radius = spec.irisRadius * this.pitch + 2;
+    this.contrast = spec.irisContrast ?? 0;
     this.centerY = (spec.centerY - y) * rowPitch;
     canvas.style.left = `${x / design.width * 100}%`;
     canvas.style.top = `${y / design.height * 100}%`;
@@ -63,7 +64,7 @@ export class EyeComposite {
 
   draw(shift) {
     const { width, height, mask, texture, rows, frame, pitch } = this;
-    if (Math.abs(shift) < .035) {
+    if (Math.abs(shift) < .035 && !this.contrast) {
       this.ctx.clearRect(0, 0, width, height);
       return;
     }
@@ -86,12 +87,15 @@ export class EyeComposite {
         const a = Math.floor(sample);
         const b = Math.min(right, a + 1);
         const fraction = sample - a;
+        const edge = Math.min(1, Math.hypot(sample - this.center, distance) / this.radius);
+        const iris = this.contrast * (1 - smooth(edge));
         for (let channel = 0; channel < 3; channel++) {
           const base = (start + a) * 4 + channel;
           const next = (start + b) * 4 + channel;
-          pixels[offset + channel] = texture[base] * (1 - fraction) + texture[next] * fraction;
+          const color = texture[base] * (1 - fraction) + texture[next] * fraction;
+          pixels[offset + channel] = color + (color - 120) * iris;
         }
-        pixels[offset + 3] = opacity * Math.min(1, Math.abs(sample - col) * 2);
+        pixels[offset + 3] = opacity * Math.min(1, Math.max(iris * 8, Math.abs(sample - col) * 2));
       }
     }
     this.ctx.putImageData(frame, 0, 0);

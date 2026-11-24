@@ -6,15 +6,16 @@ export const progressiveCalls = [{
   actor: '창귀',
   title: '창귀 · 길 건너편',
   file: 'assets/audio/progressive/changgwi-crossing.wav',
+  finalAt: 18.54,
 }];
 
 const unit = n => Math.max(0, Math.min(1, n));
 const smooth = n => unit(n) ** 2 * (3 - 2 * unit(n));
 
-export function hauntIntensity(seconds, duration, {start = 7, speed = 1, max = 1, profile = 'progressive'} = {}) {
+export function hauntIntensity(seconds, duration, {start = 7, speed = 1, max = 1, profile = 'progressive', finalAt} = {}) {
   if (profile === 'fixed') return max;
   if (profile === 'ending') {
-    const onset = Math.max(0, duration - 5.2);
+    const onset = Math.max(0, finalAt === undefined ? duration - 5.2 : finalAt - .72);
     return max * smooth((seconds - onset) / 1.4);
   }
   const onset = Math.min(start, Math.max(0, duration - 4));
@@ -111,20 +112,21 @@ export class ProgressiveHaunt {
     hiss.connect(filter('bandpass', 1460, 1.2)).connect(hissLevel).connect(limiter);
     hiss.start(start);
 
+    const diction = (x,t) => options.finalAt === undefined ? 0 : x * smooth((t-options.finalAt+.16)/.6);
     const automation = [
       [high.frequency, x => 165 + 65 * x],
       [low.frequency, x => 4300 - 1590 * x],
-      [presence.gain, x => 2.1 * x],
-      [direct.gain, x => 1 - .29 * x],
+      [presence.gain, (x,t) => 2.1 * x + 1.15 * diction(x,t)],
+      [direct.gain, (x,t) => 1 - .29 * x + .07 * diction(x,t)],
       [drive.gain, x => 1 + 1.8 * x],
       [rough.gain, x => .28 * x ** 1.6],
-      [rumble.gain, x => .43 * smooth((x - .24) / .76)],
+      [rumble.gain, (x,t) => .43 * smooth((x - .24) / .76) * (1 - .19 * diction(x,t))],
       [depth.gain, x => .28 * x ** 1.35],
       [wobble.frequency, (x, t) => 7 + 12 * x + 2.2 * x * Math.sin(t * 2.7)],
       [hissLevel.gain, (x, t) => {
         const interference = smooth((x - .59) / .41);
         const surge = .5 + .5 * Math.sin(t * 8 + Math.sin(t * 2));
-        return (options.noise ?? .36) * x ** 1.7 * (.010 + interference * .040 * surge ** 2);
+        return (options.noise ?? .36) * x ** 1.7 * (.010 + interference * .040 * surge ** 2) * (1 - .28 * diction(x,t));
       }],
     ];
     const steps = Math.max(2, Math.ceil(duration * 48) + 1);

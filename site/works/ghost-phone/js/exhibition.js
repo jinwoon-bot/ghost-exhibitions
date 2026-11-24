@@ -4,8 +4,8 @@ import {EncounterDirector} from './encounter.js?v=4.2.0';
 import {AmbientBus} from './ambience.js?v=4.2.0';
 import {runCallScene,callProfiles} from './call-scene.js?v=4.2.0';
 import {playFault} from './line-fault.js?v=4.2.0';
-import {abortError,wait} from './audio.js?v=5.0.0';
-import {PROGRESSIVE_HAUNT} from './progressive.js?v=5.0.0';
+import {abortError,wait} from './audio.js?v=scene-polish';
+import {PROGRESSIVE_HAUNT} from './progressive.js?v=scene-polish';
 const root=new URL('../',import.meta.url);
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,Number(x)||0));
 // Fixed local performances. No API, microphone or audience recording.
@@ -36,7 +36,7 @@ export class ExhibitionProgram {
   }
   check();
   await this.desk.play(bytes,{signal,volume:settings.progressiveVolume,
-   progressive:{start:settings.progressiveStart,speed:settings.progressiveSpeed,max:settings.progressiveMax,noise:settings.progressiveNoise},
+   progressive:{start:settings.progressiveStart,speed:settings.progressiveSpeed,max:settings.progressiveMax,noise:settings.progressiveNoise,finalAt:call.finalAt},
    onStart:()=>{this.phase='speech';this.status({phase:'speech',playbackStarted:true,actor:call.actor,scene:call.title,text:'통화 연결'});}});
   check();
   this.phase='remote_end';

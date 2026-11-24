@@ -1,10 +1,10 @@
-import {ExhibitionProgram} from './exhibition.js?v=5.0.0';
+import {ExhibitionProgram} from './exhibition.js?v=scene-polish';
 import {migrateVoices} from './voices.js?v=4.2.0';
 import {AdminLock} from './admin.js?v=4.2.0';
 import {VoiceBank} from './bank.js?v=4.2.0';
-import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=5.0.0';
-import {SoundDesk,VoiceService,wait} from './audio.js?v=5.0.0';
-import {PROGRESSIVE_HAUNT,progressiveCalls} from './progressive.js?v=5.0.0';
+import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=scene-polish';
+import {SoundDesk,VoiceService,wait} from './audio.js?v=scene-polish';
+import {PROGRESSIVE_HAUNT,progressiveCalls} from './progressive.js?v=scene-polish';
 import {SerialInput} from './serial.js?v=4.2.0';
 const $=id=>document.getElementById(id),version='5.0.0';
 const params=new URLSearchParams(location.search);

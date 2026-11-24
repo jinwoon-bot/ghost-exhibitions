@@ -1,8 +1,8 @@
 import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
-import { PoseHistory } from './history.mjs?v=contour';
-import { ExhibitionPicture } from './picture.mjs?v=foreground';
+import { PoseHistory } from './history.mjs?v=scene-polish';
+import { ExhibitionPicture } from './picture.mjs?v=scene-polish';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);
@@ -67,6 +67,7 @@ function report() {
   screen.dataset.captures = String(history.captures);
   screen.dataset.released = String(history.released);
   screen.dataset.echoes = String(history.echoes.length);
+  screen.dataset.held = String(history.echoes.filter(echo => echo.held).length);
   screen.dataset.live = String(history.tracks.filter(track => !track.missing).length);
   screen.dataset.results = String(outputs);
   const q = quality();

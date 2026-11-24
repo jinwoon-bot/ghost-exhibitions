@@ -1,6 +1,6 @@
 import { Camera } from "../only-on-screen/src/camera.mjs";
 import { RoomSound } from "../only-on-screen/src/sound.mjs";
-import { Stage } from "./stage.mjs?v=distance-matte";
+import { Stage } from "./stage.mjs?v=scene-polish";
 import { Tracks } from "./tracks.mjs?v=distance-matte";
 
 const byId = id => document.getElementById(id);
@@ -332,7 +332,7 @@ function tick(now) {
   if (backend && healthy && !pending && video.videoWidth && video.currentTime !== lastVideoTime &&
       now - lastSubmit >= 1000 / active().hz - 3) void submit(now);
   if (lastFrameAt && now - lastFrameAt > 480 && !renderUntil) renderUntil = now + 180;
-  if (dirty || renderUntil) {
+  if (dirty || renderUntil || stage.delay.needsPaint(now)) {
     const opacity = renderUntil ? Math.max(0, (renderUntil - now) / 180) : 1;
     const start = performance.now();
     if (opacity === 0) {
@@ -340,7 +340,7 @@ function tick(now) {
       lastFrameAt = renderUntil = 0;
     }
     const newComposite = dirty && lastFrameAt && opacity === 1;
-    stage.paint(settings, active(), opacity);
+    stage.paint(settings, active(), opacity, now);
     previousPaint = performance.now() - start;
     if (newComposite) {
       record(stats.render, previousPaint);

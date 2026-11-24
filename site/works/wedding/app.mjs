@@ -1,13 +1,16 @@
-import {defaults,loadConfig,saveConfig,sanitize} from './lib/config.mjs?v=20261115';
+import {defaults,loadConfig,saveConfig,sanitize} from './lib/config.mjs?v=scene-polish';
 import {Camera} from './lib/camera.mjs';
 import {Vision} from './lib/vision.mjs';
 import {SeatDetector,reasons} from './lib/seat.mjs';
 import {Interaction,phaseNames} from './lib/interaction.mjs';
-import {Scene} from './lib/scene-film.mjs';
+import {Scene} from './lib/scene-film.mjs?v=scene-polish';
 import {Metrics} from './lib/metrics.mjs';
+import {WeddingFoley} from './lib/foley.mjs';
 const $=id=>document.getElementById(id);
 let config=loadConfig(),seat=new SeatDetector(config),lastSeat=seat.lastResult,lastPose=null,lastAI=0,aiState='off',aiError='',cameraInfo=null,editing=false,dragStart=null,adminOpen=false,baselineBusy=false,noticeTimer=null,lastDebug=0;
 const metrics=new Metrics();
+const foley=new WeddingFoley();
+function unlockFoley(){if(config.sound.enabled)foley.unlock().then(()=>foley.level(config.sound.enabled?config.sound.volume:0)).catch(()=>{});}
 const interaction=new Interaction(config,event=>metrics.event(event));
 const scene=new Scene($('actors'),message=>{notify(message,true);interaction.exit(performance.now(),'art-error');});
 const video=$('camera');
@@ -42,6 +45,7 @@ async function refreshDevices(){
  try{const devices=await camera.devices(),select=$('deviceSelect'),chosen=config.camera.deviceId;select.replaceChildren(new Option('기본 카메라',''));devices.forEach((d,i)=>select.append(new Option(d.label||`카메라 ${i+1}`,d.deviceId)));select.value=chosen;}catch(e){notify(`카메라 목록: ${e.message}`);}
 }
 async function startCamera(){
+ unlockFoley();
  $('startCamera').disabled=true;$('startupMessage').textContent='Chrome의 카메라 권한을 확인해 주세요.';
  try{vision.stop();seat.reset();lastSeat=seat.lastResult;lastPose=null;await camera.start(config.camera);if(camera.stream)vision.start(config);}
  catch{}finally{$('startCamera').disabled=false;}
@@ -69,6 +73,7 @@ function readForm(){
 function applyConfig(next,{restartVision=true}={}){
  const wasWaiting=['IDLE','APPROACH','RESET'].includes(interaction.state);
  config=saveConfig(next);seat.configure(config);lastSeat=seat.lastResult;interaction.config=config;interaction.reset(performance.now());
+ if(config.sound.enabled)unlockFoley();else{foley.level(0);foley.stop();}
  if(wasWaiting)interaction.latched=false;
  if(restartVision&&camera.stream)vision.start(config);fillForm();
 }
@@ -114,7 +119,7 @@ async function captureBaseline(){
   config.calibrationDeviceId=cameraInfo?.settings.deviceId||'';applyConfig(config,{restartVision:false});notify('착석 기준을 저장했습니다. 실제 일어섬과 착석을 반복해 기준을 확인하세요.');
  },80);
 }
-function manual(){if(!scene.ready){notify('캐릭터 에셋이 아직 준비되지 않았습니다.');return;}closeSettings();$('startCard').hidden=true;interaction.preview(performance.now());metrics.event({type:'manual-preview',at:performance.now(),cameraLive:camera.state==='live'});}
+function manual(){if(!scene.ready){notify('캐릭터 에셋이 아직 준비되지 않았습니다.');return;}unlockFoley();closeSettings();$('startCard').hidden=true;interaction.preview(performance.now());metrics.event({type:'manual-preview',at:performance.now(),cameraLive:camera.state==='live'});}
 async function fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else await $('stage').requestFullscreen();}catch(e){notify(`전체화면 전환: ${e.message}`);}}
 
 $('startCamera').onclick=startCamera;$('settingsButton').onclick=()=>adminOpen?closeSettings():openSettings();$('closeSettings').onclick=closeSettings;
@@ -146,15 +151,19 @@ document.addEventListener('keydown',e=>{
  if(e.key.toLowerCase()==='h')document.body.classList.toggle('clean');
  if(e.key==='Escape'&&editing){editing=false;dragStart=null;document.body.classList.remove('drawing');$('drawingHint').hidden=true;openSettings();}
 });
-document.addEventListener('visibilitychange',()=>metrics.event({type:'visibility',hidden:document.hidden,at:performance.now()}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)foley.stop();metrics.event({type:'visibility',hidden:document.hidden,at:performance.now()});});
 window.addEventListener('beforeunload',()=>{vision.stop();camera.stop();});
 let previousState=interaction.state;
 function loop(now){
  metrics.frame(now,document.hidden);const live=camera.check(now),fresh=Boolean(lastPose&&now-lastPose.sourceMs<=config.detection.staleMs);
  const input={cameraLive:live,aiReady:vision.ready&&scene.ready,fresh,present:fresh&&lastSeat.present,occupied:fresh&&lastSeat.occupied,seated:fresh&&lastSeat.seated&&!adminOpen&&!editing,...scene.gate()};
- interaction.tick(now,input);scene.render(now,interaction.visual(now),config,interaction.state);
+ interaction.tick(now,input);scene.render(now,interaction.visual(now),config,interaction.state);foley.update(interaction.state,scene.actors,config.sound);
  $('manualBanner').hidden=!interaction.manual;
- if(previousState!==interaction.state){if(interaction.state==='IDLE'&&!live)$('startCard').hidden=false;previousState=interaction.state;}
+ if(previousState!==interaction.state){
+   if(interaction.state==='IDLE'&&!live)$('startCard').hidden=false;
+   document.body.classList.toggle('performing',live&&!interaction.manual&&['WAITING','GHOST_ENTER','GHOST_HOLD','GHOST_REVEAL','GHOST_WATCH','EXIT'].includes(interaction.state));
+   previousState=interaction.state;
+ }
  drawOverlay(now);
  if(now-lastDebug>500){
   $('aiStatus').textContent=aiState==='ready'?(fresh?'AI 분석 중':'AI 입력 대기'):aiState==='loading'?'AI 준비 중':aiState==='error'?'AI 오류':'AI 대기';

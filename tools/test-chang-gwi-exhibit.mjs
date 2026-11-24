@@ -96,12 +96,15 @@ for (let i = 0; i < frozen.pixels.length; i++) {
 }
 repeat(pose, 3000, 3500, [right], source);
 assert.ok(pose.echoes.some(echo => echo.drift < -.65), 'rapid sideways motion retains the earlier location');
+const held = pose.echoes.filter(echo => echo.held);
+assert.equal(held.length, 1, 'only one significant pose is held at a time');
+assert.ok(held[0].until - held[0].born > settings.lifetime * 1000);
 assert.deepEqual([frozen.x, frozen.y, frozen.w, frozen.h, ...frozen.pixels], was, 'saved mask is immutable across later input');
 pose.update([], 3600, settings);
 pose.prune(4500);
 assert.equal(pose.tracks.length, 0);
 assert.ok(pose.echoes.length > 0, 'departed audience leaves naturally decaying echoes');
-pose.prune(10000);
+pose.prune(11000);
 assert.equal(pose.echoes.length, 0);
 assert.equal(pose.released, pose.captures);
 

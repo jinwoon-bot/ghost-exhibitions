@@ -14,7 +14,7 @@ export const COPY = [
   { start: 4.72, step: .084, text: '본인은 아직 실종 사실을 모릅니다.' },
 ];
 export const READ_TIME = COPY.at(-1).start + Array.from(COPY.at(-1).text).length * COPY.at(-1).step + .78;
-export const FINALE = { ident: 1.08, corridor: 1.55, rush: .60, blackout: .45 };
+export const FINALE = { ident: 1.08, corridor: 2.30, silence: .42, rush: .60, blackout: .45 };
 
 export class Proximity {
   constructor() {

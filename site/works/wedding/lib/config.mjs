@@ -3,6 +3,7 @@ export const defaults = {
   roi:{x:.32,y:.42,w:.36,h:.38,configured:false},
   detection:{fps:12,width:640,sensitivity:.55,holdMs:1800,stability:.035,leaveMs:2200,staleMs:800,allowUpperBody:false,baseline:null},
   timing:{waiting:1.5,enter:6,fadeIn:.9,hold:1,reveal:8,offset:.8,watch:10,exit:2,reset:.7,maxSession:80},
+  sound:{enabled:true,volume:.32},
   actors:{songaksi:{x:.25,y:.94,height:.82},mongdal:{x:.75,y:.94,height:.9}},
   debug:false
 };
@@ -21,6 +22,7 @@ export function sanitize(raw={}){
   for(const name of Object.keys(c.actors)){
     const p=raw.actors?.[name]||{};c.actors[name]={x:clamp(p.x,.03,.97,c.actors[name].x),y:clamp(p.y,.45,1.15,.94),height:clamp(p.height,.25,1.4,c.actors[name].height)};
   }
+  c.sound={enabled:raw.sound?.enabled!==false,volume:clamp(raw.sound?.volume,0,.65,.32)};
   c.debug=raw.debug===true;
   c.calibrationDeviceId=typeof raw.calibrationDeviceId==='string'?raw.calibrationDeviceId.slice(0,250):'';
   return c;

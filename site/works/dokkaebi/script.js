@@ -1,7 +1,7 @@
 import { Gaze, defaults, sanitize } from "./lib/gaze.js?v=2.3.1";
 import { Ambient } from "../portrait/lib/ambient.js";
 import { NearestViewer } from "./lib/viewer.js?v=2.1.0";
-import { EyeComposite } from "./lib/eye-composite.mjs?v=2.3.1";
+import { EyeComposite } from "./lib/eye-composite.mjs?v=scene-polish";
 const $ = (id) => document.getElementById(id),
   video = $("camera"),
   ambient = new Ambient(),
@@ -86,7 +86,7 @@ function fillPanel() {
 async function loadAssets() {
   const photo = $("portrait");
   const [response] = await Promise.all([
-    fetch("./assets/portrait-dokkaebi-eyes.json?v=2.3.1"),
+    fetch("./assets/portrait-dokkaebi-eyes.json?v=scene-polish?v=2.3.1"),
     photo.decode(),
   ]);
   if (!response.ok) throw new Error("그림의 눈 영역 파일을 읽지 못했습니다.");

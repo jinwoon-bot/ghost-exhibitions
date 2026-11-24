@@ -1,5 +1,5 @@
-import {SoundDesk} from './audio.js?v=5.0.0';
-import {progressiveCalls} from './progressive.js?v=5.0.0';
+import {SoundDesk} from './audio.js?v=scene-polish';
+import {progressiveCalls} from './progressive.js?v=scene-polish';
 
 const desk=new SoundDesk(), call=progressiveCalls[0];
 const buttons=[...document.querySelectorAll('[data-profile]')];
@@ -31,7 +31,7 @@ async function play(profile) {
       const id=JSON.parse(localStorage.getItem('ghost-phone:settings:v1')||'{}')?.output;
       if(id)await desk.setOutput('voice',id);
     }catch{}
-    await desk.play(bytes,{signal:run.abort.signal,volume:.45,progressive:{profile},onStart:duration=>{
+    await desk.play(bytes,{signal:run.abort.signal,volume:.45,progressive:{profile,finalAt:call.finalAt},onStart:duration=>{
       const start=desk.voice.currentTime+.035;
       status.textContent=labels[profile]+' 재생 중';
       const paint=()=>{

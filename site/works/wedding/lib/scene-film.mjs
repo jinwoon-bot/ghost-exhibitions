@@ -3,6 +3,13 @@ import {appURL} from './paths.mjs';
 const image=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('귀신 시작 이미지를 읽지 못했습니다.'));im.src=src;});
 const usable=v=>v.readyState>=2&&!v.seeking;
 const finished=v=>v.ended||(v.duration>0&&v.currentTime>=v.duration-.04);
+// Follow the contact point as the source takes a step toward the camera.
+const walkGround={songaksi:[847,848,887,924,978,1009,1017],mongdal:[844,844,894,940,953,990,1016]};
+export function groundAt(name,kind,progress){
+ if(kind!=='walk')return kind==='reveal'?1017:walkGround[name][0];
+ const points=walkGround[name],index=Math.max(0,Math.min(1,progress))*(points.length-1),from=Math.floor(index);
+ return points[from]+((points[from+1]??points[from])-points[from])*(index-from);
+}
 export class Scene{
  constructor(container,onError){this.container=container;this.onError=onError;this.actors={};this.ready=false;this.lastState='INIT';this.generation=0;this.events=[];this.artStatus='walking-reveal-film-v2';this.failed=false;}
  event(type,extra={}){this.events.push({type,at:performance.now(),...extra});if(this.events.length>600)this.events.splice(0,100);}
@@ -21,8 +28,10 @@ export class Scene{
    await image(spec.poster);const el=document.createElement('div');el.className='actor film-actor';el.dataset.actor=name;
    const poster=document.createElement('img');poster.className='film-poster';poster.src=spec.poster;poster.alt='';
    const create=kind=>{const v=document.createElement('video');v.className='film-video';v.dataset.kind=kind;v.muted=true;v.playsInline=true;v.preload='auto';v.disablePictureInPicture=true;v.setAttribute('aria-hidden','true');return v;};
-   const walk=create('walk'),reveal=create('reveal');el.append(poster,walk,reveal);this.container.append(el);
-   const a={el,poster,walk,reveal,spec,active:'poster',walkStarted:false,revealStarted:false,lastProgress:performance.now(),lastTime:0};this.actors[name]=a;
+   const walk=create('walk'),reveal=create('reveal'),ground=document.createElement('span');
+   ground.className='film-ground';
+   el.append(ground,poster,walk,reveal);this.container.append(el);
+   const a={el,ground,poster,walk,reveal,spec,active:'poster',walkStarted:false,revealStarted:false,lastProgress:performance.now(),lastTime:0};this.actors[name]=a;
    await this.load(walk,spec.walk);await this.load(reveal,spec.reveal);
   }
   // 실제 alpha-video 합성 경로까지 낮은 불투명도로 미리 그린다.
@@ -63,6 +72,13 @@ export class Scene{
    const p=config.actors[name],h=height*p.height,w=h*576/1024;
    a.el.style.width=w+'px';a.el.style.height=h+'px';a.el.style.left=`calc(${p.x*100}% - ${w/2}px)`;a.el.style.top=`calc(${p.y*100}% - ${h}px)`;
    a.el.style.transform='none';a.el.style.opacity=String(visual.opacity);
+   if(visual.opacity>0){
+    const progress=a.active==='walk'?a.walk.currentTime/a.walk.duration:1;
+    const ground=groundAt(name,a.active,progress);
+    a.ground.style.top=(ground/1024*100).toFixed(2)+'%';
+    a.ground.style.width=(34+Math.max(0,ground-844)*.12).toFixed(2)+'%';
+    a.ground.style.opacity=(.28+Math.max(0,ground-844)*.0011).toFixed(2);
+   }
    if(state==='GHOST_ENTER')this.begin(a,'walk',Math.max(...Object.values(this.actors).map(x=>x.walk.duration))/config.timing.enter,name);
    if(state==='GHOST_REVEAL'&&(name==='songaksi'||this.actors.songaksi.reveal.currentTime>=config.timing.offset))this.begin(a,'reveal',a.reveal.duration/config.timing.reveal,name);
    if(['GHOST_ENTER','GHOST_REVEAL','EXIT'].includes(state)){

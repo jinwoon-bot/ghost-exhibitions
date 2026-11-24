@@ -1,6 +1,6 @@
 import { Camera } from '../src/camera.mjs';
 import { FaceInput } from './detector.mjs';
-import { COPY, FINALE, Episode, Proximity, clamp, smooth } from './episode.mjs?v=hard-cut';
+import { COPY, FINALE, Episode, Proximity, clamp, smooth } from './episode.mjs?v=scene-polish';
 import { BroadcastAudio } from './audio.mjs?v=hard-cut';
 import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs?v=hard-cut';
 import { DistanceReadings, minimumRange, rangeLimit } from './distance.mjs';
@@ -399,7 +399,7 @@ function frame(now) {
     if ($('notice-campus').style.opacity !== campusOpacity) $('notice-campus').style.opacity = campusOpacity;
     type(episode.dossierTime);
   }
-  const silent = phase === 'cut' || (phase === 'reveal' && age >= FINALE.corridor - .23);
+  const silent = phase === 'cut' || (phase === 'reveal' && age >= FINALE.corridor - FINALE.silence);
   signal.draw(now, phase === 'cut' ? 0 : stress, phase === 'cut' ? 0 : alpha.reveal, reduced.matches, burst, phase);
   if (now - lastAudio >= 57) {
     lastAudio = now;

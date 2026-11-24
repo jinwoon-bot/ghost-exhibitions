@@ -82,6 +82,15 @@ export class ExhibitionPicture {
     for (const echo of history.echoes) {
       if (!this.stamps.has(echo.id)) {
         const stamp = createInkStamp(echo.snapshot, this.texture, echo.seed, profile.grains, echo.drift, echo.lift);
+        if (echo.held) {
+          for (const piece of stamp.grains) {
+            const height = piece.y / echo.snapshot.h;
+            if (piece.paper && height > .18 && height < .62 && piece.start < .43) {
+              piece.size *= 1.55;
+              piece.start *= .8;
+            }
+          }
+        }
         this.stamps.set(echo.id, stamp);
         echo.dispose = () => {
           stamp.surface.width = stamp.surface.height = 0;
@@ -91,7 +100,7 @@ export class ExhibitionPicture {
       }
       const stamp = this.stamps.get(echo.id);
       const age = (now - echo.born) / (echo.until - echo.born);
-      const progress = smooth(.075, .74, age) ** (1.27 - echo.strength * .27);
+      const progress = smooth(echo.held ? .23 : .075, echo.held ? .88 : .74, age) ** (1.27 - echo.strength * .27);
       const frame = echo.snapshot;
       const drifting = progress + smooth(.68, 1, age) * .57;
       const box = project(frame, view);

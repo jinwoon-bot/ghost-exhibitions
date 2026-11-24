@@ -112,11 +112,15 @@ export class PoseHistory {
   remember(track, currentPose, now, settings) {
     if (this.echoes.length >= settings.maxEchoes) return;
     const seed = this.random();
+    const held = track.reference.h / track.reference.sourceHeight >= .25
+      && (difference(track.referencePose,currentPose) >= .235 || distance(track.referencePose,currentPose) >= .055)
+      && !this.echoes.some(echo=>echo.held);
     this.echoes.push({
       id: ++this.captures,
       snapshot: track.reference,
       born: now,
-      until: now + settings.lifetime * 1000 * (.86 + seed * .28),
+      until: now + settings.lifetime * 1000 * (held ? 1.34 : .86 + seed * .28),
+      held,
       seed,
       strength: settings.erosion,
       drift: clamp((track.referencePose.cx - currentPose.cx) * 10, -1, 1),

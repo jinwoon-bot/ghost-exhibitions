@@ -1,4 +1,4 @@
-import { EyeComposite } from "../dokkaebi/lib/eye-composite.mjs?v=2.3.1";
+import { EyeComposite } from "../dokkaebi/lib/eye-composite.mjs?v=scene-polish";
 import { Gaze } from "../dokkaebi/lib/gaze.js?v=2.3.1";
 import { Audience, frameInterval, lostMs } from "./audience.mjs";
 
@@ -8,8 +8,8 @@ const video = $("camera");
 const portrait = $("portrait");
 const panel = $("operator");
 const key = "gogwandaemyeon-human-portrait-v1";
-const maxMovement = 16;
-const gaze = new Gaze({ hold: lostMs / 1000, smoothing: .48 });
+const maxMovement = 20;
+const gaze = new Gaze({ hold: lostMs / 1000, smoothing: .48, deadband: .016 });
 const audience = new Audience();
 const controls = ["cameraSelect", "mirror", "priority", "zone", "minWidth"];
 const errors = {
@@ -329,7 +329,7 @@ navigator.mediaDevices?.addEventListener("devicechange", refreshCameras);
 refreshCameras();
 
 try {
-  const [config] = await Promise.all([fetch("./assets/eyes.json"), portrait.decode()]);
+  const [config] = await Promise.all([fetch("./assets/eyes.json?v=scene-polish"), portrait.decode()]);
   if (!config.ok) throw new Error("눈 영역 파일을 열 수 없습니다.");
   const calibration = await config.json();
   eyes = calibration.eyes.map(eye => new EyeComposite($(`${eye.id}Eye`), portrait, eye, calibration));

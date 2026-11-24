@@ -79,3 +79,5 @@ button:disabled{opacity:.5}
 #input{display:block;width:100%;max-height:9.5rem;background:#090a0a;object-fit:contain;margin:.3rem 0}
 #input.mirror{transform:scaleX(-1)}
 @media(prefers-reduced-motion:reduce){.crt{background:radial-gradient(ellipse at center,transparent 50%,#02040570)}#screen[data-phase] .hall-frame,#screen[data-phase] .close-frame,#screen[data-phase] .tear{animation:none}}
+.last-sighting{position:absolute;left:7%;bottom:9%;margin:0;padding:.55em .7em;border-left:2px solid #a89e83;color:#eee9dc;background:#111b;font-size:clamp(12px,2.1cqw,27px);text-shadow:0 1px 3px #111;letter-spacing:.045em}
+.last-sighting span{display:block;margin-bottom:.28em;font-size:.64em;color:#d2cab7;letter-spacing:.1em}

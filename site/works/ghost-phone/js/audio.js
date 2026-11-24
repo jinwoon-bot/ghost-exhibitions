@@ -3,7 +3,7 @@ import {EffectChain} from './effects.js?v=4.2.0';
 import {effectPresets,sourceFor} from './voices.js?v=4.2.0';
 import {boundedBytes} from './api.js?v=4.2.0';
 import {clamp,NoRepeat} from './core.js?v=4.2.0';
-import {ProgressiveHaunt} from './progressive.js?v=5.0.0';
+import {ProgressiveHaunt} from './progressive.js?v=scene-polish';
 export const abortError=()=>new DOMException('취소됨','AbortError');
 export function wait(ms,signal){return new Promise((resolve,reject)=>{if(signal?.aborted)return reject(abortError());const cancel=()=>{clearTimeout(timer);reject(abortError());};const timer=setTimeout(()=>{signal?.removeEventListener('abort',cancel);resolve();},ms);signal?.addEventListener('abort',cancel,{once:true});});}
 export class AudioMemory {

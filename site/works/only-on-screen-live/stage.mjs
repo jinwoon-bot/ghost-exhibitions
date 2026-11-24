@@ -1,4 +1,5 @@
 import { containGeometry, coverGeometry } from "../only-on-screen/src/tracking.mjs";
+import { ShadowHold } from "./shadow-hold.mjs";
 
 const make = () => new OffscreenCanvas(1, 1);
 const size = (canvas, w, h) => {
@@ -118,12 +119,23 @@ export class Stage {
     this.frameCtx = this.frame.getContext("2d");
     this.subjects = [new Subject(), new Subject(), new Subject()];
     this.active = [];
+    this.delay = new ShadowHold();
+    this.heldInk = make();
   }
   update(packet, frame, config, preset) {
+    if (this.packet && (this.packet.width !== packet.width || this.packet.height !== packet.height)) this.delay.reset();
     this.packet = packet;
     size(this.frame, frame.width, frame.height);
     this.frameCtx.drawImage(frame, 0, 0);
     this.rebuild(config, preset);
+    this.delay.update(this.active, performance.now(), person => {
+      const source = this.subjects[this.active.indexOf(person)].ink;
+      size(this.heldInk, source.width, source.height);
+      const ctx = this.heldInk.getContext("2d");
+      ctx.clearRect(0, 0, source.width, source.height);
+      ctx.drawImage(source, 0, 0);
+      return { x: person.x, y: person.y, w: person.w, h: person.h };
+    });
   }
   rebuild(config, preset) {
     this.active = (this.packet?.people ?? []).slice(0, preset.people);
@@ -140,6 +152,8 @@ export class Stage {
     }
     this.packet = null;
     this.active = [];
+    this.delay.reset();
+    size(this.heldInk, 1, 1);
   }
   prepareWall(width, height) {
     const hasTexture = this.paper.complete && this.paper.naturalWidth;
@@ -176,7 +190,7 @@ export class Stage {
     ctx.strokeRect(fit.x + fit.w * .06, fit.y + fit.h * .06, fit.w * .88, fit.h * .88);
     ctx.setLineDash([]);
   }
-  paint(config, preset, opacity = 1) {
+  paint(config, preset, opacity = 1, now = performance.now()) {
     const width = preset.output;
     const height = Math.round(width * 9 / 16);
     size(this.output, width, height);
@@ -197,6 +211,7 @@ export class Stage {
       ctx.filter = "none";
     }
     const scaleX = fit.w / maskW, scaleY = fit.h / maskH;
+    const delayedMix = this.delay.blend(now), delayed = this.delay.hold;
     for (const [index, person] of this.active.entries()) {
       const subject = this.subjects[index];
       const x = fit.x + person.x * scaleX, y = fit.y + person.y * scaleY;
@@ -208,7 +223,15 @@ export class Stage {
         ctx.translate(anchorX, anchorY);
         ctx.transform(1 + (layer.wide - 1) * config.spread, 0, layer.lean * config.spread,
           1 + (layer.tall - 1) * config.spread, 0, 0);
-        ctx.globalAlpha = opacity * layer.opacity * config.strength;
+        const weight= i === Math.min(1,config.shadows-1) && delayed?.id===person.id ? delayedMix : 0;
+        const alpha = opacity * layer.opacity * config.strength;
+        if (weight) {
+          const pose = delayed.pose;
+          ctx.globalAlpha = alpha * weight;
+          ctx.drawImage(this.heldInk, fit.x + pose.x * scaleX - anchorX, fit.y + pose.y * scaleY - anchorY,
+            pose.w * scaleX, pose.h * scaleY);
+        }
+        ctx.globalAlpha = alpha * (1-weight);
         ctx.drawImage(layer.soft && preset.people !== 1 ? subject.smoke : subject.ink,
           x - anchorX, y - anchorY, w, h);
         ctx.restore();
