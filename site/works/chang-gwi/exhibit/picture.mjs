@@ -1,5 +1,6 @@
 import { createInkStamp, drawGrains, paintErosion, smooth } from './material.mjs?v=contour';
 import { InkPlume } from './plume.mjs?v=contour';
+import { LiveForeground } from './foreground.mjs?v=foreground';
 
 function image(url) {
   const img = new Image();
@@ -34,7 +35,7 @@ export class ExhibitionPicture {
     this.ink = image('assets/ink-bloom.png');
     this.atlas = image('../assets/paper/hanji.png');
     this.texture = {};
-    this.current = new WeakMap();
+    this.foreground = new LiveForeground();
     this.stamps = new Map();
     this.plume = new InkPlume();
     this.pieces = 0;
@@ -52,19 +53,17 @@ export class ExhibitionPicture {
     this.canvas.height = h;
   }
 
-  buildMatte(frame) {
-    const { w, h, pixels } = frame;
-    const surface = document.createElement('canvas');
-    surface.width = w;
-    surface.height = h;
-    const ctx = surface.getContext('2d');
-    const matte = ctx.createImageData(w, h);
-    for (let i = 0; i < pixels.length; i++) matte.data[i * 4 + 3] = pixels[i];
-    ctx.putImageData(matte, 0, 0);
-    return surface;
+  revealForeground(plate, view, opacity) {
+    if (!opacity) return;
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(plate.canvas, view.x, view.y, view.width, view.height);
+    ctx.restore();
   }
 
-  draw(history, now, profile, video) {
+  draw(history, now, profile, video, mirror) {
     const ctx = this.ctx;
     const { width, height } = this.canvas;
     ctx.clearRect(0, 0, width, height);
@@ -73,6 +72,7 @@ export class ExhibitionPicture {
     // Use the same centered, letterboxed projection as the unfiltered video underneath.
     const size = video?.videoWidth ? {width:video.videoWidth, height:video.videoHeight} : history.size;
     const view = layout(width, height, size);
+    const protection = video ? this.foreground.update(video, mirror, now) : 0;
     ctx.save();
     ctx.beginPath();
     ctx.rect(view.x, view.y, view.width, view.height);
@@ -98,30 +98,26 @@ export class ExhibitionPicture {
       this.plume.draw(echo, stamp, box, drifting);
       visible.push({echo, stamp, progress, drifting, box});
     }
-    if (this.plume.enabled) ctx.drawImage(this.plume.canvas, 0, 0, width, height);
-    for (const {echo, stamp, progress, drifting, box} of visible) {
-      paintErosion(stamp, echo.snapshot, progress, echo.strength);
+    if (this.plume.enabled) {
+      ctx.globalAlpha = .79;
+      ctx.drawImage(this.plume.canvas, 0, 0, width, height);
+      ctx.globalAlpha = 1;
+    }
+    for (const {echo, stamp, drifting, box} of visible) {
       ctx.save();
       ctx.translate(box.x, box.y);
       ctx.scale(box.w / echo.snapshot.w, box.h / echo.snapshot.h);
-      ctx.drawImage(stamp.surface, 0, 0);
       const budget = Math.max(0, profile.totalGrains - this.pieces);
       this.pieces += drawGrains(ctx, this.atlas, stamp.grains, drifting, echo.strength, budget);
       ctx.restore();
     }
-    ctx.restore();
-    if (!video) return;
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    for (const track of history.tracks) {
-      if (track.missing) continue;
-      const alpha = 1 - smooth(130, 310, now - track.seen);
-      if (alpha < .02) continue;
-      if (!this.current.has(track.frame)) this.current.set(track.frame, this.buildMatte(track.frame));
-      const box = project(track.frame, view);
-      ctx.globalAlpha = alpha;
-      ctx.drawImage(this.current.get(track.frame), box.x, box.y, box.w, box.h);
+
+    this.revealForeground(this.foreground.soft, view, protection);
+    for (const {echo, stamp, progress, box} of visible) {
+      paintErosion(stamp, echo.snapshot, progress, echo.strength);
+      ctx.drawImage(stamp.surface, box.x, box.y, box.w, box.h);
     }
+    this.revealForeground(this.foreground.tight, view, protection);
     ctx.restore();
   }
 
@@ -129,6 +125,6 @@ export class ExhibitionPicture {
     for (const stamp of this.stamps.values()) stamp.surface.width = stamp.surface.height = 0;
     this.stamps.clear();
     this.plume.dispose();
-    this.current = new WeakMap();
+    this.foreground.reset();
   }
 }

@@ -2,7 +2,7 @@ import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
 import { PoseHistory } from './history.mjs?v=contour';
-import { ExhibitionPicture } from './picture.mjs?v=contour';
+import { ExhibitionPicture } from './picture.mjs?v=foreground';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);
@@ -116,6 +116,7 @@ function clearInput() {
   const preview = element('preview');
   preview.getContext('2d').clearRect(0,0,preview.width,preview.height);
   history.clear();
+  picture.foreground.reset();
 }
 
 async function start(sourceMode, source = sample, retry = false) {
@@ -209,12 +210,14 @@ async function analyze(now, q) {
   const job = {};
   frameBusy = job;
   try {
+    const reference = picture.foreground.sample(video, settings.mirror);
     const masks = await camera.segment(input, settings, 'high');
     if (request !== token || frameBusy !== job || document.hidden) return;
     const finish = performance.now();
     const spent = finish - now;
     averageInference = averageInference ? averageInference * .82 + spent * .18 : spent;
     history.update(masks, finish, {...settings, maxEchoes:q.maxEchoes}, inputCtx);
+    picture.foreground.observe(reference, history.tracks, now, finish);
     outputs++;
     errors = 0;
   } catch (error) {
@@ -274,7 +277,7 @@ function loop(now) {
   }
   if (now - lastDraw >= 1000 / q.fps - 1) {
     picture.resize(q.stage);
-    picture.draw(history, now, q, showVideo ? video : null);
+    picture.draw(history, now, q, showVideo ? video : null, settings.mirror);
     lastDraw = now;
     frames++;
   }
@@ -340,6 +343,7 @@ element('mirror').onchange = ({target}) => {
   video.classList.toggle('mirror', settings.mirror);
   save();
   history.clear();
+  picture.foreground.reset();
   previousVideoTime = -1;
   if (frameBusy) request++;
 };

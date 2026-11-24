@@ -2,6 +2,35 @@ import assert from 'node:assert/strict';
 import { PoseHistory } from '../site/works/chang-gwi/exhibit/history.mjs';
 import { createInkStamp, paintErosion } from '../site/works/chang-gwi/exhibit/material.mjs';
 import { cleanCutout } from '../site/works/chang-gwi/exhibit/cutout.mjs';
+import { alignForeground } from '../site/works/chang-gwi/exhibit/foreground.mjs';
+
+const fieldWidth = 40, fieldHeight = 32, area = fieldWidth * fieldHeight;
+const priorMatte = new Uint8Array(area);
+const proximity = new Uint8Array(area);
+const currentRGB = new Uint8ClampedArray(area * 4).fill(165);
+const emptyRoom = new Uint8Array(area * 3).fill(165);
+const confidence = new Uint8Array(area).fill(1);
+const [working, tight, soft] = Array.from({length:3}, () => new Uint8Array(area));
+const at = (x, y) => y * fieldWidth + x;
+for (let y = 9; y <= 18; y++) {
+  priorMatte.fill(255, at(4, y), at(9, y));
+  proximity.fill(1, at(3, y), at(21, y));
+  for (let x = 11; x < 16; x++) currentRGB.fill(60, at(x, y) * 4, at(x, y) * 4 + 3);
+}
+currentRGB.fill(60, at(18, 13) * 4, at(18, 13) * 4 + 3);
+currentRGB.fill(60, at(24, 13) * 4, at(24, 13) * 4 + 3);
+const foreground = rgba => alignForeground(priorMatte, proximity, rgba, emptyRoom, confidence,
+  fieldWidth, fieldHeight, 135, working, tight, soft);
+foreground(currentRGB);
+assert.equal(tight[at(13, 13)], 255, 'protect the new position between segmentation results');
+assert.ok(tight[at(6, 13)] <= 12, 'release the old position when the empty room becomes visible');
+assert.equal(tight[at(10, 13)], 0, 'a person does not create a rectangular cutout');
+assert.ok(soft[at(10, 13)] > 0 && soft[at(9, 13)] === 0, 'smoke feathering stays one pixel from the subject');
+assert.ok(tight[at(18, 13)] <= 82, 'single pixels do not become fully opaque');
+assert.equal(tight[at(24, 13)], 0, 'unrelated changes outside the person area are ignored');
+foreground(new Uint8ClampedArray(area * 4).fill(218));
+assert.equal(tight[at(6, 13)], 255, 'global lighting change falls back to segmentation');
+assert.equal(tight[at(13, 13)], 0, 'global lighting change does not mask the whole search area');
 
 const swatch = colors => new Uint8ClampedArray(colors.flatMap(gray => [gray, gray, gray, 255]));
 const softEdge = Uint8Array.from([255, 190, 88, 0]);
