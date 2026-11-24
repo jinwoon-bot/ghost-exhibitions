@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070808">
+  <title>야광귀 — 하나, 둘, 셋…</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="theatre" aria-label="야광귀 — 하나, 둘, 셋…">
+    <div id="frame" aria-hidden="true">
+      <img src="./assets/gate.jpg" width="1672" height="941" alt="" fetchpriority="high">
+      <canvas id="picture"></canvas>
+    </div>
+    <section id="welcome" aria-labelledby="title">
+      <div class="invitation">
+        <h1 id="title">야광귀<span>하나, 둘, 셋…</span></h1>
+        <p>숫자를 세는 소리가 들리면 손뼉을 치세요.</p>
+        <button id="start" type="button" disabled>전시 시작</button>
+        <output id="start-status" role="status"></output>
+      </div>
+    </section>
+  </main>
+  <dialog id="operator" aria-labelledby="operator-title">
+    <header class="operator-top">
+      <h2 id="operator-title">야광귀 운영실</h2>
+      <form method="dialog"><button>닫기</button></form>
+    </header>
+    <div class="console">
+      <div class="boards">
+        <section aria-labelledby="mic-title">
+          <h3 id="mic-title">마이크</h3>
+          <label>입력 장치 <select id="device"><option value="">기본 마이크</option></select></label>
+          <output id="mic-status" aria-live="polite">연결 대기</output>
+          <label class="meter-row">입력 레벨 <meter id="level" min="0" max="1" aria-label="입력 레벨"></meter></label>
+          <output id="mic-readings"></output>
+          <label class="range">박수 감도 <input id="sensitivity" type="range" min=".15" max=".95" step=".05"><output id="sensitivity-value"></output></label>
+          <label class="range">중복 방지 <input id="interval" type="range" min="150" max="850" step="10"><output id="interval-value"></output></label>
+          <div class="buttons">
+            <button id="connect" type="button">마이크 연결</button>
+            <button id="calibrate" type="button">소음 재측정</button>
+            <button id="keyboard" type="button">키보드 모드</button>
+            <button id="clap-test" type="button">박수 테스트</button>
+          </div>
+        </section>
+        <section aria-labelledby="score-title">
+          <h3 id="score-title">연출</h3>
+          <dl class="readouts">
+            <dt>현재 상태</dt><dd id="state">대기</dd>
+            <dt>숫자</dt><dd id="count">—</dd>
+            <dt>누적 방해</dt><dd id="strikes">0</dd>
+            <dt>눈 단계</dt><dd id="eyes">0</dd>
+          </dl>
+          <label>첫 눈 <input id="first" type="number" min="1" max="8"></label>
+          <label>여러 눈 <input id="many" type="number" min="2" max="11"></label>
+          <label>클라이맥스 <input id="final" type="number" min="3" max="15"></label>
+          <div class="buttons">
+            <button id="reset" type="button">상태 초기화</button>
+            <button id="reveal" type="button">강제 클라이맥스</button>
+            <button id="theft" type="button">강제 신발 도난</button>
+          </div>
+        </section>
+        <section aria-labelledby="sound-title">
+          <h3 id="sound-title">음향</h3>
+          <label class="range">전체 <input id="master" type="range" min="0" max="1" step=".05"><output id="master-value"></output></label>
+          <label class="range">귀신 음성 <input id="voice" type="range" min="0" max="1" step=".05"><output id="voice-value"></output></label>
+          <label class="range">효과음 <input id="fx" type="range" min="0" max="1" step=".05"><output id="fx-value"></output></label>
+          <label class="range">환경음 <input id="room" type="range" min="0" max="1" step=".05"><output id="room-value"></output></label>
+          <label><input id="muted" type="checkbox"> 음소거</label>
+          <output id="voice-status"></output>
+        </section>
+        <section aria-labelledby="exhibit-title">
+          <h3 id="exhibit-title">전시</h3>
+          <label><input id="safe" type="checkbox"> 안전 모드</label>
+          <label><input id="autoReset" type="checkbox"> 자동 초기화</label>
+          <label><input id="hideCursor" type="checkbox"> 커서 숨기기</label>
+          <output id="perf"></output>
+          <div class="buttons">
+            <button id="fullscreen" type="button">전체 화면</button>
+            <button id="resume" type="button">오디오 다시 켜기</button>
+          </div>
+          <p class="hint">장면은 끝난 뒤 자동으로 초기화됩니다. D 운영실 · F 전체 화면 · Space 박수 테스트</p>
+        </section>
+      </div>
+      <output id="error" role="status"></output>
+    </div>
+  </dialog>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
