@@ -79,14 +79,14 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0, lift 
     const fiber = shadeAt(texture.paper, x * 1.36 - sy, y * 1.25 + sx);
     const edge = 1 - smooth(2, 14, field[i]);
     const grain = randomAt(i + seed * 1679);
-    const light = (.24 + .76 * noise(x / 18, y / 26, seed)) * edge;
+    const light = (.16 + .84 * noise(x / 18, y / 26, seed)) * edge;
     contour[i] = Math.round(light * 255);
     textureTone[i] = Math.round((fiber * .66 + grain * .34) * 255);
     for (let channel = 0; channel < 3; channel++) {
       const cloth = color ? color[i * 3 + channel] : 117;
       const value = Math.min(255, cloth * subjectColor[channel] * .97 + fiber * 8);
       tone[i * 3 + channel] = value;
-      paint.data[i * 4 + channel] = value + light * (14 + channel * 5);
+      paint.data[i * 4 + channel] = value;
     }
     paint.data[i * 4 + 3] = 255 * smooth(53, 239, pixels[i]);
     threshold[i] = Math.round(thresholdAt(limit(field[i] / depth), x, y, w, h, seed, ink, wind, lift) * 255);
@@ -108,7 +108,7 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0, lift 
     const spread = .52 + v * .64;
     grains.push({
       x, y, paper, start: threshold[index] / 255,
-      size: paper ? (.55 + u * u * 3.2) : (.6 + u * u * 3.1),
+      size: paper ? (.48 + u * u * 2.7) : (.50 + u * u * 2.35),
       tile: Math.floor(randomAt(j + seed * 287 + 4) * 8),
       vx: w * ((u - .5) * (paper ? 1.0 : 1.65) + wind * spread * (paper ? .95 : 1.65)),
       vy: h * (paper ? -.12 - v * .35 + lift * .26 : -.17 + v * .25 + lift * .13),
@@ -126,7 +126,7 @@ export function paintErosion(stamp, snapshot, progress, strength = 1) {
   stamp.strength = strength;
   const cut = step / 68 * 255;
   const { paint, threshold, contour, textureTone, tone } = stamp;
-  const rim = Math.min(strength, 1.35) * (1 - smooth(.18, .64, progress));
+  const rim = Math.min(strength, 1.35) * smooth(.02, .18, progress) * (1 - smooth(.18, .64, progress));
   const tearing = Math.min(strength, 1.35) * smooth(.01, .085, progress);
   for (let i = 0; i < threshold.length; i++) {
     const remaining = threshold[i] - cut;
@@ -134,7 +134,7 @@ export function paintErosion(stamp, snapshot, progress, strength = 1) {
     paint.data[i * 4 + 3] = a;
     if (!a) continue;
     const torn = (1 - smooth(1, 20, remaining)) * tearing;
-    const glow = contour[i] / 255 * rim * .22 + torn * (.17 + textureTone[i] * .0022);
+    const glow = contour[i] / 255 * rim * .16 + torn * (.12 + textureTone[i] * .0019);
     for (let channel = 0; channel < 3; channel++) {
       const value = tone[i * 3 + channel] * (1 - torn * .25);
       paint.data[i * 4 + channel] = value + (228 + channel * 13 - value) * glow;
@@ -151,7 +151,7 @@ export function drawGrains(ctx, atlas, grains, progress, strength, budget) {
     const age = (progress - grain.start) / grain.travel;
     if (age <= 0 || age >= 1) continue;
     const flight = 1 - (1 - age) ** 1.6;
-    const drift = Math.sin(age * 7 + grain.angle) * age * grain.size * 4.5;
+    const drift = (Math.sin(age * 8 + grain.angle) - Math.sin(grain.angle)) * age * grain.size * 3.4;
     const x = grain.x + strength * (grain.vx * flight + drift);
     const y = grain.y + strength * (grain.vy * flight + age * age * (grain.paper ? 10 : 47) + drift * .45);
     ctx.globalAlpha = smooth(0, .065, age) * (1 - smooth(.46, 1, age)) * (grain.paper ? .84 : .89);

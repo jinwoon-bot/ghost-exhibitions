@@ -2,27 +2,30 @@ const vertex = `
 attribute vec2 corner;
 uniform vec2 screen;
 uniform vec4 bounds;
-varying vec2 uv;
+uniform vec4 spread;
+varying mediump vec2 uv;
 void main() {
-  uv = mix(vec2(-2.7, -1.08), vec2(3.7, 1.9), corner);
+  uv = mix(spread.xy,spread.zw,corner);
   vec2 point = bounds.xy + uv * bounds.zw;
   gl_Position = vec4(point / screen * vec2(2., -2.) + vec2(-1., 1.), 0., 1.);
 }`;
 
 const fragment = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 uniform sampler2D mask;
+uniform sampler2D flowField;
+uniform float density;
 uniform vec3 effect;
 uniform vec2 motion;
-varying vec2 uv;
-float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(127.1, 311.7))) * 437.585);
-}
+varying mediump vec2 uv;
 float noise(vec2 p) {
-  vec2 f = fract(p), i = floor(p);
+  vec2 f = fract(p);
   f = f*f*(3.-2.*f);
-  return mix(mix(hash(i), hash(i+vec2(1,0)), f.x),
-             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+  return texture2D(flowField,(floor(p)+f+.5)/64.).r;
 }
 vec3 silhouette(vec2 p) {
   float inside = step(0.,p.x)*step(p.x,1.)*step(0.,p.y)*step(p.y,1.);
@@ -33,6 +36,10 @@ float powder(vec2 p, float delay) {
   float age = effect.x - info.r - delay;
   return info.g * smoothstep(-.015,.10,age) * (1.-smoothstep(.23,.72,age));
 }
+vec2 turbulence(vec2 p, float seed, float phase) {
+  vec2 domain = p*vec2(4.8,7.0) + vec2(seed,-phase*2.1);
+  return vec2(noise(domain),noise(domain*.93+vec2(2.5,8.06))) - .5;
+}
 void main() {
   float life = effect.x;
   float strength = effect.y;
@@ -40,39 +47,62 @@ void main() {
   float flow = smoothstep(.055,.80,life) * min(strength,1.45);
   float current = noise(uv*vec2(2.3,4.1) + vec2(seed,life*.72));
   float eddy = noise(uv*vec2(6.4,8.5) + vec2(seed*.71,-life*.53));
-  float flecks = noise(uv*vec2(105.,211.) + seed*.2);
-  float threads = noise(vec2(uv.x*46.-uv.y*33.,uv.y*81.) - life*2.3 + seed*3.);
   float tail = (1.-smoothstep(.98,1.55,life)) * min(1.,strength);
   float floorBand = smoothstep(.33,.98,uv.y);
+  vec2 curl = turbulence(uv,seed,life);
 
   // Dark material spreads from the feet in a broad, irregular wake.
-  vec2 dark = uv - vec2(motion.x*(.58+current*.92)+(eddy-.46)*.51,
-                        .19+floorBand*.12+(current-.5)*.59+motion.y*.19)*flow;
-  dark.x = .5+(dark.x-.5)/(1.+flow*(.68+floorBand*.85));
-  float ink = .89*powder(dark,0.)
-    + .49*powder(dark+vec2(motion.x*.41,-.11)*flow,.045)
-    + .37*powder(dark+vec2(-motion.x*.24,.105)*flow,.11);
-  float granulate = smoothstep(.23,.76,flecks*.57+threads*.43);
-  float lowerFalloff = 1.-smoothstep(1.06,1.41,uv.y);
-  ink *= (.12+.88*granulate)*(.61+floorBand*.39)*lowerFalloff*tail;
+  vec2 dark = uv - vec2(motion.x*(.47+current*.79)+curl.y*.65,
+                        .14+floorBand*.12+curl.x*.44+motion.y*.19)*flow;
+  dark.x = .5+(dark.x-.5)/(1.+flow*(.45+floorBand*.88));
+  float ink = .84*powder(dark,0.)
+    + .47*powder(dark+vec2(motion.x*.38,-.105)*flow,.045)
+    + .29*powder(dark+vec2(-motion.x*.26,.08)*flow,.12);
+  float soot = noise(dark*vec2(132.,192.)+vec2(seed,life*11.));
+  float clumps = noise(dark*vec2(27.,42.)+seed);
+  float granulate = smoothstep(.27,.79,soot*.68+clumps*.32);
+  float lowerFalloff = 1.-smoothstep(1.02,1.39,uv.y);
+  ink *= (.08+.92*granulate)*(.52+floorBand*.48)*lowerFalloff*tail*density;
 
   // Pale strands twist upward from the parts of the silhouette that just broke away.
-  vec2 arc = uv - vec2(motion.x*(.39+current*.68)+(eddy-.47)*.88,
-                       -.51+(current-.48)*.47+motion.y*.50)*flow;
-  float fiber = powder(arc,0.) + .54*powder(arc+vec2(-motion.x*.33,.12)*flow,.027);
-  float wisps = smoothstep(.35,.73,threads*.54+eddy*.28+flecks*.18);
-  float sparks = smoothstep(.68,.96,flecks)*smoothstep(.23,.66,eddy);
-  fiber *= (.66*wisps+.83*sparks)*(1.-floorBand*.63)*tail;
+  vec2 arc = uv - vec2(motion.x*(.31+current*.51)+curl.y*.84,
+                       -.47+curl.x*.43+motion.y*.49)*flow;
+  float fiber = powder(arc,0.) + .46*powder(arc+vec2(-motion.x*.36,.117)*flow,.038);
+  float thread = noise(vec2(arc.x*53.-arc.y*31.,arc.y*65.)+seed*3.);
+  float splinters = noise(arc*vec2(144.,177.)+seed);
+  float wisps = smoothstep(.36,.76,thread*.61+eddy*.39);
+  float sparks = smoothstep(.64,.94,splinters)*smoothstep(.23,.66,eddy);
+  fiber *= (.62*wisps+.72*sparks)*(1.-floorBand*.65)*tail*density;
   float edge = silhouette(uv).b;
   edge = max(edge, .44*(silhouette(uv+vec2(.026,0.)).b+silhouette(uv-vec2(.026,0.)).b));
   float bloom = edge*smoothstep(0.,.09,life)*(1.-smoothstep(.17,.48,life))*.48*strength;
   fiber = min(.94, fiber+bloom);
   ink = min(.92,ink)*(1.-fiber);
 
-  vec3 charcoal = vec3(.018,.018,.036) + current*.072;
-  vec3 filament = mix(vec3(.72,.81,1.),vec3(1.,.97,.90),smoothstep(.35,.75,eddy));
+  vec3 charcoal = mix(vec3(.018,.017,.021),vec3(.16,.145,.135), current*.50+soot*.50);
+  vec3 filament = mix(vec3(.78,.83,.92),vec3(1.,.97,.89),smoothstep(.35,.75,eddy));
   gl_FragColor = vec4(charcoal*ink + filament*fiber, ink+fiber);
 }`;
+
+function makeFlowField(gl) {
+  const size = 64;
+  const pixels = new Uint8Array(size * size);
+  let seed = 172933;
+  for (let i = 0; i < pixels.length; i++) {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    pixels[i] = seed >>> 24;
+  }
+  const texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, size, size, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, pixels);
+  gl.activeTexture(gl.TEXTURE0);
+  return texture;
+}
 
 export class InkPlume {
   constructor() {
@@ -101,7 +131,9 @@ export class InkPlume {
       const corner = gl.getAttribLocation(program, 'corner');
       gl.enableVertexAttribArray(corner);
       gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
-      this.uniforms = Object.fromEntries(['screen','bounds','effect','motion','mask'].map(name => [name,gl.getUniformLocation(program, name)]));
+      this.uniforms = Object.fromEntries(['screen','bounds','spread','density','effect','motion','mask','flowField']
+        .map(name => [name,gl.getUniformLocation(program, name)]));
+      this.flowField = makeFlowField(gl);
       this.canvas.addEventListener('webglcontextlost', event => {
         event.preventDefault();
         this.enabled = false;
@@ -113,7 +145,7 @@ export class InkPlume {
     }
   }
 
-  begin(width, height, scale) {
+  begin(width, height, scale, echoCount, view) {
     const gl = this.gl;
     this.enabled = Boolean(scale && gl);
     if (!this.enabled) return;
@@ -124,12 +156,20 @@ export class InkPlume {
       this.canvas.height = renderHeight;
     }
     gl.viewport(0, 0, renderWidth, renderHeight);
+    gl.disable(gl.SCISSOR_TEST);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    const scaleX = renderWidth / width;
+    const scaleY = renderHeight / height;
+    gl.scissor(Math.floor(view.x * scaleX), Math.floor((height - view.y - view.height) * scaleY),
+      Math.ceil(view.width * scaleX), Math.ceil(view.height * scaleY));
+    gl.enable(gl.SCISSOR_TEST);
     gl.useProgram(this.program);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.uniform2f(this.uniforms.screen, width, height);
+    gl.uniform1f(this.uniforms.density, 1 / Math.sqrt(1 + Math.max(0, echoCount - 3) * .12));
+    gl.uniform1i(this.uniforms.flowField, 1);
   }
 
   draw(echo, stamp, box, progress) {
@@ -155,6 +195,12 @@ export class InkPlume {
     } else gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(this.uniforms.mask, 0);
     gl.uniform4f(this.uniforms.bounds, box.x, box.y, box.w, box.h);
+    // The raster bounds grow with the flow so a fresh echo touches only nearby pixels.
+    const phase = Math.max(0, Math.min(1, (progress - .055) / .745));
+    const flow = phase * phase * (3 - 2 * phase) * Math.min(echo.strength, 1.45);
+    const reach = .08 + flow * (.72 + Math.abs(stamp.wind) * 1.66);
+    gl.uniform4f(this.uniforms.spread,
+      -reach, -.075 - flow * .74, 1 + reach, Math.min(1.42, 1.055 + flow * .54));
     gl.uniform3f(this.uniforms.effect, progress, echo.strength, echo.seed * 27);
     gl.uniform2f(this.uniforms.motion, stamp.wind, stamp.lift);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -169,6 +215,7 @@ export class InkPlume {
   dispose() {
     for (const id of this.textures.keys()) this.release(id);
     this.gl?.deleteBuffer(this.buffer);
+    this.gl?.deleteTexture(this.flowField);
     this.gl?.deleteProgram(this.program);
   }
 }

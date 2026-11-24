@@ -1,4 +1,5 @@
 import { refineMask } from '../js/mask.js';
+import { cleanCutout } from './cutout.mjs';
 
 const GRID_WIDTH = 64;
 const GRID_HEIGHT = 36;
@@ -62,18 +63,13 @@ function saveMask(mask, pose, alpha, source) {
     const begin = (y + row) * mask.width + x;
     pixels.set(alpha.subarray(begin, begin + w), row * w);
   }
-  let color = null;
-  if (source?.canvas.width === mask.width && source.canvas.height === mask.height) {
-    const rgba = source.getImageData(x, y, w, h).data;
-    color = new Uint8Array(w * h * 3);
-    for (let i = 0; i < pixels.length; i++) {
-      if (pixels[i] < 16) continue;
-      color[i * 3] = rgba[i * 4];
-      color[i * 3 + 1] = rgba[i * 4 + 1];
-      color[i * 3 + 2] = rgba[i * 4 + 2];
-    }
-  }
-  return Object.freeze({ x, y, w, h, pixels, color, sourceWidth: mask.width, sourceHeight: mask.height });
+  const cutout = source?.canvas.width === mask.width && source.canvas.height === mask.height
+    ? cleanCutout(source.getImageData(x, y, w, h).data, pixels, w, h)
+    : null;
+  return Object.freeze({
+    x, y, w, h, pixels: cutout?.alpha ?? pixels, color: cutout?.color ?? null,
+    sourceWidth: mask.width, sourceHeight: mask.height,
+  });
 }
 
 export class PoseHistory {

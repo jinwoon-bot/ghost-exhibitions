@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict';
 import { PoseHistory } from '../site/works/chang-gwi/exhibit/history.mjs';
 import { createInkStamp, paintErosion } from '../site/works/chang-gwi/exhibit/material.mjs';
+import { cleanCutout } from '../site/works/chang-gwi/exhibit/cutout.mjs';
+
+const swatch = colors => new Uint8ClampedArray(colors.flatMap(gray => [gray, gray, gray, 255]));
+const softEdge = Uint8Array.from([255, 190, 88, 0]);
+const contrastingEdge = cleanCutout(swatch([20, 98, 240, 240]), softEdge, 4, 1);
+assert.ok(contrastingEdge.alpha[1] < 190, 'bright background reduces estimated edge coverage');
+assert.ok(contrastingEdge.color[3] < 65, 'matting removes the room color from a dark sleeve');
+assert.equal(contrastingEdge.color[9], 0, 'background-only pixels retain no RGB');
+const softShadow = cleanCutout(swatch([20, 23, 25, 29]), softEdge, 4, 1);
+assert.deepEqual(softShadow.alpha, softEdge, 'low-contrast edges retain the model matte');
+const narrowFinger = cleanCutout(swatch([230, 40, 230]), Uint8Array.of(0, 175, 0), 3, 1);
+assert.equal(narrowFinger.alpha[1], 175, 'thin outlines without a solid interior remain visible');
 
 const width = 100, height = 72;
 

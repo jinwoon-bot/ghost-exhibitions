@@ -1,5 +1,5 @@
-import { createInkStamp, drawGrains, paintErosion, smooth } from './material.mjs?v=clones';
-import { InkPlume } from './plume.mjs?v=clones';
+import { createInkStamp, drawGrains, paintErosion, smooth } from './material.mjs?v=contour';
+import { InkPlume } from './plume.mjs?v=contour';
 
 function image(url) {
   const img = new Image();
@@ -77,7 +77,7 @@ export class ExhibitionPicture {
     ctx.beginPath();
     ctx.rect(view.x, view.y, view.width, view.height);
     ctx.clip();
-    this.plume.begin(width, height, profile.plumeScale);
+    this.plume.begin(width, height, profile.plumeScale, history.echoes.length, view);
     const visible = [];
     for (const echo of history.echoes) {
       if (!this.stamps.has(echo.id)) {
