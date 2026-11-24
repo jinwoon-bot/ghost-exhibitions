@@ -1,0 +1,28 @@
+:root { color-scheme: dark; color: #dddacc; background: #090d0e; font-family: system-ui,sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; }
+main { width: 100vw; height: 100dvh; display: grid; place-items: center; position: relative; }
+#stage { display: block; width: min(100vw,177.78dvh); height: auto; aspect-ratio: 16/9; }
+[hidden] { display: none !important; }
+button,input,select { font: inherit; }
+button,select { border: 1px solid #737971; background: #252d2c; color: inherit; border-radius: 2px; padding: 9px 12px; }
+button { cursor: pointer; }
+button:disabled { opacity: .55; cursor: wait; }
+:focus-visible { outline: 2px solid #c5bca4; outline-offset: 2px; }
+#entry { position: absolute; inset: 0; display: grid; place-items: center; background: #090d10b8; padding: 14px; }
+.entry-card { width: min(470px,95vw); padding: clamp(20px,4.5vw,42px); border: 1px solid #66675a; background: #181d1de8; }
+h1 { margin: 0 0 24px; font-size: clamp(1.45rem,4vw,2.4rem); font-weight: 490; letter-spacing: -.05em; }
+.row { display: flex; flex-wrap: wrap; gap: 7px; }
+.primary { display: block; width: 100%; margin-bottom: 10px; background: #c5c1ae; color: #151b1b; }
+.entry-card p,.help { color: #b1b6ab; font-size: .78rem; line-height: 1.6; }
+#notice { min-height: 1.6em; margin-bottom: 0; color: #d9c9a6; }
+#demo-mark { position: absolute; bottom: 12px; right: 14px; background: #090d10c9; padding: 4px 8px; font-size: .73rem; }
+#operator { position: fixed; z-index: 1; inset: 0 0 0 auto; width: min(90vw,390px); overflow-y: auto; overscroll-behavior: contain; padding: 16px; background: #151a1af7; border-left: 1px solid #5c625a; }
+#operator header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#operator h2 { font-size: 1.25rem; margin: 6px 0; }
+fieldset { border: 1px solid #4a5552; margin: 16px 0; padding: 10px 12px; }
+fieldset label { display: grid; gap: 4px; margin: 8px 0; font-size: .8rem; }
+fieldset .check { display: flex; align-items: center; }
+fieldset select,input[type=file] { max-width: 100%; }
+pre { overflow: auto; max-height: 210px; background:#090e0e; padding: 8px; color:#bac5ba; font-size: .69rem; }
+body.running:not(.operator) { cursor: none; }

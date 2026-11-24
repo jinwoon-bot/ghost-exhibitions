@@ -39,11 +39,12 @@
   {
     "id": "only-on-screen",
     "title": "화면 속에만 있는 사람",
-    "tagline": "시선을 돌린 사이, 한 걸음 더.",
-    "description": "관객의 고개 움직임에 따라 화면 속 존재의 거리가 달라집니다.",
-    "input": "카메라 · 고개",
-    "entry": "works/only-on-screen/index.html",
-    "extra": null
+    "tagline": "움직인 사람은 셋. 그림자는 더 많다.",
+    "description": "웹캠으로 분리한 관객마다 먹빛 그림자가 붙어 팔과 몸의 움직임을 따라갑니다.",
+    "input": "카메라 · 전신 움직임",
+    "entry": "works/only-on-screen-live/index.html",
+    "extra": "works/only-on-screen/index.html",
+    "extraLabel": "이전 고개 반응판 열기"
   },
   {
     "id": "forbidden-broadcast",
