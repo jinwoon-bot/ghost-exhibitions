@@ -27,33 +27,41 @@ float powder(vec2 p, float delay) {
   float inside = step(0.,p.x)*step(p.x,1.)*step(0.,p.y)*step(p.y,1.);
   vec4 info = texture2D(mask, clamp(p, 0., 1.));
   float age = effect.x - info.r - delay;
-  return inside * info.g * smoothstep(.006,.14,age) * (1.-smoothstep(.18,.65,age));
+  return inside * info.g * smoothstep(.005,.095,age) * (1.-smoothstep(.21,.66,age));
 }
 void main() {
   float life = effect.x;
   float strength = effect.y;
   float wind = effect.z;
   float seed = effect.w;
-  float flow = smoothstep(.05,1.15,life);
-  vec2 v = uv;
-  float current = noise(v * vec2(2.9,6.) + vec2(seed, life*.85));
-  float eddy = noise(v * vec2(10.,17.) + seed);
-  vec2 air = vec2(wind * (.38+current*.75) + (current-.50)*.61,
-                 -.26+(eddy-.37)*.61);
-  vec2 src = v - air * flow * strength;
-  src.x += (eddy-.50)*.31*flow*strength;
-  src.x = .5+(src.x-.5)/(1.+flow*.64);
-  float alpha = powder(src, 0.)*.73;
-  alpha = max(alpha, powder(src+vec2(wind*.14,-.035)*flow,.09)*.45);
-  alpha = max(alpha, powder(src+vec2(-wind*.16,.045)*flow,.17)*.27);
-  float flecks = noise(v*vec2(81.,119.) + seed*.2);
-  float threads = noise(vec2(v.x*28.-v.y*15., v.y*85.) + seed*3.);
-  float grain = smoothstep(.27,.81,flecks*.59 + threads*.41);
-  alpha *= grain * (1.-smoothstep(1.03,1.48,life)) * min(1.,strength) * .83;
-  vec3 charcoal = mix(vec3(.031,.036,.057), vec3(.16,.19,.29), current*.47);
-  vec3 fiber = vec3(.81,.86,.99);
-  vec3 color = mix(charcoal, fiber, smoothstep(.73,.97,flecks*threads + current*.27) * .74);
-  gl_FragColor = vec4(color * alpha, alpha);
+  float flow = smoothstep(.05,1.12,life) * strength;
+  float current = noise(uv * vec2(2.8,5.) + vec2(seed, life*.94));
+  float eddy = noise(uv * vec2(9.,13.) + seed);
+  float flecks = noise(uv*vec2(119.,143.) + seed*.2);
+  float threads = noise(vec2(uv.x*27.-uv.y*18., uv.y*83.) + seed*3.);
+  float tail = (1.-smoothstep(1.04,1.50,life)) * min(1., strength);
+  float bodyBand = smoothstep(.40,.91,uv.y);
+
+  // Detached dense grains spread horizontally and fall toward the bottom of the frame.
+  vec2 dark = uv - vec2(wind*(.59 + current*.89) + (current-.5)*.56,
+                        bodyBand*.21 + (eddy-.43)*.43) * flow;
+  dark.x = .5 + (dark.x-.5)/(1. + flow*.70);
+  float ink = powder(dark,0.) * .98;
+  ink = max(ink, powder(dark+vec2(wind*.25,-.03)*flow,.065)*.76);
+  ink = max(ink, powder(dark+vec2(-wind*.18,.07)*flow,.14)*.49);
+  ink *= smoothstep(.17,.70,flecks*.62+threads*.38) * (.70+bodyBand*.27) * tail;
+
+  // The thinner fibers curl upward independently of the graphite-colored layer.
+  vec2 arc = uv - vec2(wind*(.21+current*.37)+(eddy-.49)*.56,
+                       -.42+(current-.41)*.36) * flow;
+  float fiber = powder(arc,0.) + .47 * powder(arc+vec2(.045,-.06)*flow,.032);
+  fiber *= smoothstep(.59,.91,flecks*.38+threads*.49+eddy*.21) * (1.-bodyBand*.55) * tail;
+  fiber = min(.88,fiber);
+  ink = min(.88,ink) * (1.-fiber);
+
+  vec3 charcoal = vec3(.021,.025,.049) + current*.075;
+  vec3 filament = mix(vec3(.69,.74,1.), vec3(1.,.96,.86), smoothstep(.42,.87,eddy));
+  gl_FragColor = vec4(charcoal*ink + filament*fiber, ink+fiber);
 }`;
 
 export class InkPlume {

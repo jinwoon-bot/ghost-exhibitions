@@ -123,7 +123,7 @@ export class PoseHistory {
       until: now + settings.lifetime * 1000 * (.86 + seed * .28),
       seed,
       strength: settings.erosion,
-      drift: clamp((track.referencePose.cx - currentPose.cx) * 8, -1, 1),
+      drift: clamp((track.referencePose.cx - currentPose.cx) * 10, -1, 1),
     });
   }
 
@@ -168,8 +168,8 @@ export class PoseHistory {
       unmatched.delete(track);
       const poseDelta = difference(track.referencePose, pose);
       const shift = distance(track.referencePose, pose);
-      const meaningful = poseDelta >= .102 || shift >= .024;
-      const abrupt = poseDelta >= .26 || shift >= .066;
+      const meaningful = poseDelta >= .084 || shift >= .018;
+      const abrupt = poseDelta >= .195 || shift >= .040;
       const gap = now - track.seen;
       let { reference, referencePose, lastCapture } = track;
       let changes = meaningful ? track.changes + 1 : 0;
@@ -178,7 +178,7 @@ export class PoseHistory {
         referencePose = pose;
         changes = 0;
       } else if (meaningful && (abrupt || changes >= 2)) {
-        const cadence = clamp((abrupt ? 225 : 355) / settings.frequency, 120, 1400);
+        const cadence = clamp((abrupt ? 142 : 275) / settings.frequency, 75, 1100);
         if (now - lastCapture >= cadence) {
           this.remember(track, pose, now, settings);
           lastCapture = now;
@@ -186,7 +186,7 @@ export class PoseHistory {
           referencePose = pose;
           changes = 0;
         }
-      } else if (!meaningful && poseDelta < .047 && shift < .011) {
+      } else if (!meaningful && poseDelta < .038 && shift < .009) {
         // During a held pose, the most recent mask is the source of the next echo.
         reference = frame;
         referencePose = pose;

@@ -1,8 +1,8 @@
 import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
-import { PoseHistory } from './history.mjs';
-import { ExhibitionPicture } from './picture.mjs';
+import { PoseHistory } from './history.mjs?v=live-camera';
+import { ExhibitionPicture } from './picture.mjs?v=live-camera';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);
@@ -21,11 +21,12 @@ const key = 'chang-gwi-frozen-poses-v1';
 const defaults = {device:'', mirror:true, frequency:1.6, lifetime:5.5, erosion:1, people:1, sensitivity:.55, quality:'auto', sound:false, awake:true};
 const ranges = {frequency:[.35, 2.6], lifetime:[3, 16], erosion:[0, 1.6], sensitivity:[.2, .85]};
 const prof = {
-  low: { resolution: 320, every: 230, stage: 920, grains: 136, totalGrains: 430, maxEchoes: 7, fps: 24 },
-  high: { resolution: 512, every: 88, stage: 1550, grains: 392, totalGrains: 1550, maxEchoes: 13, fps: 36 },
+  low: { resolution: 320, every: 205, stage: 920, grains: 136, totalGrains: 430, maxEchoes: 7, fps: 24 },
+  high: { resolution: 512, every: 75, stage: 1550, grains: 392, totalGrains: 1550, maxEchoes: 13, fps: 36 },
 };
 const sample = '../assets/demo/pose_1.mp4';
 let settings = savedSettings(), mode = 'idle', request = 0, running = false, starting = false;
+video.classList.toggle('mirror', settings.mirror);
 let chosenSource = null, sourceURL = null, wantCamera = false, retries = 0, tryAgain = 0;
 let frameBusy = null, previousVideoTime = -1, inferenceAt = 0, lastDraw = 0, lastStatus = 0;
 let averageInference = 0, renderingFPS = 0, frames = 0, outputs = 0, errors = 0, failureText = '';
@@ -104,6 +105,7 @@ function clearInput() {
   inferenceAt = 0;
   averageInference = 0;
   errors = 0;
+  video.hidden = true;
   camera.stop();
   camera.stopWorker();
   if (sourceURL) URL.revokeObjectURL(sourceURL);
@@ -246,6 +248,8 @@ function loop(now) {
   const q = quality();
   history.prune(now);
   const live = mode === 'camera' ? camera.healthy(now) : video.readyState >= 2 && !video.paused;
+  const showVideo = running && live;
+  if (video.hidden === showVideo) video.hidden = !showVideo;
   if (running && live) analyze(now, q);
   if (wantCamera && !starting && (!running || !live) && now >= tryAgain) {
     if (retries < 3) {
@@ -270,7 +274,7 @@ function loop(now) {
   }
   if (now - lastDraw >= 1000 / q.fps - 1) {
     picture.resize(q.stage);
-    picture.draw(history, now, q);
+    picture.draw(history, now, q, showVideo ? video : null);
     lastDraw = now;
     frames++;
   }
@@ -333,6 +337,7 @@ element('devices').onchange = ({target}) => {
 };
 element('mirror').onchange = ({target}) => {
   settings.mirror = target.checked;
+  video.classList.toggle('mirror', settings.mirror);
   save();
   history.clear();
   previousVideoTime = -1;

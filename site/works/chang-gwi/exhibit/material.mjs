@@ -82,7 +82,7 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0) {
     darkness[i] = gray;
     for (let channel = 0; channel < 3; channel++) {
       const cloth = color ? color[i * 3 + channel] : 117;
-      const value = Math.min(255, cloth * subjectColor[channel] * 1.17 + 20 + fiber * 11 + edge * 8);
+      const value = Math.min(255, cloth * subjectColor[channel] * 1.07 + 7 + fiber * 9 + edge * 6);
       tone[i * 3 + channel] = value;
       paint.data[i * 4 + channel] = value;
     }

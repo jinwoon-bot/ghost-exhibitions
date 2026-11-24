@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0e0e0d">
   <title>창귀 · 네 뒤에 남은 것</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=live-camera">
 </head>
 <body>
   <main id="exhibition" data-mode="idle" aria-label="네 뒤에 남은 것">
+    <video id="video" playsinline muted aria-hidden="true" hidden></video>
     <canvas id="stage" aria-label="현재 관객과 그 자리에 남아 있는 과거 실루엣"></canvas>
     <section id="setup" aria-labelledby="work-title">
       <div class="opening">
@@ -61,7 +62,6 @@
       <p class="hint">D 운영 설정 · F 전체화면. 영상은 기기 안에서 분석하고, 배경을 제거한 인물 영역만 메모리에 잠시 보관합니다.</p>
     </div>
   </dialog>
-  <video id="video" playsinline muted hidden></video>
-  <script type="module" src="./app.mjs"></script>
+  <script type="module" src="./app.mjs?v=live-camera"></script>
 </body>
 </html>

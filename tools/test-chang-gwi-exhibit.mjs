@@ -63,6 +63,13 @@ pose.prune(10000);
 assert.equal(pose.echoes.length, 0);
 assert.equal(pose.released, pose.captures);
 
+const traverse = new PoseHistory(() => .5);
+for (let t = 0; t <= 560; t += 80) {
+  traverse.update([mask(26 + t / 80 * 5)], t, settings);
+}
+assert.ok(traverse.echoes.length >= 4, 'a brisk continuous traverse leaves a series of closely spaced poses');
+assert.ok(traverse.echoes.every((echo, i, list) => !i || echo.snapshot.x > list[i - 1].snapshot.x));
+
 const people = new PoseHistory(() => .52);
 repeat(people, 0, 400, [mask(20), mask(77)]);
 assert.equal(people.tracks.length, 2);
