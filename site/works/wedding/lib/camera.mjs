@@ -5,12 +5,19 @@ export class Camera {
  stop(){this.generation++;if(this.frameRequest!==null&&this.video.cancelVideoFrameCallback)this.video.cancelVideoFrameCallback(this.frameRequest);for(const t of this.stream?.getTracks()||[])t.stop();this.stream=null;this.video.srcObject=null;this.lastFrame=0;this.frameCount=0;this.notify('off');}
  async start(config){
   this.stop();const generation=this.generation;
-  if(!globalThis.isSecureContext||!navigator.mediaDevices?.getUserMedia){this.notify('error',{message:'카메라는 Chrome의 localhost 주소에서 실행해야 합니다.'});throw Error('secure-context');}
+  if(!globalThis.isSecureContext||!navigator.mediaDevices?.getUserMedia){this.notify('error',{message:'Chrome에서 HTTPS 전시 주소나 localhost 주소로 실행하세요.'});throw Error('secure-context');}
   this.notify('requesting');
   try{
    const video={width:{ideal:config.width},height:{ideal:config.height},frameRate:{ideal:config.fps,max:60}};
-   if(config.deviceId)video.deviceId={exact:config.deviceId};else video.facingMode='user';
-   const stream=await navigator.mediaDevices.getUserMedia({video,audio:false});
+   const device=config.deviceId?{deviceId:{exact:config.deviceId}}:null;
+   Object.assign(video,device||{facingMode:{ideal:'user'}});
+   let stream;
+   try{
+    stream=await navigator.mediaDevices.getUserMedia({video,audio:false});
+   }catch(error){
+    if(error.name!=='OverconstrainedError'||generation!==this.generation)throw error;
+    stream=await navigator.mediaDevices.getUserMedia({video:device||true,audio:false});
+   }
    if(generation!==this.generation){stream.getTracks().forEach(t=>t.stop());return;}
    this.stream=stream;const track=stream.getVideoTracks()[0];
    track.addEventListener('ended',()=>{if(generation===this.generation)this.notify('ended',{message:'카메라 연결이 종료되었습니다. 다시 연결하세요.'});});

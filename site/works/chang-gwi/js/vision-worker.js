@@ -69,10 +69,16 @@ self.onmessage=async({data:m})=>{
       ctx.drawImage(bitmap,0,0);pixels=ctx.getImageData(0,0,width,height).data;
     }else{width=m.width;height=m.height;pixels=new Uint8ClampedArray(m.pixels);}
     const light=enhanceLowLight(pixels);
+    if(light.unusable){
+      postMessage({id:m.id,type:'result',masks:[],inferMs:performance.now()-start,light,backend,memory:memory()});
+      return;
+    }
     const rgb=new Uint8Array(width*height*3);
     for(let p=0,j=0;p<pixels.length;p+=4){rgb[j++]=pixels[p];rgb[j++]=pixels[p+1];rgb[j++]=pixels[p+2];}
     tensor=tf.tensor3d(rgb,[height,width,3],'int32');
-    const masks=await net.segmentMultiPerson(tensor,{flipHorizontal:false,internalResolution:m.quality||'medium',segmentationThreshold:m.settings.sensitivity,maxDetections:Math.min(3,m.settings.people),scoreThreshold:.25,nmsRadius:20,minKeypointScore:.2,refineSteps:10});
+    // Avoid a second downsample when the camera already supplies a small, dim frame.
+    const quality=m.quality==='high'&&Math.max(width,height)<=320&&light.mean<25?'full':m.quality||'medium';
+    const masks=await net.segmentMultiPerson(tensor,{flipHorizontal:false,internalResolution:quality,segmentationThreshold:m.settings.sensitivity,maxDetections:Math.min(3,m.settings.people),scoreThreshold:.25,nmsRadius:20,minKeypointScore:.2,refineSteps:10});
     tensor.dispose();tensor=null;
     const output=masks.map(x=>({width:x.width,height:x.height,data:x.data instanceof Uint8Array?x.data:new Uint8Array(x.data),pose:x.pose}));
     postMessage({id:m.id,type:'result',masks:output,inferMs:performance.now()-start,light,backend,memory:memory()},output.map(x=>x.data.buffer));
