@@ -175,7 +175,7 @@ export class PoseHistory {
         referencePose = pose;
         changes = 0;
       } else if (meaningful && (abrupt || changes >= 2)) {
-        const cadence = clamp((abrupt ? 142 : 275) / settings.frequency, 75, 1100);
+        const cadence = clamp((abrupt ? 236 : 390) / settings.frequency, 100, 1100);
         if (now - lastCapture >= cadence) {
           this.remember(track, pose, now, settings);
           lastCapture = now;

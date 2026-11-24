@@ -91,9 +91,9 @@ export class ExhibitionPicture {
       }
       const stamp = this.stamps.get(echo.id);
       const age = (now - echo.born) / (echo.until - echo.born);
-      const progress = smooth(.075, .74, age) ** (1.27 - echo.strength * .27);
+      const progress = smooth(.17, .85, age) ** (1.27 - echo.strength * .27);
       const frame = echo.snapshot;
-      const drifting = progress + smooth(.68, 1, age) * .57;
+      const drifting = progress + smooth(.77, 1, age) * .57;
       const box = project(frame, view);
       this.plume.draw(echo, stamp, box, drifting);
       visible.push({echo, stamp, progress, drifting, box});
