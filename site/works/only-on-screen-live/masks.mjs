@@ -77,7 +77,7 @@ export function splitMasks(people, width, height, threshold = .18, rgb = null) {
     const bounds = connectedBody(shape, owner, owners, confidence, queue, width, height);
     if (!bounds) return [];
     const [left, top, right, bottom] = bounds;
-    if (right - left < 5 || bottom - top < 10) return [];
+    if (right - left < 3 || bottom - top < 9) return [];
     const w = right - left + 1, h = bottom - top + 1;
     const alpha = new Uint8Array(w * h);
     let area = 0;
@@ -93,7 +93,8 @@ export function splitMasks(people, width, height, threshold = .18, rgb = null) {
         if (value >= 112) area++;
       }
     }
-    if (area < size * .003 || area > size * .82) return [];
+    const minArea = Math.max(32, size * Math.min(.003, shape.height * shape.height * .072));
+    if (area < minArea || area > size * .82) return [];
     const expectedX = (shape.feet?.x ?? shape.center.x) * width - left;
     const expectedY = shape.feet ? clamp(shape.feet.y * height - top, 0, h - 1) : h - 1;
     const anchor = findContact(alpha, w, h, expectedX, expectedY);

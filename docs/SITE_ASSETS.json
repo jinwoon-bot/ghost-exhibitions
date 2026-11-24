@@ -432,8 +432,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/app.mjs",
-      "bytes": 18770,
-      "sha256": "c5e71aa946c164b2044d07e4ee313dd8aa78511591b44eb344de53246fea56e9"
+      "bytes": 18844,
+      "sha256": "97d6a75e9273334e5e1961dbf0b12bfe99e7a0fcfada794862eead9e5efd36f6"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/assets/anchor-plate.png",
@@ -487,8 +487,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/audio.mjs",
-      "bytes": 5371,
-      "sha256": "6305e9e4205ff8a0f4fa2bc70118d3743b35602c2c9cc833ae386733720d9e3d"
+      "bytes": 5338,
+      "sha256": "89343eb11b09a6b9ab976d9633d7a603df7dc036db07e41747ebe58fbe83d96c"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/detector.mjs",
@@ -497,8 +497,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/episode.mjs",
-      "bytes": 3124,
-      "sha256": "09c90601ce8b3c62c15486787f4b066a9589e43d6961513978acdab05804f8a4"
+      "bytes": 2718,
+      "sha256": "f51d0626c1c407c93f35d16b3f8d6047a39f01c1a68ef074a51f70e91a275880"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/face-worker.js",
@@ -507,8 +507,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/index.html",
-      "bytes": 6243,
-      "sha256": "001519b466a8303ebed7b42b61bd46ad4b460d33e64944aa458d4a10cb9db8bb"
+      "bytes": 5435,
+      "sha256": "0fa84deafc560a9de4d134f1138b20383a32359be5763b2f7629be0c468e051c"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/program.json",
@@ -517,13 +517,13 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/style.css",
-      "bytes": 6706,
-      "sha256": "a37ab7fb48a6d76293dd9c3d716de17c4322ed8fcf50b836811d16ab5370cd43"
+      "bytes": 6291,
+      "sha256": "fe95262c472fb449a21ca4573d4aac390588eb733d1669cdd0f8cd863c352227"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/visual.mjs",
-      "bytes": 5376,
-      "sha256": "e6f6419f29ebfb17477932b0d58bf9a13208eabffe597cdb28ef808209c4c30d"
+      "bytes": 6197,
+      "sha256": "05f08c2fb345d29693a2da1919f04030c67d0f8e3fb8365193cc9b995143a2b8"
     },
     {
       "path": "works/forbidden-broadcast/index.html",
@@ -1437,8 +1437,8 @@
     },
     {
       "path": "works/only-on-screen-live/app.mjs",
-      "bytes": 19343,
-      "sha256": "5d5c632906dd3606bbac8cda78a3b7c2990a28860638a620587be7df1c1c5dc6"
+      "bytes": 19656,
+      "sha256": "6ab94f51561f3c1684d8a707ef785e43b9d79b5c4736d2173e742c430524c6ef"
     },
     {
       "path": "works/only-on-screen-live/assets/hanji-wall.webp",
@@ -1446,19 +1446,24 @@
       "sha256": "239ad55fd7711ffde3424b37864633eea5dcf1504bd08a0f05bf0b4c9c6814af"
     },
     {
+      "path": "works/only-on-screen-live/assets/selfie_segmenter.tflite",
+      "bytes": 249537,
+      "sha256": "191ac9529ae506ee0beefa6b2c945a172dab9d07d1e802a290a4e4038226658b"
+    },
+    {
       "path": "works/only-on-screen-live/index.html",
-      "bytes": 4621,
-      "sha256": "0a2b0032a6ea8fa33a66e6465ebe2242170402390b4b9f2393e5465930cc5798"
+      "bytes": 4624,
+      "sha256": "1d900625e1c6b5715cf21aa1ea80835f34c3af109da1317382426bbdf2d519ec"
     },
     {
       "path": "works/only-on-screen-live/masks.mjs",
-      "bytes": 7695,
-      "sha256": "9bba496634a9fdb1d27ab49623d6d247ef25c404ddccc1f701ad0930de8c1b11"
+      "bytes": 7783,
+      "sha256": "dd32d6e09165e38367f033f316823b9ffda5b7864ebccb74f6d64512fddd4f27"
     },
     {
       "path": "works/only-on-screen-live/segment-worker.js",
-      "bytes": 4410,
-      "sha256": "50b5f8783a601ec06014d359e480028c1842c0f7dabf514e836ad383c1f68a1a"
+      "bytes": 8204,
+      "sha256": "53be005ad1f70e5eca22471e7469432bd2d5b5f42ff63d946d37728238cba042"
     },
     {
       "path": "works/only-on-screen-live/stage.mjs",
@@ -1471,9 +1476,14 @@
       "sha256": "c5d20442cd458761a2c621ef6b4afaada2eab010902953295937e88fd0f16b04"
     },
     {
+      "path": "works/only-on-screen-live/subject-detail.mjs",
+      "bytes": 3308,
+      "sha256": "2f1648064d1ab76dbf8c52e60493e63e5886926ed0a8624bec447578c15f1b0c"
+    },
+    {
       "path": "works/only-on-screen-live/tracks.mjs",
-      "bytes": 2225,
-      "sha256": "4af10cfe956e7eeb00aaf0e282c8684f80b8e3f02efb14de7d61dd0e8a6337b3"
+      "bytes": 2334,
+      "sha256": "dc891542fdb93b3615ee1441f5f995748571f420be90099beb3e72f5fe006add"
     },
     {
       "path": "works/portrait/.nojekyll",

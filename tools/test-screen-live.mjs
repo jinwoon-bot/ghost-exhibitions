@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { geometry, splitMasks } from "../site/works/only-on-screen-live/masks.mjs";
 import { Tracks } from "../site/works/only-on-screen-live/tracks.mjs";
+import { blendDetail, projectMask, projectPose, subjectCrop } from "../site/works/only-on-screen-live/subject-detail.mjs";
 
 const width = 120, height = 90;
 function shape(x) {
@@ -78,6 +79,38 @@ test("camera color guides the feathering across a sharp clothing boundary", () =
   assert.ok(at(contrast, 49, 40) < at(uniform, 49, 40));
   assert.equal(at(contrast, 48, 40), 255);
 });
+test("a small credible silhouette survives the size check", () => {
+  const smallWidth = 640, smallHeight = 400;
+  const mask = new Uint8Array(smallWidth * smallHeight);
+  for (let y = 143; y < 187; y++) mask.fill(217, y * smallWidth + 421, y * smallWidth + 428);
+  const tiny = { center: { x: .663, y: .40 }, left: .654, right: .674, top: .355, bottom: .47, height: .115 };
+  const [person] = splitMasks([{ mask, shape: tiny }], smallWidth, smallHeight);
+  assert.ok(person.area < .003);
+  assert.ok(person.h >= 44);
+});
+test("a focused crop projects its landmark and mask back into the camera frame", () => {
+  const crop = { x: 70, y: 35, w: 50, h: 50 };
+  const [pose] = projectPose([{ x: .5, y: .9, visibility: .9 }], crop, 200, 100);
+  assert.deepEqual(pose, { x: .475, y: .8, visibility: .9 });
+  const mask = projectMask(Float32Array.of(0, 1, 1, 0), 2, 2, crop, 200, 100);
+  assert.equal(mask[50 * 200 + 108], 255);
+  assert.equal(mask[50 * 200 + 75], 0);
+  assert.equal(mask[85 * 200 + 90], 0);
+  assert.equal(subjectCrop({ left: .3, right: .4, top: .2, bottom: .9 }, 200, 100).w, 87);
+});
+test("a second mask can refine a thin boundary and cannot replace the actor", () => {
+  const w = 12, h = 12, crop = { x: 0, y: 0, w, h };
+  const pose = new Uint8Array(w * h);
+  for (let y = 3; y <= 9; y++) pose.fill(230, y * w + 4, y * w + 8);
+  const bystander = new Float32Array(w * h).fill(1, 0, w * 2);
+  assert.equal(blendDetail(pose, { width:w, height:h, data:bystander }, w, h, crop), false);
+  const detail = Float32Array.from(pose, alpha => alpha / 255);
+  detail[5 * w + 8] = .96;
+  assert.equal(blendDetail(pose, { width:w, height:h, data:detail }, w, h, crop), true);
+  assert.equal(pose[5 * w + 7], 230);
+  assert.ok(pose[5 * w + 8] > 80);
+  assert.equal(pose[5 * w + 9], 0);
+});
 test("landmarks require a visible torso and expose hands separately", () => {
   const pose = Array(33);
   pose[11] = { x: .25, y: .3, visibility: .95 };
@@ -103,4 +136,12 @@ test("missing viewers are hidden immediately, with an ID grace window only", () 
   assert.equal(tracks.update([obs(.3)], 300)[0].id, a.id);
   assert.notEqual(tracks.update([obs(.3)], 1000)[0].id, a.id);
   assert.equal(tracks.update([obs(.7), obs(.2)], 1100, 1).length, 1);
+});
+test("a slow inference can reconnect the same visitor without showing a stale mask", () => {
+  const tracks = new Tracks();
+  const [first] = tracks.update([obs(.51)], 0);
+  const [afterWarmup] = tracks.update([obs(.52)], 740, 3, 570);
+  assert.equal(afterWarmup.id, first.id);
+  assert.deepEqual(tracks.update([], 850, 3, 570), []);
+  assert.notEqual(tracks.update([obs(.52)], 1900, 3, 570)[0].id, first.id);
 });

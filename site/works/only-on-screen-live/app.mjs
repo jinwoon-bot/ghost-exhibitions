@@ -1,7 +1,7 @@
 import { Camera } from "../only-on-screen/src/camera.mjs";
 import { RoomSound } from "../only-on-screen/src/sound.mjs";
-import { Stage } from "./stage.mjs?v=body-detail";
-import { Tracks } from "./tracks.mjs";
+import { Stage } from "./stage.mjs?v=distance-matte";
+import { Tracks } from "./tracks.mjs?v=distance-matte";
 
 const byId = id => document.getElementById(id);
 const defaults = {
@@ -11,7 +11,7 @@ const defaults = {
 const presets = {
   high: { people: 3, input: 768, hz: 30, output: 1280, edgeDetail: true },
   balanced: { people: 3, input: 576, hz: 18, output: 1120, edgeDetail: true },
-  medium: { people: 2, input: 480, hz: 12, output: 960 },
+  medium: { people: 2, input: 480, hz: 12, output: 960, edgeDetail: true },
   low: { people: 1, input: 384, hz: 10, output: 864 },
 };
 const autoOrder = ["high", "balanced", "medium", "low"];
@@ -56,7 +56,7 @@ const camera = new Camera(video, event => {
 });
 
 function createStats() {
-  return { inference: [], render: [], prepare: [], rAF: [], captures: [], lag: [], samples: 0, brightness: null };
+  return { inference: [], render: [], prepare: [], rAF: [], captures: [], lag: [], samples: 0, enhanced: 0, focused: 0, brightness: null };
 }
 function record(series, value, max = 120) {
   series.push(value);
@@ -156,7 +156,7 @@ function recoverAnalysis(message) {
   try { bootWorker("CPU"); } catch (error) { fail(error.message); }
 }
 function bootWorker(preferred = settings.delegate) {
-  const instance = new Worker(new URL("./segment-worker.js?v=body-detail", import.meta.url));
+  const instance = new Worker(new URL("./segment-worker.js?v=distance-matte", import.meta.url));
   worker = instance;
   workerPreference = preferred;
   loadTimer = setTimeout(() => {
@@ -189,13 +189,16 @@ function bootWorker(preferred = settings.delegate) {
     record(stats.lag, now - frame.started);
     stats.brightness = data.brightness;
     stats.samples++;
+    if (data.enhanced) stats.enhanced++;
+    if (data.focused) stats.focused++;
     const composeStarted = performance.now();
-    data.people = tracks.update(data.people, now, active().people);
+    data.people = tracks.update(data.people, frame.started, active().people, data.inferenceMs);
     if (data.people.length || settings.cameraBackground) {
       stage.update(data, snapshot, settings, active());
     } else stage.clear();
     record(stats.prepare, performance.now() - composeStarted);
     lastFrameAt = now;
+    renderUntil = 0;
     dirty = true;
     if (!byId("entry").hidden) byId("entry").hidden = true;
     setStatus((mode === "camera" ? "웹캠 연결 · 관객 추적 중" : "샘플 입력 · 관객 추적 중") +
@@ -302,7 +305,8 @@ function report(now) {
   byId("metrics").textContent = JSON.stringify({
     input: mode, status, quality: qualityNames[currentQuality], maxPeople: active().people, backend,
     source: video.videoWidth ? [video.videoWidth, video.videoHeight] : null,
-    cameraFrames: camera.frames, samples: stats.samples, brightness: rounded(stats.brightness),
+    cameraFrames: camera.frames, samples: stats.samples, enhancedMasks: stats.enhanced, zoomDetections: stats.focused,
+    brightness: rounded(stats.brightness),
     browserFPS: rounded(stats.rAF.length ? 1000 / average(stats.rAF) : null),
     compositeFPS: rounded(rate(stats.captures)), inferenceMs: rounded(average(stats.inference)),
     captureToResultMs: rounded(average(stats.lag)), maskComposeMs: rounded(average(stats.prepare)),
@@ -331,7 +335,10 @@ function tick(now) {
   if (dirty || renderUntil) {
     const opacity = renderUntil ? Math.max(0, (renderUntil - now) / 180) : 1;
     const start = performance.now();
-    if (opacity === 0) resetFrame();
+    if (opacity === 0) {
+      stage.clear();
+      lastFrameAt = renderUntil = 0;
+    }
     const newComposite = dirty && lastFrameAt && opacity === 1;
     stage.paint(settings, active(), opacity);
     previousPaint = performance.now() - start;

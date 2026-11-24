@@ -21,8 +21,9 @@ export class Tracks {
 
   constructor() { this.reset(); }
 
-  update(people, now, limit = 3) {
-    const current = this.items.filter(track => now - track.at < keepMs);
+  update(people, now, limit = 3, analysisMs = 0) {
+    const keep = people.length ? Math.max(keepMs, Math.min(1000, analysisMs * 1.55)) : keepMs;
+    const current = this.items.filter(track => now - track.at < keep);
     const observations = people.slice().sort((a, b) => b.area - a.area).slice(0, limit);
     let best = Infinity, assignment = [];
     const find = (index, used, score, taken) => {
