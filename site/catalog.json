@@ -1,5 +1,14 @@
 [
   {
+    "id": "yagwanggwi",
+    "title": "야광귀 — 하나, 둘, 셋…",
+    "tagline": "손뼉을 치면, 그 귀신은 하나부터 다시 센다.",
+    "description": "설밤의 대문 너머에서 숫자가 들립니다. 손뼉으로 방해하면 낡은 체의 구멍에 눈이 하나씩 나타납니다.",
+    "input": "마이크 · 박수",
+    "entry": "works/yagwanggwi/index.html",
+    "standalone": true
+  },
+  {
     "id": "wedding",
     "title": "손각시 · 몽달귀신",
     "tagline": "의자가 채워지면, 혼례가 시작된다.",
