@@ -1,5 +1,5 @@
-import { createInkStamp, drawGrains, paintErosion, smooth } from './material.mjs?v=live-camera';
-import { InkPlume } from './plume.mjs?v=live-camera';
+import { createInkStamp, drawGrains, paintErosion, smooth } from './material.mjs?v=clones';
+import { InkPlume } from './plume.mjs?v=clones';
 
 function image(url) {
   const img = new Image();
@@ -73,11 +73,15 @@ export class ExhibitionPicture {
     // Use the same centered, letterboxed projection as the unfiltered video underneath.
     const size = video?.videoWidth ? {width:video.videoWidth, height:video.videoHeight} : history.size;
     const view = layout(width, height, size);
-    this.plume.begin(width, height, profile.grains > 200);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(view.x, view.y, view.width, view.height);
+    ctx.clip();
+    this.plume.begin(width, height, profile.plumeScale);
     const visible = [];
     for (const echo of history.echoes) {
       if (!this.stamps.has(echo.id)) {
-        const stamp = createInkStamp(echo.snapshot, this.texture, echo.seed, profile.grains, echo.drift);
+        const stamp = createInkStamp(echo.snapshot, this.texture, echo.seed, profile.grains, echo.drift, echo.lift);
         this.stamps.set(echo.id, stamp);
         echo.dispose = () => {
           stamp.surface.width = stamp.surface.height = 0;
@@ -87,24 +91,25 @@ export class ExhibitionPicture {
       }
       const stamp = this.stamps.get(echo.id);
       const age = (now - echo.born) / (echo.until - echo.born);
-      const progress = smooth(.15, .86, age) ** (1.37 - echo.strength * .37);
+      const progress = smooth(.075, .74, age) ** (1.27 - echo.strength * .27);
       const frame = echo.snapshot;
-      const drifting = progress + smooth(.76, 1, age) * .5;
+      const drifting = progress + smooth(.68, 1, age) * .57;
       const box = project(frame, view);
       this.plume.draw(echo, stamp, box, drifting);
       visible.push({echo, stamp, progress, drifting, box});
     }
-    if (this.plume.enabled) ctx.drawImage(this.plume.canvas, 0, 0);
+    if (this.plume.enabled) ctx.drawImage(this.plume.canvas, 0, 0, width, height);
     for (const {echo, stamp, progress, drifting, box} of visible) {
-      paintErosion(stamp, echo.snapshot, progress);
+      paintErosion(stamp, echo.snapshot, progress, echo.strength);
       ctx.save();
       ctx.translate(box.x, box.y);
       ctx.scale(box.w / echo.snapshot.w, box.h / echo.snapshot.h);
       ctx.drawImage(stamp.surface, 0, 0);
       const budget = Math.max(0, profile.totalGrains - this.pieces);
-      this.pieces += drawGrains(ctx, this.atlas, stamp.grains, drifting, echo.strength, echo.seed, budget);
+      this.pieces += drawGrains(ctx, this.atlas, stamp.grains, drifting, echo.strength, budget);
       ctx.restore();
     }
+    ctx.restore();
     if (!video) return;
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';

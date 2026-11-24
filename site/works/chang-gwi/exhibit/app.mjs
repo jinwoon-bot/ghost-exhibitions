@@ -1,8 +1,8 @@
 import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
-import { PoseHistory } from './history.mjs?v=live-camera';
-import { ExhibitionPicture } from './picture.mjs?v=live-camera';
+import { PoseHistory } from './history.mjs?v=clones';
+import { ExhibitionPicture } from './picture.mjs?v=clones';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);
@@ -21,8 +21,8 @@ const key = 'chang-gwi-frozen-poses-v1';
 const defaults = {device:'', mirror:true, frequency:1.6, lifetime:5.5, erosion:1, people:1, sensitivity:.55, quality:'auto', sound:false, awake:true};
 const ranges = {frequency:[.35, 2.6], lifetime:[3, 16], erosion:[0, 1.6], sensitivity:[.2, .85]};
 const prof = {
-  low: { resolution: 320, every: 205, stage: 920, grains: 136, totalGrains: 430, maxEchoes: 7, fps: 24 },
-  high: { resolution: 512, every: 75, stage: 1550, grains: 392, totalGrains: 1550, maxEchoes: 13, fps: 36 },
+  low: { resolution: 320, every: 205, stage: 920, grains: 185, totalGrains: 620, maxEchoes: 7, fps: 24, plumeScale: .50 },
+  high: { resolution: 512, every: 75, stage: 1550, grains: 510, totalGrains: 1850, maxEchoes: 13, fps: 36, plumeScale: .83 },
 };
 const sample = '../assets/demo/pose_1.mp4';
 let settings = savedSettings(), mode = 'idle', request = 0, running = false, starting = false;

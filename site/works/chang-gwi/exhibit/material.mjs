@@ -50,15 +50,14 @@ function shadeAt(texture, x, y) {
   return (texture[i] * .22 + texture[i + 1] * .70 + texture[i + 2] * .08) / 255;
 }
 
-function thresholdAt(distance, x, y, w, h, seed, ink) {
-  const low = noise(x / 25, y / 29, seed);
-  const high = noise(x / 6, y / 8, seed + .442);
-  const angle = seed * 6.283;
-  const wind = (x / w - .5) * Math.sin(angle) + (y / h - .5) * Math.cos(angle);
-  return limit(.041 + distance * .54 + low * .15 + high * .12 + ink * .12 + wind * .13, .025, .96);
+function thresholdAt(distance, x, y, w, h, seed, ink, wind, lift) {
+  const bloom = noise(x / 24, y / 34, seed);
+  const tears = noise(x / 7, y / 11, seed + .442);
+  const bias = (x / w - .5) * wind * .27 + (y / h - .5) * (.21 + lift * .2);
+  return limit(.034 + distance * .51 + bloom * .26 + tears * .16 + ink * .09 - bias, .025, .96);
 }
 
-export function createInkStamp(snapshot, texture, seed, budget, drift = 0) {
+export function createInkStamp(snapshot, texture, seed, budget, drift = 0, lift = 0) {
   const { w, h, pixels, color } = snapshot;
   const surface = document.createElement('canvas');
   surface.width = w;
@@ -66,28 +65,31 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0) {
   const ctx = surface.getContext('2d');
   const paint = ctx.createImageData(w, h);
   const threshold = new Uint8Array(w * h);
-  const darkness = new Uint8Array(w * h);
+  const contour = new Uint8Array(w * h);
+  const textureTone = new Uint8Array(w * h);
   const tone = new Uint8Array(w * h * 3);
   const field = distanceToContour(snapshot);
   const depth = Math.max(22, Math.min(w, h) * .38) * 3;
   const sx = seed * 321, sy = seed * 493;
+  const wind = Math.abs(drift) > .065 ? Math.sign(drift) * (.34 + Math.abs(drift) * .66) : (seed - .5) * 1.68;
   for (let i = 0; i < pixels.length; i++) {
     if (!pixels[i]) continue;
     const x = i % w, y = Math.floor(i / w);
     const ink = shadeAt(texture.ink, x * .87 + sx, y * .73 + sy);
     const fiber = shadeAt(texture.paper, x * 1.36 - sy, y * 1.25 + sx);
-    const edge = 1 - limit(field[i] / 24);
-    const rough = randomAt(i + seed * 1679);
-    const gray = 8 + ink * 31 + fiber * 6 + edge * (6 + ink * 8) + rough * 3;
-    darkness[i] = gray;
+    const edge = 1 - smooth(2, 14, field[i]);
+    const grain = randomAt(i + seed * 1679);
+    const light = (.24 + .76 * noise(x / 18, y / 26, seed)) * edge;
+    contour[i] = Math.round(light * 255);
+    textureTone[i] = Math.round((fiber * .66 + grain * .34) * 255);
     for (let channel = 0; channel < 3; channel++) {
       const cloth = color ? color[i * 3 + channel] : 117;
-      const value = Math.min(255, cloth * subjectColor[channel] * 1.07 + 7 + fiber * 9 + edge * 6);
+      const value = Math.min(255, cloth * subjectColor[channel] * .97 + fiber * 8);
       tone[i * 3 + channel] = value;
-      paint.data[i * 4 + channel] = value;
+      paint.data[i * 4 + channel] = value + light * (14 + channel * 5);
     }
-    paint.data[i * 4 + 3] = pixels[i];
-    threshold[i] = Math.round(thresholdAt(limit(field[i] / depth), x, y, w, h, seed, ink) * 255);
+    paint.data[i * 4 + 3] = 255 * smooth(53, 239, pixels[i]);
+    threshold[i] = Math.round(thresholdAt(limit(field[i] / depth), x, y, w, h, seed, ink, wind, lift) * 255);
   }
   ctx.putImageData(paint, 0, 0);
   const grains = [];
@@ -101,53 +103,59 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0) {
     if (y >= h) break;
     const index = y * w + x;
     if (pixels[index] < 128) continue;
-    const paper = n > .74;
-    const vector = Math.abs(drift) > .07 ? Math.sign(drift) * (.25 + Math.abs(drift) * .75) : (seed - .5) * 1.7;
+    const paper = n > .59;
+    const u = randomAt(j + seed * 46 + 6), v = randomAt(j + seed * 78 + 9);
+    const spread = .52 + v * .64;
     grains.push({
       x, y, paper, start: threshold[index] / 255,
-      size: paper ? (1.25 + n * 2.3) : (.52 + n * 2.8),
+      size: paper ? (.55 + u * u * 3.2) : (.6 + u * u * 3.1),
       tile: Math.floor(randomAt(j + seed * 287 + 4) * 8),
-      vx: (randomAt(j + seed * 46 + 6) - .5) * (paper ? 129 : 183) + vector * (paper ? 93 : 143),
-      vy: (paper ? -36 : 14) - randomAt(j + seed * 78 + 9) * (paper ? 55 : 118),
+      vx: w * ((u - .5) * (paper ? 1.0 : 1.65) + wind * spread * (paper ? .95 : 1.65)),
+      vy: h * (paper ? -.12 - v * .35 + lift * .26 : -.17 + v * .25 + lift * .13),
       angle: n * 6.283, spin: (n - .52) * 4,
-      travel: .27 + randomAt(j + seed * 252 + 17) * .48,
+      travel: .38 + randomAt(j + seed * 252 + 17) * .55,
     });
   }
-  return { surface, ctx, paint, threshold, darkness, tone, grains, step: 0 };
+  return { surface, ctx, paint, threshold, contour, textureTone, tone, grains, wind, lift, step: -1, strength: -1 };
 }
 
-export function paintErosion(stamp, snapshot, progress) {
+export function paintErosion(stamp, snapshot, progress, strength = 1) {
   const step = Math.round(progress * 68);
-  if (stamp.step === step) return;
+  if (stamp.step === step && stamp.strength === strength) return;
   stamp.step = step;
+  stamp.strength = strength;
   const cut = step / 68 * 255;
-  const { paint, threshold, darkness, tone } = stamp;
-  const ink = smooth(.05, .65, progress);
+  const { paint, threshold, contour, textureTone, tone } = stamp;
+  const rim = Math.min(strength, 1.35) * (1 - smooth(.18, .64, progress));
+  const tearing = Math.min(strength, 1.35) * smooth(.01, .085, progress);
   for (let i = 0; i < threshold.length; i++) {
-    const a = snapshot.pixels[i] * limit((threshold[i] - cut + 7) / 9);
+    const remaining = threshold[i] - cut;
+    const a = 255 * smooth(53, 239, snapshot.pixels[i]) * limit((remaining + 7) / 9);
     paint.data[i * 4 + 3] = a;
     if (!a) continue;
-    const edge = 1 - smooth(4, 25, threshold[i] - cut);
+    const torn = (1 - smooth(1, 20, remaining)) * tearing;
+    const glow = contour[i] / 255 * rim * .22 + torn * (.17 + textureTone[i] * .0022);
     for (let channel = 0; channel < 3; channel++) {
-      paint.data[i * 4 + channel] = tone[i * 3 + channel] * (1 - ink) + darkness[i] * ink
-        + edge * (channel + 2) * (1 - ink);
+      const value = tone[i * 3 + channel] * (1 - torn * .25);
+      paint.data[i * 4 + channel] = value + (228 + channel * 13 - value) * glow;
     }
   }
   stamp.ctx.putImageData(paint, 0, 0);
 }
 
-export function drawGrains(ctx, atlas, grains, progress, strength, seed, budget) {
+export function drawGrains(ctx, atlas, grains, progress, strength, budget) {
   if (strength <= .01 || progress <= 0) return 0;
   let drawn = 0;
   for (const grain of grains) {
     if (drawn >= budget) break;
     const age = (progress - grain.start) / grain.travel;
     if (age <= 0 || age >= 1) continue;
-    const drift = Math.sin(age * 8 + grain.angle) * age * (9 + strength * 14);
-    const x = grain.x + strength * (grain.vx * age * (.5 + age * .5) + drift);
-    const y = grain.y + strength * (grain.vy * age + age * age * 26 + Math.cos(age * 6 + grain.angle) * age * 11);
-    ctx.globalAlpha = (1 - smooth(.35, 1, age)) * (grain.paper ? .64 : .78);
-    if (grain.paper && atlas?.complete && atlas.naturalWidth) {
+    const flight = 1 - (1 - age) ** 1.6;
+    const drift = Math.sin(age * 7 + grain.angle) * age * grain.size * 4.5;
+    const x = grain.x + strength * (grain.vx * flight + drift);
+    const y = grain.y + strength * (grain.vy * flight + age * age * (grain.paper ? 10 : 47) + drift * .45);
+    ctx.globalAlpha = smooth(0, .065, age) * (1 - smooth(.46, 1, age)) * (grain.paper ? .84 : .89);
+    if (grain.paper && grain.size > 1.55 && atlas?.complete && atlas.naturalWidth) {
       const cellW = atlas.naturalWidth / 4, cellH = atlas.naturalHeight / 2;
       const size = grain.size * (1 + strength * .47);
       ctx.save();
@@ -157,12 +165,11 @@ export function drawGrains(ctx, atlas, grains, progress, strength, seed, budget)
         -size / 2, -size / 2, size, size);
       ctx.restore();
     } else {
-      ctx.fillStyle = grain.paper ? '#ece7dd' : (seed > .5 ? '#161d32' : '#0b0c12');
-      ctx.fillRect(x, y, grain.size * (1.2 + age * .7), grain.size * .62);
-      if (age < .62 && !grain.paper) {
-        ctx.globalAlpha *= .37;
-        ctx.fillRect(x - grain.vx * age * .08, y - grain.vy * age * .07, grain.size * 2.7, grain.size * .43);
-      }
+      ctx.fillStyle = grain.paper ? '#f5f1e7' : '#101017';
+      ctx.beginPath();
+      ctx.ellipse(x, y, grain.size * (1 + age * .68), grain.size * .39,
+        Math.atan2(grain.vy, grain.vx), 0, Math.PI * 2);
+      ctx.fill();
     }
     drawn++;
   }

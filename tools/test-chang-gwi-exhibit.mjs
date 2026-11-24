@@ -46,6 +46,7 @@ const earlierCount = pose.echoes.length;
 repeat(pose, 2400, 2900, [still], source);
 assert.ok(pose.echoes.length > earlierCount, 'lowering an arm leaves the raised pose');
 const frozen = pose.echoes.at(-1).snapshot;
+assert.ok(pose.echoes.at(-1).lift < 0, 'a downward gesture preserves the earlier upward motion bias');
 const was = [frozen.x, frozen.y, frozen.w, frozen.h, ...frozen.pixels];
 assert.ok(frozen.y < pose.tracks[0].frame.y);
 assert.ok(frozen.color instanceof Uint8Array);
@@ -96,6 +97,12 @@ assert.ok(middle.some((v, i) => v === 0 && start[i] > 180));
 assert.ok(middle.some(v => v > 180));
 assert.ok(middle.every((v, i) => v <= start[i]), 'erosion only removes from the fixed-position mask');
 assert.ok(stamp.grains.length > 0 && stamp.grains.some(grain => grain.start > 0));
+const leftStamp = createInkStamp(frozen, {}, .45, 130, -.9);
+const rightStamp = createInkStamp(frozen, {}, .45, 130, .9);
+assert.ok(leftStamp.grains.every((grain, i) => grain.vx < rightStamp.grains[i].vx),
+  'grains travel away from the direction of the departing pose');
+assert.ok(leftStamp.grains.some(grain => grain.paper && grain.vy < 0));
+assert.ok(leftStamp.grains.some(grain => !grain.paper && grain.vy > 0));
 paintErosion(stamp, frozen, 1);
 assert.ok(alpha().every(value => !value), 'all material disappears');
 

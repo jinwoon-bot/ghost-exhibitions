@@ -124,6 +124,7 @@ export class PoseHistory {
       seed,
       strength: settings.erosion,
       drift: clamp((track.referencePose.cx - currentPose.cx) * 10, -1, 1),
+      lift: clamp((track.referencePose.cy - currentPose.cy) * 9, -.5, .5),
     });
   }
 
