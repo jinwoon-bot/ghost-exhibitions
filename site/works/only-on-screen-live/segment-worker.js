@@ -4,10 +4,12 @@ const meter = new OffscreenCanvas(32, 24);
 const meterCtx = meter.getContext("2d", { willReadFrequently: true });
 const lifted = new OffscreenCanvas(1, 1);
 const liftedCtx = lifted.getContext("2d");
+const detail = new OffscreenCanvas(1, 1);
+const detailCtx = detail.getContext("2d", { willReadFrequently: true });
 const local = resource => new URL("../../shared/mediapipe/" + resource, self.location.href).href;
 
 async function initialize(message) {
-  ({ geometry, splitMasks } = await import("./masks.mjs"));
+  ({ geometry, splitMasks } = await import("./masks.mjs?v=body-detail"));
   importScripts(local("vendor/vision_bundle.js"));
   const vision = self.Vision || self.vision;
   files = await vision.FilesetResolver.forVisionTasks(local("vendor/wasm"));
@@ -79,7 +81,16 @@ async function segment(message) {
         if (mask.length === width * height) candidates.push({ mask, shape });
       }
     }
-    const subjects = splitMasks(candidates, width, height, message.threshold);
+    let colors = null;
+    if (candidates.length && message.edgeDetail) {
+      if (detail.width !== width || detail.height !== height) {
+        detail.width = width;
+        detail.height = height;
+      }
+      detailCtx.drawImage(bitmap, 0, 0, width, height);
+      colors = detailCtx.getImageData(0, 0, width, height).data;
+    }
+    const subjects = splitMasks(candidates, width, height, message.threshold, colors);
     postMessage({ type: "result", seq, sourceMs, width, height, people: subjects,
       brightness, inferenceMs: performance.now() - started }, subjects.map(person => person.alpha.buffer));
   } catch (error) {

@@ -48,9 +48,13 @@ class Subject {
         const value = alpha[i];
         this.pixels.data[i * 4 + 3] = value;
         // Keep the silhouette alpha. Suppress camera-background color near the edge.
-        const near = col > 1 && col < w - 2 && row > 1 && row < h - 2
-          ? Math.min(value, alpha[i - 2], alpha[i + 2], alpha[i - 2 * w], alpha[i + 2 * w]) : 0;
-        this.corePixels.data[i * 4 + 3] = value ? 22 + Math.round(Math.max(0, near - 90) * 233 / 165) : 0;
+        const across = col > 0 && col + 1 < w ? Math.min(alpha[i - 1], alpha[i + 1]) : 0;
+        const along = row > 0 && row + 1 < h ? Math.min(alpha[i - w], alpha[i + w]) : 0;
+        const core = col > 1 && col < w - 2 && row > 1 && row < h - 2
+          ? Math.min(alpha[i - 2], alpha[i + 2], alpha[i - 2 * w], alpha[i + 2 * w]) : 0;
+        // Keep some lighting along thin fingers and strands, without exposing the source background.
+        const near = Math.max(core, .48 * Math.max(across, along));
+        this.corePixels.data[i * 4 + 3] = value ? 22 + Math.round(Math.max(0, Math.min(value, near) - 90) * 233 / 165) : 0;
       }
     }
     this.maskCtx.putImageData(this.pixels, 0, 0);
@@ -155,6 +159,22 @@ export class Stage {
     spill.addColorStop(1, "rgba(0,0,0,.48)");
     ctx.fillStyle = spill;
     ctx.fillRect(0, 0, width, height);
+  }
+  preview(video, preset, mirror) {
+    const width = preset.output, height = Math.round(width * 9 / 16);
+    size(this.output, width, height);
+    const ctx = this.ctx;
+    const fit = containGeometry(video.videoWidth, video.videoHeight, width, height);
+    ctx.fillStyle = "#101514";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+    if (mirror) { ctx.translate(width, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(video, fit.x, fit.y, fit.w, fit.h);
+    ctx.restore();
+    ctx.strokeStyle = "rgba(181, 216, 200, .75)";
+    ctx.setLineDash([9, 7]);
+    ctx.strokeRect(fit.x + fit.w * .06, fit.y + fit.h * .06, fit.w * .88, fit.h * .88);
+    ctx.setLineDash([]);
   }
   paint(config, preset, opacity = 1) {
     const width = preset.output;

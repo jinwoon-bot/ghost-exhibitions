@@ -1,6 +1,6 @@
 import { Camera } from "../only-on-screen/src/camera.mjs";
 import { RoomSound } from "../only-on-screen/src/sound.mjs";
-import { Stage } from "./stage.mjs";
+import { Stage } from "./stage.mjs?v=body-detail";
 import { Tracks } from "./tracks.mjs";
 
 const byId = id => document.getElementById(id);
@@ -9,8 +9,8 @@ const defaults = {
   shadows: 3, strength: .9, spread: 1.15, contrast: 1.12, tone: "ink", threshold: .2, sound: false, volume: .12,
 };
 const presets = {
-  high: { people: 3, input: 640, hz: 30, output: 1280 },
-  balanced: { people: 3, input: 512, hz: 18, output: 1120 },
+  high: { people: 3, input: 768, hz: 30, output: 1280, edgeDetail: true },
+  balanced: { people: 3, input: 576, hz: 18, output: 1120, edgeDetail: true },
   medium: { people: 2, input: 480, hz: 12, output: 960 },
   low: { people: 1, input: 384, hz: 10, output: 864 },
 };
@@ -29,7 +29,7 @@ const capture = snapshot.getContext("2d", { alpha: false });
 let mode = "idle", currentQuality = "high", generation = 0, sequence = 0;
 let worker, backend, workerPreference, pending, localUrl, connectedAt, status, lastFrameAt, lastSubmit, lastVideoTime;
 let stats = createStats(), dirty = true, renderUntil = 0, overBudget = 0, lastReport = 0, lastTick = 0, previousPaint = 0;
-let loadTimer, demoWait, soundState;
+let loadTimer, demoWait, soundState, framingPreview = false;
 
 const active = () => presets[currentQuality];
 const setStatus = message => {
@@ -113,6 +113,7 @@ function resetFrame() {
   dirty = true;
 }
 function stopInput() {
+  setFramingPreview(false);
   generation++;
   mode = "idle";
   clearTimeout(loadTimer);
@@ -155,7 +156,7 @@ function recoverAnalysis(message) {
   try { bootWorker("CPU"); } catch (error) { fail(error.message); }
 }
 function bootWorker(preferred = settings.delegate) {
-  const instance = new Worker(new URL("./segment-worker.js", import.meta.url));
+  const instance = new Worker(new URL("./segment-worker.js?v=body-detail", import.meta.url));
   worker = instance;
   workerPreference = preferred;
   loadTimer = setTimeout(() => {
@@ -277,7 +278,7 @@ async function submit(now) {
     bitmap = await createImageBitmap(snapshot);
     if (pending !== current) { bitmap.close(); return; }
     worker.postMessage({ type: "frame", seq: current.seq, sourceMs: now, bitmap,
-      people: active().people, threshold: settings.threshold }, [bitmap]);
+      people: active().people, threshold: settings.threshold, edgeDetail: !!active().edgeDetail }, [bitmap]);
   } catch {
     bitmap?.close();
     if (pending === current) fail("영상 프레임을 처리할 수 없습니다. 카메라나 샘플을 다시 연결하세요.");
@@ -290,6 +291,14 @@ function report(now) {
   if (now - lastReport < 250) return;
   lastReport = now;
   const packet = stage.packet;
+  const people = packet?.people || [];
+  byId("framing-preview").disabled = mode === "idle" || !video.videoWidth;
+  const framing = mode === "idle" ? "입력을 시작하면 머리와 발이 들어오는지 확인할 수 있습니다."
+    : people.some(person => person.framing === "edge") ? "윤곽이 카메라 위나 아래에 닿습니다. 원본 화면에서 머리와 발 주변의 여백을 확인하세요."
+    : people.length && people.every(person => person.framing === "feet") ? `발까지 감지된 관객 ${people.length}명`
+    : people.length ? "일부 발의 위치를 확인하지 못했습니다. 카메라 원본과 화면의 윤곽을 비교해 보세요."
+    : "분리된 관객이 없습니다. 원본 화면에서 위치와 밝기를 확인하세요.";
+  if (byId("framing-status").textContent !== framing) byId("framing-status").textContent = framing;
   byId("metrics").textContent = JSON.stringify({
     input: mode, status, quality: qualityNames[currentQuality], maxPeople: active().people, backend,
     source: video.videoWidth ? [video.videoWidth, video.videoHeight] : null,
@@ -299,9 +308,9 @@ function report(now) {
     captureToResultMs: rounded(average(stats.lag)), maskComposeMs: rounded(average(stats.prepare)),
     outputPaintMs: rounded(average(stats.render)),
     jsHeapMiB: rounded(performance.memory?.usedJSHeapSize / 1048576),
-    people: (packet?.people || []).map(p => ({
+    people: people.map(p => ({
       id: p.id, center: p.shape.center, wrists: p.shape.wrists, area: p.area,
-      bounds: [p.x, p.y, p.w, p.h], anchor: p.anchor, shadows: settings.shadows,
+      bounds: [p.x, p.y, p.w, p.h], anchor: p.anchor, framing: p.framing, shadows: settings.shadows,
     })),
   }, null, 2);
 }
@@ -333,9 +342,19 @@ function tick(now) {
     dirty = false;
   }
   updateSound(mode !== "idle" && settings.sound, settings.volume, stage.active.length);
+  if (framingPreview && healthy && video.videoWidth) stage.preview(video, active(), settings.mirror);
   report(now);
 }
-function toggleOperator(force = byId("operator").hidden) { byId("operator").hidden = !force; }
+function setFramingPreview(enabled) {
+  framingPreview = enabled;
+  byId("framing-preview").setAttribute("aria-pressed", String(enabled));
+  byId("framing-preview").textContent = enabled ? "그림자 화면으로 돌아가기" : "카메라 원본 확인";
+  dirty = true;
+}
+function toggleOperator(force = byId("operator").hidden) {
+  byId("operator").hidden = !force;
+  if (!force) setFramingPreview(false);
+}
 async function fullscreen() {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
@@ -376,6 +395,7 @@ byId("reconnect").onclick = () => void startInput("camera");
 byId("stop").onclick = () => { stopInput(); setStatus("입력 중지 · 다시 시작할 수 있습니다."); };
 byId("operator-open").onclick = () => toggleOperator(true);
 byId("operator-close").onclick = byId("screen-only").onclick = () => toggleOperator(false);
+byId("framing-preview").onclick = () => setFramingPreview(!framingPreview);
 byId("fullscreen").onclick = byId("operator-fullscreen").onclick = fullscreen;
 document.addEventListener("keydown", event => {
   if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || /INPUT|SELECT|TEXTAREA/.test(event.target.tagName)) return;

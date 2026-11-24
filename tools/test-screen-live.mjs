@@ -50,6 +50,34 @@ test("confident floor artifacts outside the pose cannot drag an actor's shadows 
   assert.ok(Math.abs(mask.anchor.x - person.shape.feet.x) < .04);
   assert.ok(Math.abs(mask.anchor.y - person.shape.feet.y) < .04);
 });
+test("connected legs and shoes extend past the last usable landmark", () => {
+  const person = actor(.35, 27, 56);
+  person.shape.bottom = .53;
+  person.shape.height = .38;
+  person.shape.feet = null;
+  for (let y = 68; y < 84; y++) {
+    person.mask.fill(230, y * width + 28, y * width + 35);
+    person.mask.fill(223, y * width + 46, y * width + 53);
+  }
+  for (let y = 73; y < 86; y++) person.mask.fill(255, y * width + 73, y * width + 77);
+  const [mask] = splitMasks([person], width, height);
+  assert.ok(at(mask, 32, 83) > 220);
+  assert.ok(at(mask, 49, 83) > 220);
+  assert.equal(at(mask, 74, 80), 0);
+  assert.equal(at(mask, 40, 80), 0);
+  assert.ok(mask.anchor.y > .9);
+});
+test("camera color guides the feathering across a sharp clothing boundary", () => {
+  const person = actor(.27, 14, 49);
+  const i = 40 * width + 49;
+  person.mask[i] = 113;
+  const colors = new Uint8ClampedArray(width * height * 4);
+  for (let x = 0; x < 3; x++) colors[(i - 1) * 4 + x] = 240;
+  const [uniform] = splitMasks([person], width, height, .18);
+  const [contrast] = splitMasks([person], width, height, .18, colors);
+  assert.ok(at(contrast, 49, 40) < at(uniform, 49, 40));
+  assert.equal(at(contrast, 48, 40), 255);
+});
 test("landmarks require a visible torso and expose hands separately", () => {
   const pose = Array(33);
   pose[11] = { x: .25, y: .3, visibility: .95 };

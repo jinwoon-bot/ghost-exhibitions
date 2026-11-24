@@ -1,11 +1,12 @@
 const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
 const smooth = t => t * t * (3 - 2 * t);
 const usable = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && (point.visibility ?? 1) >= .35;
+const inFrame = point => usable(point) && point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1;
 
 export function geometry(landmarks) {
-  const torso = [11, 12, 23, 24].map(index => landmarks[index]).filter(usable);
+  const torso = [11, 12, 23, 24].map(index => landmarks[index]).filter(inFrame);
   if (torso.length < 2) return null;
-  const points = landmarks.filter(usable);
+  const points = landmarks.filter(inFrame);
   const extent = key => [Math.min(...points.map(p => p[key])), Math.max(...points.map(p => p[key]))];
   const [left, right] = extent("x");
   const [top, bottom] = extent("y");
@@ -13,21 +14,21 @@ export function geometry(landmarks) {
     x: clamp(torso.reduce((sum, p) => sum + p.x, 0) / torso.length, 0, 1),
     y: clamp(torso.reduce((sum, p) => sum + p.y, 0) / torso.length, 0, 1),
   };
-  const feet = [27, 28, 29, 30, 31, 32].map(index => landmarks[index]).filter(usable);
+  const feet = [27, 28, 29, 30, 31, 32].map(index => landmarks[index]).filter(inFrame);
   return {
     center, left, right, top, bottom,
     height: clamp(bottom - top, .07, 1.2),
     feet: feet.length ? { x: feet.reduce((sum, p) => sum + p.x, 0) / feet.length, y: Math.max(...feet.map(p => p.y)) } : null,
-    wrists: [15, 16].map(index => usable(landmarks[index]) ? { x: landmarks[index].x, y: landmarks[index].y } : null),
+    wrists: [15, 16].map(index => inFrame(landmarks[index]) ? { x: landmarks[index].x, y: landmarks[index].y } : null),
   };
 }
 
-export function splitMasks(people, width, height, threshold = .18) {
+export function splitMasks(people, width, height, threshold = .18, rgb = null) {
   if (!people.length || !width || !height) return [];
   const size = width * height;
   const owners = new Uint8Array(size).fill(255);
   const confidence = new Uint8Array(size);
-  const boxes = people.map(() => [width, height, -1, -1]);
+  const queue = new Int32Array(size);
   const minimum = Math.round(clamp(threshold, .1, .35) * 255);
   const lookup = Uint8Array.from({ length: 256 }, (_, value) =>
     Math.round(255 * smooth(clamp((value - minimum) / (189 - minimum), 0, 1))));
@@ -49,14 +50,16 @@ export function splitMasks(people, width, height, threshold = .18) {
       const index = offset + x;
       let best = -Infinity, owner = -1, raw = 0;
       for (let i = 0; i < people.length; i++) {
-        const region = regions[i];
-        if (x < region.x0 || x > region.x1 || y < region.y0 || y > region.y1) continue;
         const value = people[i].mask[index];
         if (value <= minimum) continue;
+        const region = regions[i];
+        const outside = x < region.x0 || x > region.x1 || y < region.y0 || y > region.y1;
+        // A strong mask may extend beyond unreliable foot or wrist landmarks.
+        if (outside && value < Math.max(110, minimum + 38)) continue;
         const p = people[i].shape;
         const horizontal = Math.max(0, p.left - columns[x], columns[x] - p.right);
         const vertical = Math.max(0, p.top - rows[y], rows[y] - p.bottom);
-        const cost = Math.abs(columns[x] - p.center.x) * 22 + (horizontal + vertical) * 85;
+        const cost = Math.abs(columns[x] - p.center.x) * 22 + Math.min(39, (horizontal + vertical) * 85);
         const score = value - cost;
         if (score > best) {
           best = score;
@@ -68,29 +71,24 @@ export function splitMasks(people, width, height, threshold = .18) {
       if (owner < 0 || !alpha) continue;
       owners[index] = owner;
       confidence[index] = alpha;
-      const box = boxes[owner];
-      box[0] = Math.min(box[0], x);
-      box[1] = Math.min(box[1], y);
-      box[2] = Math.max(box[2], x);
-      box[3] = Math.max(box[3], y);
     }
   }
   return people.flatMap(({ shape }, owner) => {
-    const [left, top, right, bottom] = boxes[owner];
+    const bounds = connectedBody(shape, owner, owners, confidence, queue, width, height);
+    if (!bounds) return [];
+    const [left, top, right, bottom] = bounds;
     if (right - left < 5 || bottom - top < 10) return [];
     const w = right - left + 1, h = bottom - top + 1;
     const alpha = new Uint8Array(w * h);
     let area = 0;
-    const at = index => owners[index] === owner ? confidence[index] : 0;
+    const member = owner + 128;
+    const at = index => owners[index] === member ? confidence[index] : 0;
     for (let y = top; y <= bottom; y++) {
       for (let x = left; x <= right; x++) {
         const i = y * width + x;
-        if (owners[i] !== owner) continue;
+        if (owners[i] !== member) continue;
         const current = confidence[i];
-        const nearby = (x > 0 ? at(i - 1) : 0) + (x < width - 1 ? at(i + 1) : 0) +
-          (y > 0 ? at(i - width) : 0) + (y < height - 1 ? at(i + width) : 0);
-        // Preserve a high-confidence hand edge. Only soften uncertain pixels.
-        const value = current >= 235 ? current : Math.round(current * .76 + nearby * .06);
+        const value = current >= 238 ? current : refineEdge(current, i, x, y, width, height, at, rgb);
         alpha[(y - top) * w + x - left] = value;
         if (value >= 112) area++;
       }
@@ -99,9 +97,64 @@ export function splitMasks(people, width, height, threshold = .18) {
     const expectedX = (shape.feet?.x ?? shape.center.x) * width - left;
     const expectedY = shape.feet ? clamp(shape.feet.y * height - top, 0, h - 1) : h - 1;
     const anchor = findContact(alpha, w, h, expectedX, expectedY);
-    return [{ x: left, y: top, w, h, alpha, area: area / size, shape,
+    const framing = top < height * .02 || bottom >= height * .98 ? "edge" : shape.feet &&
+      bottom >= shape.feet.y * height - Math.max(3, h * .08) ? "feet" : "partial";
+    return [{ x: left, y: top, w, h, alpha, area: area / size, shape, framing,
       anchor: { x: (left + anchor.x) / width, y: (top + anchor.y) / height } }];
   });
+}
+
+function connectedBody(shape, owner, owners, confidence, queue, width, height) {
+  const cx = Math.round(shape.center.x * (width - 1)), cy = Math.round(shape.center.y * (height - 1));
+  const rx = Math.max(4, Math.ceil(width * Math.min(.11, shape.height * .20)));
+  const ry = Math.max(5, Math.ceil(height * Math.min(.14, shape.height * .22)));
+  let seed = -1, best = -Infinity;
+  for (let y = Math.max(0, cy - ry); y <= Math.min(height - 1, cy + ry); y++) {
+    for (let x = Math.max(0, cx - rx); x <= Math.min(width - 1, cx + rx); x++) {
+      const i = y * width + x;
+      if (owners[i] !== owner || confidence[i] < 95) continue;
+      const score = confidence[i] - Math.abs(x - cx) * 35 / rx - Math.abs(y - cy) * 35 / ry;
+      if (score > best) { best = score; seed = i; }
+    }
+  }
+  if (seed < 0) return null;
+  let end = 0;
+  const add = index => {
+    if (owners[index] !== owner) return;
+    owners[index] = owner + 128;
+    queue[end++] = index;
+  };
+  add(seed);
+  let left = width, top = height, right = -1, bottom = -1;
+  for (let start = 0; start < end; start++) {
+    const i = queue[start], x = i % width, y = (i - x) / width;
+    if (x < left) left = x;
+    if (x > right) right = x;
+    if (y < top) top = y;
+    if (y > bottom) bottom = y;
+    if (x > 0) add(i - 1);
+    if (x + 1 < width) add(i + 1);
+    if (y > 0) add(i - width);
+    if (y + 1 < height) add(i + width);
+  }
+  return [left, top, right, bottom];
+}
+
+function refineEdge(value, index, x, y, width, height, alpha, rgb) {
+  let sum = value * 3, total = 3;
+  const p = index * 4;
+  const include = neighbor => {
+    const q = neighbor * 4;
+    const difference = rgb ? Math.abs(rgb[p] - rgb[q]) + Math.abs(rgb[p + 1] - rgb[q + 1]) + Math.abs(rgb[p + 2] - rgb[q + 2]) : 0;
+    const weight = 1 / (1 + difference * .075);
+    sum += alpha(neighbor) * weight;
+    total += weight;
+  };
+  if (x > 0) include(index - 1);
+  if (x + 1 < width) include(index + 1);
+  if (y > 0) include(index - width);
+  if (y + 1 < height) include(index + width);
+  return Math.round(sum / total);
 }
 
 function findContact(alpha, width, height, desiredX, desiredY) {
