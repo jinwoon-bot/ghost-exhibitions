@@ -104,10 +104,10 @@ export class BroadcastAudio {
     return (this.context.currentTime - at + offset) % duration;
   }
 
-  update(volume, stress, overlay, reveal, burst = 0) {
+  update(volume, stress, overlay, reveal, burst = 0, silent = false) {
     if (!this.started) return;
     const ctx = this.context;
-    gainAt(this.master.gain, ctx, this.enabled ? volume : 0, .095);
+    gainAt(this.master.gain, ctx, this.enabled && !silent ? volume : 0, silent || burst > .05 ? .022 : .095);
     gainAt(this.voice.gain, ctx, .78 * (1 - overlay * .97));
     gainAt(this.speech.frequency, ctx, 5200 - stress * 2100);
     gainAt(this.echo.gain, ctx, stress * .052 * (1 - overlay * .6));
@@ -116,9 +116,9 @@ export class BroadcastAudio {
     gainAt(this.basement.gain, ctx, stress ** 2 * .14 + reveal * .05, .2);
   }
 
-  tone(frequency, end, length, level, type = 'sine') {
+  tone(frequency, end, length, level, type = 'sine', delay = 0) {
     if (!this.enabled || !this.started) return;
-    const ctx = this.context, now = ctx.currentTime;
+    const ctx = this.context, now = ctx.currentTime + delay;
     const source = ctx.createOscillator(), gain = ctx.createGain();
     source.type = type;
     source.frequency.setValueAtTime(frequency, now);
@@ -133,6 +133,16 @@ export class BroadcastAudio {
   }
 
   shutter() { this.tone(92, 46, .62, .17, 'triangle'); }
+
+  ident() {
+    this.tone(527, 505, .25, .047, 'triangle');
+    this.tone(403, 377, .42, .061, 'triangle', .19);
+  }
+
+  scare() {
+    this.tone(187, 41, .48, .22, 'triangle');
+    this.tone(639, 88, .26, .095, 'sawtooth');
+  }
 
   type() {
     if (!this.started || this.context.currentTime - this.lastType < .145) return;

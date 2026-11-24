@@ -14,16 +14,19 @@ export const COPY = [
   { start: 4.72, step: .084, text: '본인은 아직 실종 사실을 모릅니다.' },
 ];
 export const READ_TIME = COPY.at(-1).start + Array.from(COPY.at(-1).text).length * COPY.at(-1).step + .78;
+export const FINALE = { ident: 1.08, corridor: 1.55, rush: .60, blackout: .45 };
 
 export class Proximity {
   constructor() {
     this.filtered = 0;
     this.raw = 0;
     this.lastSeen = -Infinity;
+    this.lastAnalysis = -Infinity;
     this.lastKind = '';
   }
 
   feed(now, sample) {
+    this.lastAnalysis = now;
     if (sample) {
       this.raw = sample.score;
       this.lastKind = sample.kind;
@@ -31,9 +34,13 @@ export class Proximity {
     }
   }
 
+  present(now) {
+    // A delayed analysis and a confirmed empty frame have different grace periods.
+    return now - this.lastSeen < (now - this.lastAnalysis > 420 ? 1500 : 640);
+  }
+
   update(now, dt, far, near, override = null) {
-    const hold = now - this.lastSeen < 640;
-    let target = hold ? clamp((this.raw - far) / (near - far)) : 0;
+    let target = this.present(now) ? clamp((this.raw - far) / (near - far)) : 0;
     if (override !== null) target = override;
     this.filtered = approach(this.filtered, target, dt, target > this.filtered ? .20 : .47);
     if (this.filtered < .002) this.filtered = 0;
@@ -48,9 +55,8 @@ export class Episode {
     this.phase = 'normal';
     this.age = 0;
     this.dossierTime = 0;
-    this.nearTime = 0;
     this.leaveTime = 0;
-    this.alpha = { notice: 0, reveal: 0 };
+    this.alpha = { ident: 0, notice: 0, reveal: 0, interrupt: 0 };
   }
 
   enter(phase) {
@@ -58,24 +64,32 @@ export class Episode {
     this.age = 0;
   }
 
-  update(dt, p) {
+  update(dt, p, present) {
     this.age += dt;
-    this.leaveTime = p < .21 ? this.leaveTime + dt : 0;
-    this.nearTime = p >= .76 ? this.nearTime + dt : 0;
-
-    if (this.phase === 'normal' && p >= .34) this.enter('notice');
-    if (this.phase === 'notice' && p >= .28) {
-      this.dossierTime += dt * (.84 + p * .2);
-      if (this.dossierTime >= READ_TIME && this.nearTime >= .31) this.enter('reveal');
+    this.leaveTime = present ? 0 : this.leaveTime + dt;
+    if (!['normal', 'leaving'].includes(this.phase) && this.leaveTime >= .49) {
+      this.enter('leaving');
+    } else if (this.phase === 'normal' && present) {
+      this.enter('ident');
+    } else if (this.phase === 'ident' && present && this.age >= FINALE.ident) {
+      this.enter('notice');
+      this.alpha.notice = 1;
+    } else if (this.phase === 'notice' && present) {
+      this.dossierTime += dt * (.96 + p * .11);
+      if (this.dossierTime >= READ_TIME) this.enter('reveal');
+    } else if (this.phase === 'reveal' && present && this.age >= FINALE.corridor) {
+      this.enter('scare');
+    } else if (this.phase === 'scare' && this.age >= FINALE.rush) {
+      this.enter('cut');
+    } else if (this.phase === 'cut' && this.age >= FINALE.blackout) {
+      this.enter('cooldown');
     }
-    if (this.phase === 'reveal' && this.age >= 2.35) this.enter('cooldown');
-
-    if (!['normal', 'leaving'].includes(this.phase) && this.leaveTime >= .49) this.enter('leaving');
-
-    const notice = this.phase === 'notice' ? smooth(.15, .34, p) : 0;
-    const reveal = this.phase === 'reveal' ? smooth(.24, .68, p) : 0;
+    const notice = this.phase === 'notice' ? 1 : 0;
+    const reveal = this.phase === 'reveal' ? 1 : 0;
     this.alpha.notice = approach(this.alpha.notice, notice, dt, notice ? .045 : .25);
     this.alpha.reveal = approach(this.alpha.reveal, reveal, dt, reveal ? .065 : .36);
+    this.alpha.ident = this.phase === 'ident' ? 1 : 0;
+    this.alpha.interrupt = this.phase === 'scare' || this.phase === 'cut' ? 1 : 0;
 
     return this.phase === 'leaving' && Math.max(...Object.values(this.alpha)) < .025;
   }

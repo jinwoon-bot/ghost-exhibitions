@@ -4,21 +4,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>금지된 방송 · 실종 접수</title>
-  <link rel="stylesheet" href="style.css?v=signal-cut">
+  <link rel="stylesheet" href="style.css?v=hard-cut">
 </head>
 <body>
-  <main id="screen" aria-label="동남 지역방송 화면">
+  <main id="screen" aria-label="동명 지역방송 화면">
     <section id="news" class="layer" aria-label="평상시 뉴스">
       <canvas id="anchor" width="960" height="720"></canvas>
-      <div class="station"><b>동남</b><span>저녁 뉴스</span></div>
+      <div class="station"><b>동명</b><span>저녁 뉴스</span></div>
       <div id="clock" class="clock"></div>
       <div class="lower"><b>지역</b><span id="headline">생활 소식</span></div>
+    </section>
+    <section id="station-card" class="layer scene" aria-label="동명 실종기록센터 안내" aria-hidden="true">
+      <img class="feed ident-campus" src="assets/campus.jpg" alt="">
+      <div class="ident-wash"></div>
+      <div class="station"><b>동명</b><span>지역방송</span></div>
+      <div class="ident-content">
+        <div class="ident-emblem" aria-hidden="true"><i></i><b></b><span></span></div>
+        <h2>동명 실종기록센터</h2>
+        <p>실종 기록 안내방송</p>
+      </div>
+      <p class="ident-footer">전시용 창작 방송</p>
     </section>
     <section id="notice" class="layer scene" aria-label="실종자 공지" aria-hidden="true">
       <img class="feed document-bg" src="assets/hall-day.jpg" alt="">
       <img id="notice-campus" class="feed document-bg" src="assets/campus.jpg" alt="">
       <div class="document-veil"></div>
-      <header class="dispatch"><h2>실종자를 찾습니다</h2><span>동남 기록방송</span></header>
+      <header class="dispatch"><h2>실종자를 찾습니다</h2><span>동명 기록방송</span></header>
       <div class="record">
         <figure class="portrait-frame">
           <canvas id="portrait" width="360" height="450"></canvas>
@@ -35,8 +46,16 @@
       <p class="notice-footer">지역 실종안내 자료 · 전시용 재구성</p>
     </section>
     <section id="final-shot" class="layer scene" aria-label="야간 복도" aria-hidden="true">
-      <img class="feed" src="assets/hall-night.jpg" alt="">
-      <canvas id="paper" width="94" height="124"></canvas>
+      <div class="hall-frame">
+        <img class="feed" src="assets/hall-night.jpg" alt="">
+        <canvas id="paper" width="94" height="124"></canvas>
+      </div>
+    </section>
+    <section id="shock-cut" class="layer scene" aria-label="방송 간섭과 암전" aria-hidden="true">
+      <div class="close-frame">
+        <img class="feed" src="assets/hall-close.webp" alt="">
+        <span class="tear" aria-hidden="true"></span>
+      </div>
     </section>
     <canvas id="signal" class="layer" width="240" height="180" aria-hidden="true"></canvas>
     <div class="crt layer" aria-hidden="true"></div>
@@ -70,9 +89,12 @@
         <h3>거리 보정</h3>
         <p class="hint">전시 위치에서 먼 점과 촬영할 가까운 점에 차례로 서서 기록하세요.</p>
         <label>먼 점 <input id="far" type="range" min=".03" max=".48" step=".005"><output id="far-value"></output></label>
-        <label>가까운 점 <input id="near" type="range" min=".12" max=".80" step=".005"><output id="near-value"></output></label>
+        <label>가까운 점 <input id="near" type="range" min=".055" max=".80" step=".005"><output id="near-value"></output></label>
         <div class="buttons"><button id="mark-far">현재 거리를 먼 점에 기록</button><button id="mark-near">현재 거리를 가까운 점에 기록</button></div>
         <meter id="intensity" min="0" max="1" value="0" aria-label="거리 강도"></meter>
+        <output id="distance-status">현재 거리값 없음</output>
+        <output id="calibration-feedback" role="status"></output>
+        <output id="notice-timing"></output>
       </section>
       <section>
         <h3>대체 사진과 데모</h3>
@@ -85,6 +107,6 @@
       </section>
     </div>
   </dialog>
-  <script type="module" src="app.mjs?v=signal-cut"></script>
+  <script type="module" src="app.mjs?v=hard-cut"></script>
 </body>
 </html>

@@ -1,18 +1,20 @@
 import { Camera } from '../src/camera.mjs';
 import { FaceInput } from './detector.mjs';
-import { COPY, Episode, Proximity, clamp, smooth } from './episode.mjs?v=signal-cut';
-import { BroadcastAudio } from './audio.mjs?v=signal-cut';
-import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs?v=signal-cut';
+import { COPY, FINALE, Episode, Proximity, clamp, smooth } from './episode.mjs?v=hard-cut';
+import { BroadcastAudio } from './audio.mjs?v=hard-cut';
+import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs?v=hard-cut';
+import { DistanceReadings, minimumRange, rangeLimit } from './distance.mjs';
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const cameraSetup = params.get('camera') === '1';
 const defaults = { near: .37, far: .11, mirror: true, lowLight: true, volume: .55, device: '' };
-const key = 'dongnam-missing-exhibit-settings-v1';
+const key = 'dongmyeong-missing-exhibit-settings-v1';
 const settings = loadSettings();
 const screen = $('screen'), panel = $('operator'), video = $('input');
 const portrait = $('portrait'), paper = $('paper');
 const prox = new Proximity(), episode = new Episode();
+const distance = new DistanceReadings();
 const audio = new BroadcastAudio('assets/news.wav');
 const signal = new SignalPicture($('signal'));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,15 +28,17 @@ let generation = 0, busy = false, retryAt = 0, retryCount = 0;
 let demo = 0, manual = false, cameraWanted = false, chosenHeadline = -1;
 let boot = performance.now(), lastFrame = 0, lastStatus = 0, lastAudio = 0;
 let intensity = 0, lastPhase = 'normal', typed = 0;
+let detectedAt = null, lastIdentMs = null, lastNoticeMs = null;
 
 function loadSettings() {
   let data = {};
-  try { data = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch {}
+  try { data = JSON.parse(localStorage.getItem(key) || localStorage.getItem('dongnam-missing-exhibit-settings-v1') || '{}') || {}; } catch {}
   const number = (value, normal, min, max) => Number.isFinite(value) ? clamp(value, min, max) : normal;
-  const far = number(data.far, defaults.far, .03, .48);
+  const far = number(data.far, defaults.far, rangeLimit.farMin, rangeLimit.farMax);
   return {
     far,
-    near: number(data.near ?? defaults.near, Math.max(defaults.near, far + .06), Math.max(.12, far + .06), .8),
+    near: number(data.near ?? defaults.near, Math.max(defaults.near, far + minimumRange),
+      Math.max(rangeLimit.nearMin, far + minimumRange), rangeLimit.nearMax),
     mirror: typeof data.mirror === 'boolean' ? data.mirror : true,
     lowLight: typeof data.lowLight === 'boolean' ? data.lowLight : true,
     volume: number(data.volume, defaults.volume, 0, .8),
@@ -76,19 +80,27 @@ const face = new FaceInput(sample => {
 });
 
 function receive({ candidates, luma: light, now }) {
+  if (performance.now() - now > 760) return;
   luma = light;
   const best = candidates.reduce((maximum, item) => !maximum || item.score > maximum.score ? item : maximum, null);
+  prox.feed(now, best);
   faceKind = best?.kind || '';
   if (!best) {
     if (latest && now - latest.now > 370) latest = null;
+    distance.clear();
+    if (episode.phase === 'normal') detectedAt = null;
     return;
   }
   const matching = latest && now - latest.now < 340 && latest.kind === best.kind &&
     Math.hypot(latest.x - best.x, latest.y - best.y) < .105 &&
     Math.abs(latest.score - best.score) < .13;
-  if (!matching) stableAt = now;
+  if (!matching) {
+    stableAt = now;
+    distance.clear();
+  }
   latest = { ...best, now };
-  prox.feed(now, best);
+  distance.feed(now, best.kind, best.score);
+  if (episode.phase === 'normal' && !manual) detectedAt ??= now;
   if (++receive.count % 12 === 0) status();
 }
 receive.count = 0;
@@ -98,7 +110,9 @@ function clearObservation() {
   stableAt = 0;
   luma = null;
   faceKind = '';
-  prox.lastSeen = -Infinity;
+  distance.clear();
+  detectedAt = null;
+  prox.lastSeen = prox.lastAnalysis = -Infinity;
 }
 
 function clearPortrait() {
@@ -115,11 +129,12 @@ function resetEpisode() {
   typed = 0;
   portraitAt = 0;
   lastPhase = 'normal';
+  detectedAt = null;
   for (const node of copyNodes) {
     node.textContent = '';
     node.classList.remove('typing');
   }
-  for (const id of ['notice', 'final-shot']) scene(id, 0);
+  for (const id of ['station-card', 'notice', 'final-shot', 'shock-cut']) scene(id, 0);
   screen.dataset.phase = 'normal';
 }
 
@@ -131,7 +146,7 @@ function scene(id, alpha) {
   if (layer.getAttribute('aria-hidden') !== hidden) layer.setAttribute('aria-hidden', hidden);
 }
 
-function lockPortrait(now, p) {
+function lockPortrait(now) {
   if (portraitLocked) return;
   const canUseFace = mode === 'camera' && !manual && $('allow-face').checked;
   let image = fallback;
@@ -140,7 +155,7 @@ function lockPortrait(now, p) {
     portraitAt ||= now;
     const stable = latest?.kind === 'face' && now - latest.now < 335 &&
       latest.now - stableAt >= 195 && video.readyState >= 2 && camera.healthy(now);
-    if (stable && p >= .32) {
+    if (stable) {
       try {
         image = webcamPortrait(video, latest, settings.mirror, settings.lowLight ? luma : 95);
         kind = 'audience';
@@ -175,15 +190,24 @@ function type(t) {
 }
 
 function status() {
+  const now = performance.now();
   const observation = luma === null ? '' : ' · 밝기 ' + Math.round(luma);
-  const detection = faceKind === 'face' ? ' · 얼굴 감지' : faceKind === 'person' ? ' · 사람 영역 감지 / 대체 사진 적용' : '';
-  const dark = luma !== null && luma < 22 && !faceKind ? ' · 어두운 상태 / 수동 송출 가능' : '';
+  const delayed = luma !== null && now - prox.lastAnalysis > 700;
+  const detection = delayed ? ' · 분석 결과 지연' : faceKind === 'face' ? ' · 얼굴 감지' :
+    faceKind === 'person' ? ' · 사람 영역 감지 / 대체 사진 적용' : '';
+  const dark = !delayed && luma !== null && luma < 22 && !faceKind ? ' · 어두운 상태 / 수동 송출 가능' : '';
   $('status').value = (mode === 'demo' ? '마우스 데모' : cameraState) + (mode === 'camera' && modelState ? ' · ' + modelState : '') + observation + detection + dark + audioError;
   $('connect').disabled = $('start-camera-exhibit').disabled = busy || !news;
   $('intensity').value = intensity;
-  const calibrated = performance.now() - prox.lastSeen < 700 && mode === 'camera';
-  $('mark-far').disabled = !calibrated;
-  $('mark-near').disabled = !calibrated;
+  const reading = mode === 'camera' ? distance.read(now) : null;
+  $('mark-far').disabled = !reading?.stable;
+  $('mark-near').disabled = !reading?.stable;
+  const distanceStatus = reading
+    ? `${reading.kind === 'face' ? '얼굴 폭' : '사람 영역'} ${reading.score.toFixed(3)} · ${reading.stable ? '기록 가능' : '자세 유지 중'} · 강도 ${Math.round(intensity * 100)}%`
+    : '현재 거리값 없음';
+  if ($('distance-status').textContent !== distanceStatus) $('distance-status').textContent = distanceStatus;
+  const timing = lastIdentMs === null ? '' : `최근 자동 송출 · 안내 카드 ${lastIdentMs}ms${lastNoticeMs === null ? '' : ` · 실종 공지 ${lastNoticeMs}ms`}`;
+  if ($('notice-timing').textContent !== timing) $('notice-timing').textContent = timing;
 }
 
 async function devices() {
@@ -327,36 +351,59 @@ function frame(now) {
 
   const override = manual ? .98 : mode === 'demo' ? demo : null;
   intensity = prox.update(now, step, settings.far, settings.near, override);
-  if (episode.update(step, intensity)) resetEpisode();
+  const present = manual || (mode === 'demo' && demo >= .34) ||
+    (mode === 'camera' && cameraWanted && prox.present(now));
+  if (episode.update(step, intensity, present)) resetEpisode();
   const { phase, age, alpha } = episode;
   if (phase !== lastPhase) {
+    if (phase === 'ident') {
+      audio.ident();
+      if (detectedAt !== null && !manual) {
+        const delay = now - detectedAt;
+        lastIdentMs = delay <= 1000 ? Math.round(delay) : null;
+        lastNoticeMs = null;
+      }
+    }
     if (phase === 'reveal') audio.shutter();
-    if (phase === 'cooldown' && manual) manual = false;
+    if (phase === 'scare') audio.scare();
+    if (phase === 'cooldown') {
+      manual = false;
+      clearPortrait();
+    }
     lastPhase = phase;
     screen.dataset.phase = phase;
   }
 
   const t = programTime(now);
-  const burst = phase === 'notice' ? 1 - smooth(.035, .56, age) : 0;
-  const overlay = Math.max(alpha.notice, alpha.reveal);
-  const stress = phase === 'normal' || phase === 'cooldown' ? 0 : intensity * smooth(.12, .55, intensity);
+  const burst = phase === 'notice' ? 1 - smooth(.035, .56, age)
+    : phase === 'scare' ? .88 * (1 - smooth(.035, .21, age)) : 0;
+  const overlay = Math.max(...Object.values(alpha));
+  const stress = ['notice', 'reveal', 'scare'].includes(phase) ? .27 + .65 * intensity : 0;
   const voice = program.envelope[Math.floor(t * program.envelopeRate)] / 255 || 0;
   if (overlay < .994) {
     if (!syncFilm(t)) news.draw(t, voice, stress * .55, reduced.matches);
     setHeadline(t);
   }
+  scene('station-card', alpha.ident);
   scene('notice', alpha.notice);
   scene('final-shot', alpha.reveal);
+  scene('shock-cut', alpha.interrupt);
+  if (phase === 'notice' && alpha.notice >= .45 && detectedAt !== null && !manual) {
+    const delay = now - detectedAt;
+    lastNoticeMs = lastIdentMs !== null && delay < 3800 ? Math.round(delay) : null;
+    detectedAt = null;
+  }
   if (phase === 'notice') {
-    lockPortrait(now, intensity);
+    lockPortrait(now);
     const campusOpacity = (1 - smooth(.64, 2.15, episode.dossierTime)).toFixed(3);
     if ($('notice-campus').style.opacity !== campusOpacity) $('notice-campus').style.opacity = campusOpacity;
     type(episode.dossierTime);
   }
-  signal.draw(now, stress, alpha.reveal, reduced.matches, burst);
+  const silent = phase === 'cut' || (phase === 'reveal' && age >= FINALE.corridor - .23);
+  signal.draw(now, phase === 'cut' ? 0 : stress, phase === 'cut' ? 0 : alpha.reveal, reduced.matches, burst, phase);
   if (now - lastAudio >= 57) {
     lastAudio = now;
-    audio.update(settings.volume, stress, overlay, alpha.reveal, reduced.matches ? burst * .35 : burst);
+    audio.update(settings.volume, stress, overlay, alpha.reveal, reduced.matches ? burst * .35 : burst, silent);
   }
 
   if (panel.open && now - lastStatus >= 580) {
@@ -392,8 +439,8 @@ function demoMode() {
 }
 
 function calibrate(side, score) {
-  if (side === 'near') settings.near = clamp(score, settings.far + .06, .80);
-  else settings.far = clamp(score, .03, Math.min(.48, settings.near - .06));
+  if (side === 'near') settings.near = clamp(score, Math.max(rangeLimit.nearMin, settings.far + minimumRange), rangeLimit.nearMax);
+  else settings.far = clamp(score, rangeLimit.farMin, Math.min(rangeLimit.farMax, settings.near - minimumRange));
   save();
 }
 
@@ -410,8 +457,21 @@ $('low-light').onchange = e => { settings.lowLight = e.target.checked; if (setti
 $('device').onchange = e => { settings.device = e.target.value; save(); if (mode === 'camera') connect(); };
 $('volume').oninput = e => { settings.volume = Number(e.target.value); save(); };
 for (const side of ['far', 'near']) {
-  $(side).oninput = e => calibrate(side, Number(e.target.value));
-  $('mark-' + side).onclick = () => calibrate(side, prox.raw);
+  $(side).oninput = e => {
+    calibrate(side, Number(e.target.value));
+    $('calibration-feedback').textContent = '';
+  };
+  $('mark-' + side).onclick = () => {
+    const measurement = distance.read(performance.now());
+    if (!measurement?.stable || mode !== 'camera') return;
+    const { score, kind } = measurement;
+    if (side === 'near' && score - settings.far < minimumRange) {
+      $('calibration-feedback').textContent = '가까운 점과 먼 점의 차이가 너무 작습니다. 조금 더 가까이 서거나 먼 점을 다시 기록하세요.';
+      return;
+    }
+    calibrate(side, score);
+    $('calibration-feedback').textContent = `${side === 'far' ? '먼 점' : '가까운 점'} ${settings[side].toFixed(3)} 기록 · ${kind === 'face' ? '얼굴 기준' : '사람 영역 기준'}`;
+  };
 }
 
 $('fallback').onchange = async ({ target }) => {
@@ -457,12 +517,15 @@ screen.addEventListener('pointerleave', () => {
 });
 screen.addEventListener('dblclick', () => operator());
 window.addEventListener('keydown', e => {
-  if (e.repeat || e.ctrlKey || e.altKey || e.metaKey || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target?.tagName)) return;
+  const target = e.target;
+  const typing = target?.isContentEditable || target?.tagName === 'TEXTAREA' ||
+    (target?.tagName === 'INPUT' && /^(text|search|email|password|tel|url|number)$/.test(target.type));
+  if (e.repeat || e.ctrlKey || e.altKey || e.metaKey || typing) return;
   const letter = e.key.toLowerCase();
   if (letter === 'd') operator();
   if (letter === 'f') full();
   if (letter === 'm') toggleAudio();
-  if (e.code === 'Space' && (!panel.open || e.target?.tagName !== 'BUTTON')) {
+  if (e.code === 'Space' && !target?.closest?.('button,input,select,summary')) {
     e.preventDefault();
     manualStart();
   }
@@ -503,6 +566,7 @@ Promise.all([
     return response.json();
   }),
   ...['campus', 'hall-day', 'hall-night'].map(name => loadImage('assets/' + name + '.jpg')),
+  loadImage('assets/hall-close.webp'),
 ]).then(([anchor, sample, rundown]) => {
   news = new NewsPicture($('anchor'), anchor);
   defaultPhoto = fallback = sample;

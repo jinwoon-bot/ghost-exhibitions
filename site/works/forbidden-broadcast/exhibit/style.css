@@ -15,6 +15,16 @@ body{display:grid;place-items:center;font-family:"Malgun Gothic","Apple SD Gothi
 .lower{position:absolute;bottom:7%;left:6.4%;right:6.4%;display:flex;align-items:center;min-height:6.9%;box-shadow:inset 0 1px #f0ead9,0 .24cqw .46cqw #24211cad;background:linear-gradient(#dcd8bf,#c5c4b1);border-bottom:.22cqw solid #7a8271;color:#1b2826;font-size:2.87cqw;font-weight:700}
 .lower b{align-self:stretch;display:grid;place-items:center;padding:0 .65em;background:#24474c;color:#f3eacb;font-size:.81em;letter-spacing:.1em;box-shadow:inset 0 1px #859c90}
 .lower span{padding:.13em .57em}
+.ident-campus{filter:saturate(.67) contrast(1.12) brightness(.84);object-fit:cover;transform:scale(1.024)}
+.ident-wash{position:absolute;inset:0;background:linear-gradient(#1e302b19,#171b1349 36%,#10130ea8),radial-gradient(ellipse at 50% 46%,transparent 30%,#1720214d)}
+.ident-content{position:absolute;inset:17% 10% 13%;display:grid;align-content:center;justify-items:center;gap:.9cqw;text-align:center;color:#f5ebc9;text-shadow:1px 2px #202421,-1px 0 #293230,2px 0 #443c30}
+.ident-content h2{margin:2cqw 0 0;font-size:5.1cqw;letter-spacing:.04em}
+.ident-content p{margin:.15cqw 0 0;font-size:2.45cqw;letter-spacing:.16em}
+.ident-emblem{position:relative;width:12cqw;height:13cqw;filter:drop-shadow(.22cqw .28cqw #19241d)}
+.ident-emblem i{position:absolute;inset:1.3cqw .52cqw 2.5cqw;border:.42cqw solid #2b3026;border-radius:45% 45% 30% 30%;background:#dfaa54;box-shadow:inset 0 .4cqw #f3cd82;transform:rotate(-6deg)}
+.ident-emblem b{position:absolute;inset:4cqw 3.4cqw 4.6cqw;border-bottom:.38cqw solid #2b3026;border-radius:50%;transform:rotate(-6deg);background:radial-gradient(circle at 26% 38%,#2b3026 8%,transparent 11%),radial-gradient(circle at 74% 38%,#2b3026 8%,transparent 11%)}
+.ident-emblem span{position:absolute;inset:auto 3.7cqw 1.45cqw;height:1.8cqw;border:.34cqw solid #23322b;background:#647c6b;border-radius:45%;transform:rotate(-6deg)}
+.ident-footer{position:absolute;inset:auto 7% 5.5%;margin:0;text-align:right;font-size:1.27cqw;letter-spacing:.13em;color:#e0d4ac;text-shadow:1px 1px #162018}
 .document-bg{filter:grayscale(.86) brightness(.28) contrast(1.13);transform:scale(1.02)}
 #notice-campus{filter:grayscale(.85) brightness(.39) contrast(1.08)}
 .document-veil{position:absolute;inset:0;background:linear-gradient(90deg,#161a15b5,#10151040 72%,#171b16b5),linear-gradient(#0b100da8,transparent 33%,#050605b5)}
@@ -32,9 +42,21 @@ body{display:grid;place-items:center;font-family:"Malgun Gothic","Apple SD Gothi
 .record-text .small-line{margin-top:2.85cqw;border:0;color:#d5bd9e;font-size:1.63cqw;min-height:1.9em;letter-spacing:.025em}
 .record-text .typing::after{content:"";display:inline-block;width:.44em;height:.105em;margin-left:.21em;background:currentColor;opacity:.69}
 .notice-footer{position:absolute;inset:auto 7% 7.6%;margin:0;padding-top:1.18cqw;border-top:1px solid #d5cbae47;text-align:right;color:#c1b79e;font-size:1.29cqw;letter-spacing:.095em}
-#final-shot .feed{filter:brightness(1.13) saturate(.8)}
+#final-shot .feed{filter:brightness(1.10) saturate(.71)}
+.hall-frame,.close-frame{position:absolute;inset:0;overflow:hidden}
+#screen[data-phase=reveal] .hall-frame{animation:hall-creep 1.55s linear both;transform-origin:51% 54%}
+@keyframes hall-creep{from{transform:scale(1)}to{transform:scale(1.065)}}
+#shock-cut{background:#020303}
+#shock-cut .feed{filter:saturate(.62) contrast(1.16) brightness(1.09)}
+#screen[data-phase=scare] .close-frame{transform-origin:50% 45%;animation:lens-rush .60s both}
+@keyframes lens-rush{0%{transform:translateY(1.5%) scale(1.015);animation-timing-function:cubic-bezier(.44,.04,.98,.54)}19%{transform:translate(-1.8%,-1.2%) scale(1.27);animation-timing-function:cubic-bezier(.06,.81,.2,1)}54%{transform:translate(.25%,0) scale(1.145)}100%{transform:scale(1.135)}}
+.tear{position:absolute;inset:0;background:center/cover url('assets/hall-close.webp');filter:contrast(1.45) saturate(.43);opacity:0}
+#screen[data-phase=scare] .tear{animation:tape-tear 175ms steps(1,end) both}
+@keyframes tape-tear{0%{opacity:.82;clip-path:inset(37% 0 50%);transform:translateX(4%)}43%{opacity:.72;clip-path:inset(49% 0 44%);transform:translateX(-3%)}100%{opacity:0;transform:none}}
+#screen[data-phase=cut] .close-frame{visibility:hidden}
+#screen[data-phase=cut] #signal{opacity:0}
 #paper{position:absolute;left:48.84%;top:50.20%;width:5.61%;height:10.19%;opacity:.84;mix-blend-mode:multiply;filter:sepia(.17) contrast(.8);transform:rotate(.1deg)}
-#signal{pointer-events:none;mix-blend-mode:screen;image-rendering:auto;opacity:.46}
+#signal{pointer-events:none;image-rendering:auto;opacity:.53}
 .crt{pointer-events:none;z-index:10;background:radial-gradient(ellipse at 50% 47%,#e6faef06 30%,transparent 65%,#03060665 100%),repeating-linear-gradient(180deg,#02070524 0,#02070524 1px,transparent 2.4px,transparent 4px);box-shadow:inset 0 0 2.3cqw .45cqw #01020280}
 #fault{position:absolute;z-index:12;bottom:10%;inset-inline:10%;font-size:2.6cqw;text-align:center}
 dialog{width:min(42rem,calc(100vw - 1.6rem));max-height:calc(100dvh - 1.6rem);padding:0;border:1px solid #5b635e;background:#171c1a;color:#ecf0e9;border-radius:.55rem;color-scheme:dark}
@@ -56,4 +78,4 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 button:disabled{opacity:.5}
 #input{display:block;width:100%;max-height:9.5rem;background:#090a0a;object-fit:contain;margin:.3rem 0}
 #input.mirror{transform:scaleX(-1)}
-@media(prefers-reduced-motion:reduce){.crt{background:radial-gradient(ellipse at center,transparent 50%,#02040570)}}
+@media(prefers-reduced-motion:reduce){.crt{background:radial-gradient(ellipse at center,transparent 50%,#02040570)}#screen[data-phase] .hall-frame,#screen[data-phase] .close-frame,#screen[data-phase] .tear{animation:none}}

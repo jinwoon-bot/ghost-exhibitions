@@ -103,32 +103,36 @@ export class SignalPicture {
     this.tick = 0;
   }
 
-  draw(now, intensity, reveal, reduced, burst = 0) {
+  draw(now, intensity, reveal, reduced, burst = 0, phase = 'normal') {
     if (now - this.tick < (reduced ? 230 : burst > .04 ? 39 : 88)) return;
     this.tick = now;
     const { width, height, ctx, pixels } = this;
-    const amount = 6 + intensity ** 1.9 * (reduced ? 13 : 35) + burst * (reduced ? 37 : 171);
-    for (let i = 0; i < pixels.data.length; i += 4) {
-      const value = Math.random();
-      pixels.data[i] = 181;
-      pixels.data[i + 1] = 187;
-      pixels.data[i + 2] = 173;
-      pixels.data[i + 3] = value > .44 ? (value - .44) * amount : 0;
+    const amount = (phase === 'normal' ? 8 : 15) + intensity * (reduced ? 7 : 14) +
+      burst * (reduced ? 23 : 88);
+    for (let y = 0; y < height; y++) {
+      const tracking = y > height * .89 && !reduced;
+      const bias = Math.random() - .5;
+      for (let x = 0; x < width; x++) {
+        const i = (y * width + x) * 4;
+        const noise = Math.random() * 2 - 1;
+        const shade = noise + bias * .64;
+        const luma = shade > 0 ? 206 : 14;
+        pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = luma;
+        pixels.data[i + 3] = Math.abs(shade) * (amount + (tracking ? 22 + burst * 35 : 0));
+      }
     }
     ctx.putImageData(pixels, 0, 0);
     if (burst > .015 && !reduced) {
-      const bands = [height * .24, height * .55, height * .79];
+      const bands = [height * .32, height * .69, height * .91];
       for (const [i, base] of bands.entries()) {
-        const y = Math.floor(base + (Math.random() - .5) * 14);
-        const bandHeight = 4 + i * 3;
-        const glow = ctx.createLinearGradient(0, y, 0, y + bandHeight);
-        glow.addColorStop(0, 'rgba(222,226,207,0)');
-        glow.addColorStop(.20, 'rgba(222,226,207,' + (burst * .72) + ')');
-        glow.addColorStop(1, 'rgba(222,226,207,0)');
-        ctx.fillStyle = glow;
+        const y = Math.floor(base + (Math.random() - .5) * 7);
+        const bandHeight = 3 + i * 2;
+        ctx.fillStyle = 'rgba(12,15,14,' + (burst * .46) + ')';
         ctx.fillRect(0, y, width, bandHeight);
-        ctx.fillStyle = 'rgba(222,226,207,' + (burst * .22) + ')';
-        ctx.fillRect(0, y + bandHeight + 2, width * (.45 + Math.random() * .55), 1);
+        ctx.fillStyle = 'rgba(179,187,176,' + (burst * .48) + ')';
+        for (let x = 0; x < width; x += 9 + Math.random() * 29) {
+          ctx.fillRect(x, y + Math.random() * bandHeight, 8 + Math.random() * 19, 1);
+        }
       }
     }
     if (intensity > .29 && !reduced) {
