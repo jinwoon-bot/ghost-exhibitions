@@ -68,12 +68,14 @@
       </div>
       <section>
         <h3>관객 감지</h3>
+        <p id="camera-start-hint" class="hint" hidden>전시 PC에서 웹캠을 고른 뒤 시작을 누르세요. 브라우저에서 카메라를 허용하면 방송이 시작됩니다.</p>
         <label>웹캠 <select id="device"><option value="">기본 웹캠</option></select></label>
+        <label><input id="allow-face" type="checkbox"> 안내 확인 후 관객 얼굴 삽입 허용</label>
+        <p class="hint">얼굴 삽입을 켜면 관객 얼굴이 공지에 잠시 표시됩니다. 영상과 사진은 기기 안에서 처리하고 회차가 끝나면 지웁니다.</p>
+        <button id="start-camera-exhibit" class="primary" disabled>웹캠 전시 시작</button>
         <div class="buttons"><button id="connect">웹캠 연결</button><button id="disconnect">연결 종료</button></div>
         <label><input id="mirror" type="checkbox" checked> 사진과 미리보기 좌우 반전</label>
         <label><input id="low-light" type="checkbox" checked> 저조도 보정 및 사람 영역 보조 감지</label>
-        <label><input id="allow-face" type="checkbox"> 안내 확인 후 관객 얼굴 삽입 허용</label>
-        <p class="hint">선택하면 안내를 본 관객의 얼굴이 공지에 잠시 표시됩니다. 카메라 영상과 사진은 기기 안에서 처리하고 회차가 끝나면 지웁니다.</p>
         <details><summary>웹캠 미리보기</summary><video id="input" muted playsinline></video></details>
         <output id="status" role="status">카메라 대기</output>
       </section>
@@ -96,6 +98,6 @@
       </section>
     </div>
   </dialog>
-  <script type="module" src="app.mjs"></script>
+  <script type="module" src="app.mjs?v=camera-entry"></script>
 </body>
 </html>

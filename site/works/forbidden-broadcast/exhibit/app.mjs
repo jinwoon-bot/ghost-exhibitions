@@ -6,6 +6,7 @@ import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPor
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
+const cameraSetup = params.get('camera') === '1';
 const defaults = { near: .37, far: .11, mirror: true, lowLight: true, volume: .55, device: '' };
 const key = 'dongnam-missing-exhibit-settings-v1';
 const settings = loadSettings();
@@ -20,7 +21,7 @@ const copyNodes = [$('line-0'), $('line-1'), $('line-2'), $('small-line')];
 
 let mode = 'idle', fallback, defaultPhoto, news, program, filmed;
 let latest = null, stableAt = 0, portraitAt = 0, portraitLocked = false;
-let cameraState = '카메라 대기', modelState = '', luma = null, faceKind = '';
+let cameraState = '카메라 대기', modelState = '', audioError = '', luma = null, faceKind = '';
 let generation = 0, busy = false, retryAt = 0, retryCount = 0;
 let demo = 0, manual = false, cameraWanted = false, chosenHeadline = -1;
 let boot = performance.now(), lastFrame = 0, lastStatus = 0, lastAudio = 0;
@@ -178,8 +179,8 @@ function status() {
   const observation = luma === null ? '' : ' · 밝기 ' + Math.round(luma);
   const detection = faceKind === 'face' ? ' · 얼굴 감지' : faceKind === 'person' ? ' · 사람 영역 감지 / 대체 사진 적용' : '';
   const dark = luma !== null && luma < 22 && !faceKind ? ' · 어두운 상태 / 수동 송출 가능' : '';
-  $('status').value = (mode === 'demo' ? '마우스 데모' : cameraState) + (mode === 'camera' && modelState ? ' · ' + modelState : '') + observation + detection + dark;
-  $('connect').disabled = busy;
+  $('status').value = (mode === 'demo' ? '마우스 데모' : cameraState) + (mode === 'camera' && modelState ? ' · ' + modelState : '') + observation + detection + dark + audioError;
+  $('connect').disabled = $('start-camera-exhibit').disabled = busy || !news;
   $('intensity').value = intensity;
   const calibrated = performance.now() - prox.lastSeen < 700 && mode === 'camera';
   $('mark-far').disabled = !calibrated;
@@ -217,7 +218,7 @@ function stopInputs() {
 }
 
 async function connect(retry = false) {
-  if (busy || !news) return;
+  if (busy || !news) return false;
   if (!retry) {
     stopInputs();
     resetEpisode();
@@ -229,22 +230,25 @@ async function connect(retry = false) {
   status();
   try {
     await camera.start({ cameraId: settings.device, cameraWidth: 960 });
-    if (request !== generation) return;
+    if (request !== generation) return false;
     const connectedId = camera.stream?.getVideoTracks()[0]?.getSettings().deviceId;
     if (settings.device && connectedId && connectedId !== settings.device) {
       camera.stop();
       throw Error('선택한 웹캠이 연결되지 않았습니다. 다른 장치를 선택하세요.');
     }
     await devices();
-    if (request !== generation) return;
+    if (request !== generation) return false;
     await face.start(settings.lowLight);
-    if (request === generation) retryCount = 0;
+    if (request !== generation) return false;
+    retryCount = 0;
+    return true;
   } catch (error) {
-    if (request !== generation) return;
+    if (request !== generation) return false;
     camera.stop();
     face.stop();
     cameraState = error.message;
     if (retry) scheduleRetry();
+    return false;
   } finally {
     if (request === generation) {
       busy = false;
@@ -253,15 +257,26 @@ async function connect(retry = false) {
   }
 }
 
-async function toggleAudio() {
+async function setAudio(enabled) {
+  audioError = '';
   try {
-    if (audio.enabled) audio.enabled = false;
-    else await audio.start(programTime(performance.now()));
+    if (enabled && !audio.enabled) await audio.start(programTime(performance.now()));
+    if (!enabled) audio.enabled = false;
     $('sound-toggle').textContent = audio.enabled ? '소리 끄기' : '소리 켜기';
   } catch (error) {
-    cameraState = error.message;
-    status();
+    audioError = ' · 소리 연결 실패: ' + error.message;
   }
+  status();
+  return audio.enabled === enabled;
+}
+
+function toggleAudio() {
+  return setAudio(!audio.enabled);
+}
+
+async function startCameraExhibit() {
+  const [soundReady, connected] = await Promise.all([setAudio(true), connect()]);
+  if (soundReady && connected && mode === 'camera' && camera.stream && panel.open) panel.close();
 }
 
 function programTime(now) {
@@ -382,6 +397,7 @@ function calibrate(side, score) {
 }
 
 $('connect').onclick = () => connect();
+$('start-camera-exhibit').onclick = startCameraExhibit;
 $('disconnect').onclick = () => { stopInputs(); mode = 'idle'; resetEpisode(); status(); };
 $('manual').onclick = manualStart;
 $('reset').onclick = () => { resetEpisode(); prox.filtered = 0; demo = 0; $('demo-distance').value = '0'; clearObservation(); };
@@ -474,8 +490,9 @@ window.addEventListener('pagehide', () => {
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 
 syncSettings();
-if (params.has('demo')) demoMode();
-if (params.has('operator') || params.has('demo')) operator();
+if (!cameraSetup && params.has('demo')) demoMode();
+if (cameraSetup || params.has('operator') || params.has('demo')) operator();
+$('camera-start-hint').hidden = !cameraSetup;
 
 Promise.all([
   loadImage('assets/anchor-plate.png'),
@@ -510,4 +527,5 @@ function connectReady() {
   screen.dataset.phase = 'normal';
   screen.dataset.ready = 'true';
   status();
+  if (cameraSetup && panel.open) $('start-camera-exhibit').focus();
 }

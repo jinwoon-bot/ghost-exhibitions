@@ -56,6 +56,7 @@ dialog::backdrop{background:#070908aa}
 .operator-body label output{display:inline;margin:0}
 .operator-body .buttons{display:flex;flex-wrap:wrap;gap:.35rem}
 button,select{font:inherit;color:inherit;background:#29332d;border:1px solid #657369;border-radius:.28rem;padding:.35rem .58rem}
+button.primary{margin:.25rem 0 .65rem;background:#d9dfca;color:#222d25;border-color:#d9dfca;font-weight:700}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #d6e8b3;outline-offset:2px}
 button:disabled{opacity:.5}
 #input{display:block;width:100%;max-height:9.5rem;background:#090a0a;object-fit:contain;margin:.3rem 0}

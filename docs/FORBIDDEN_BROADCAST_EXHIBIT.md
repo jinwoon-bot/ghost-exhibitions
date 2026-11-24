@@ -4,6 +4,7 @@
 
 - 전시 화면 `site/works/forbidden-broadcast/exhibit/`
 - GitHub Pages 경로 `works/forbidden-broadcast/exhibit/`
+- 전시 PC에서 첫 실행은 [웹캠 전시 시작](https://jinwoon-bot.github.io/ghost-exhibitions/works/forbidden-broadcast/exhibit/?camera=1)을 열고 **웹캠 전시 시작**을 누릅니다.
 - 운영실을 먼저 열려면 주소 끝에 `?operator=1`을 붙입니다.
 - 카메라 없이 연습하려면 `?demo=1`을 붙입니다.
 

@@ -48,11 +48,13 @@
   },
   {
     "id": "forbidden-broadcast",
-    "title": "금지된 방송",
+    "title": "금지된 방송 · 실종 접수",
     "tagline": "방송은 지금, 당신을 보도한다.",
-    "description": "접근과 손동작을 낯선 지역방송이 실시간으로 보도합니다.",
-    "input": "카메라 · 손과 거리",
-    "entry": "works/forbidden-broadcast/index.html",
-    "extra": "media/news-loop-v2.mp4"
+    "description": "동명대 공익방송을 보다가 다가서면, 익숙한 얼굴이 실종 공지에 나타납니다.",
+    "input": "웹캠 · 상대 거리",
+    "entry": "works/forbidden-broadcast/exhibit/index.html",
+    "cameraSetup": true,
+    "extra": "media/news-loop-v2.mp4",
+    "legacy": "works/forbidden-broadcast/index.html"
   }
 ]

@@ -6,6 +6,8 @@
 
 **공개 전시 실행: https://jinwoon-bot.github.io/ghost-exhibitions/**
 
+**금지된 방송 · 실종 접수**는 통합 전시 목록에서 시작할 수 있습니다. [웹캠 전시 바로 열기](https://jinwoon-bot.github.io/ghost-exhibitions/works/forbidden-broadcast/exhibit/?camera=1) · [설치·운영 안내](docs/FORBIDDEN_BROADCAST_EXHIBIT.md)
+
 GitHub 로그인 없이 누구나 열 수 있습니다. 2026-11-24에 배포 성공, 메인과 6개 작품의 브라우저 진입, 인증 헤더/쿠키 없는 공개 파일 301개 GET·해시 일치를 확인했습니다. GitHub 저장소 화면과 전시 실행 화면은 서로 다릅니다.
 
 메뉴에서 작품을 선택하고, 작품 안의 시작 버튼을 누르세요. 카메라 작품은 사용자가 권한을 허용해야 실제 입력이 연결됩니다. 전시 목록으로 돌아오면 이전 작품의 프레임을 제거하므로 카메라와 음원이 다음 작품과 겹치지 않습니다. 오디오 작품은 브라우저/운영체제 출력 장치를 확인하세요.
