@@ -1,8 +1,8 @@
 import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
-import { PoseHistory } from './history.mjs?v=pace';
-import { ExhibitionPicture } from './picture.mjs?v=pace';
+import { PoseHistory } from './history.mjs?v=contour';
+import { ExhibitionPicture } from './picture.mjs?v=contour';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);
@@ -18,7 +18,7 @@ const audio = new ExhibitionSound();
 const input = document.createElement('canvas');
 const inputCtx = input.getContext('2d', { willReadFrequently: true });
 const key = 'chang-gwi-frozen-poses-v1';
-const defaults = {device:'', mirror:true, frequency:1.6, lifetime:7.5, erosion:1, people:1, sensitivity:.55, quality:'auto', sound:false, awake:true};
+const defaults = {device:'', mirror:true, frequency:1.6, lifetime:5.5, erosion:1, people:1, sensitivity:.55, quality:'auto', sound:false, awake:true};
 const ranges = {frequency:[.35, 2.6], lifetime:[3, 16], erosion:[0, 1.6], sensitivity:[.2, .85]};
 const prof = {
   low: { resolution: 320, every: 205, stage: 920, grains: 185, totalGrains: 620, maxEchoes: 7, fps: 24, plumeScale: .50 },
@@ -39,7 +39,6 @@ function savedSettings() {
   for (const [name, [min,max]] of Object.entries(ranges)) {
     if (Number.isFinite(data[name])) copy[name] = Math.max(min, Math.min(max, data[name]));
   }
-  if (!data.paceVersion && data.lifetime === 5.5) copy.lifetime = defaults.lifetime;
   for (const name of ['mirror','sound','awake']) if (typeof data[name] === 'boolean') copy[name] = data[name];
   if (['auto','low','high'].includes(data.quality)) copy.quality = data.quality;
   if ([1,2,3].includes(data.people)) copy.people = data.people;
@@ -48,7 +47,7 @@ function savedSettings() {
 }
 
 function save() {
-  try { localStorage.setItem(key, JSON.stringify({...settings, paceVersion:1})); } catch {}
+  try { localStorage.setItem(key, JSON.stringify(settings)); } catch {}
 }
 
 function quality() {
@@ -136,13 +135,11 @@ async function start(sourceMode, source = sample, retry = false) {
   try {
     if (sourceMode === 'camera') {
       video.loop = false;
-      video.playbackRate = 1;
       if (!(await camera.start(settings.device, ai))) return;
     } else {
       sourceURL = typeof source === 'string' ? null : URL.createObjectURL(source);
       video.src = sourceURL || source;
       video.loop = true;
-      video.playbackRate = source === sample ? .75 : 1;
       await video.play();
       if (request !== token) return;
       await camera.load(ai);
@@ -282,7 +279,7 @@ function loop(now) {
     frames++;
   }
   for (const echo of history.echoes) {
-    if (!echo.sounded && now - echo.born > (echo.until - echo.born) * .28) {
+    if (!echo.sounded && now - echo.born > (echo.until - echo.born) * .23) {
       echo.sounded = true;
       audio.rip(echo.seed);
     }
