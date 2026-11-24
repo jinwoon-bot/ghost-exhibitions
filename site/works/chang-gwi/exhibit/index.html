@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0e0e0d">
+  <title>창귀 · 네 뒤에 남은 것</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="exhibition" data-mode="idle" aria-label="네 뒤에 남은 것">
+    <canvas id="stage" aria-label="현재 관객과 그 자리에 남아 있는 과거 실루엣"></canvas>
+    <section id="setup" aria-labelledby="work-title">
+      <div class="opening">
+        <p class="work-name">창귀</p>
+        <h1 id="work-title">네 뒤에<br>남은 것</h1>
+        <p class="direction">웹캠 앞으로 다가서서 움직여 보세요.</p>
+        <div class="actions">
+          <button id="camera-start" class="start">웹캠으로 시작</button>
+          <button id="sample-start">샘플로 시연</button>
+          <button id="settings-open">운영 설정</button>
+        </div>
+        <output id="setup-status" role="status"></output>
+      </div>
+    </section>
+    <p id="sample-label" hidden>영상 시연</p>
+  </main>
+  <dialog id="settings" aria-labelledby="settings-title">
+    <form method="dialog" class="dialog-title">
+      <h2 id="settings-title">창귀 운영 설정</h2><button value="close">닫기</button>
+    </form>
+    <div class="controls">
+      <section>
+        <h3>카메라</h3>
+        <label>웹캠 <select id="devices"><option value="">이 PC의 기본 카메라</option></select></label>
+        <div class="actions">
+          <button id="reconnect">웹캠 연결</button>
+          <button id="stop">입력 종료</button>
+          <button id="fullscreen">전체화면</button>
+        </div>
+        <label><input id="mirror" type="checkbox" checked> 좌우 반전</label>
+        <details><summary>카메라 미리보기</summary><canvas id="preview" width="288" height="162" aria-label="운영자 전용 영상 미리보기"></canvas></details>
+      </section>
+      <section>
+        <h3>잔상과 소멸</h3>
+        <label>생성 빈도 <input id="frequency" type="range" min=".35" max="2.6" step=".05"><output id="frequency-value"></output></label>
+        <label>유지 시간 <input id="lifetime" type="range" min="3" max="16" step=".5"><output id="lifetime-value"></output></label>
+        <label>흩어짐 강도 <input id="erosion" type="range" min="0" max="1.6" step=".05"><output id="erosion-value"></output></label>
+        <label>동시 관객 <select id="people"><option value="1">1명</option><option value="2">최대 2명</option><option value="3">최대 3명</option></select></label>
+        <label>분리 민감도 <input id="sensitivity" type="range" min=".2" max=".85" step=".05"><output id="sensitivity-value"></output></label>
+      </section>
+      <section>
+        <h3>시연과 장치</h3>
+        <label>성능 <select id="quality"><option value="auto">자동</option><option value="low">저사양</option><option value="high">고품질</option></select></label>
+        <label><input id="sound" type="checkbox"> 소리 사용</label>
+        <label><input id="awake" type="checkbox" checked> 화면 켜짐 유지</label>
+        <label>로컬 영상 시연 <input id="file" type="file" accept="video/mp4,video/webm"></label>
+        <button id="panel-sample">샘플로 시연</button>
+      </section>
+      <output id="status" role="status" aria-live="polite"></output>
+      <p class="hint">D 운영 설정 · F 전체화면. 영상은 기기 안에서 분석하고, 배경을 제거한 인물 영역만 메모리에 잠시 보관합니다.</p>
+    </div>
+  </dialog>
+  <video id="video" playsinline muted hidden></video>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

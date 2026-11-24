@@ -20,12 +20,13 @@
   },
   {
     "id": "chang-gwi",
-    "title": "창귀",
-    "tagline": "네가 떠나도, 흔적은 남는다.",
-    "description": "실시간 거울 위에 한지와 먹의 잔상이 남았다 흩어집니다.",
+    "title": "창귀 · 네 뒤에 남은 것",
+    "tagline": "움직임이 지나가면, 자세가 남는다.",
+    "description": "이전에 서 있던 위치와 자세가 실루엣으로 고정되고, 가장자리부터 한지와 먹으로 흩어집니다.",
     "input": "카메라 · 몸의 움직임",
-    "entry": "works/chang-gwi/index.html",
-    "extra": null
+    "entry": "works/chang-gwi/exhibit/index.html",
+    "extra": null,
+    "legacy": "works/chang-gwi/index.html"
   },
   {
     "id": "ghost-phone",

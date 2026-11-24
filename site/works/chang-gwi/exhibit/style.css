@@ -1,0 +1,34 @@
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{width:100%;height:100%;margin:0;background:#0e0e0d;color:#e5ddc9;overflow:hidden}
+body{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+#exhibition,#stage{position:absolute;inset:0;width:100%;height:100%}
+#stage{display:block}
+#setup{position:absolute;inset:0;display:grid;align-items:center;background:linear-gradient(90deg,#080911e2 0%,#0b0d16a0 50%,#0b0d161c 100%)}
+.opening{width:min(42rem,86vw);margin-left:clamp(1.65rem,10vw,12rem)}
+.work-name{margin:0 0 clamp(12px,2vh,24px);font-family:Batang,serif;font-size:clamp(1rem,2.3vw,1.8rem);color:#b69974;letter-spacing:.28em}
+h1{margin:0;font:400 clamp(3.3rem,8vw,9rem)/1.03 Batang,"Noto Serif KR",serif;letter-spacing:-.085em;color:#e7deca;text-shadow:0 6px 30px #0c0a09}
+.direction{margin:clamp(1rem,3vh,2rem) 0 1.45rem;color:#cbc1ae;font-size:clamp(.83rem,1.4vw,1rem)}
+.actions{display:flex;flex-wrap:wrap;gap:.42rem}
+button,select{font:inherit;color:inherit;background:#25231e;border:1px solid #5d5545;border-radius:2px;padding:.52rem .72rem}
+button{cursor:pointer}
+button:hover{border-color:#ae9979}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #dbc4a5;outline-offset:3px}
+button:disabled{opacity:.54;cursor:default}
+button.start{background:#d7c5a7;color:#181613;border-color:#e2cdb0;font-weight:700}
+#setup-status{display:block;max-width:31rem;min-height:2.4em;margin-top:1rem;color:#cebaa1;font-size:.83rem;line-height:1.55}
+#sample-label{position:absolute;right:5%;bottom:5%;margin:0;color:#9d9382;font-size:.76rem;letter-spacing:.15em}
+dialog{padding:0;width:min(39rem,calc(100vw - 1.4rem));max-height:calc(100dvh - 1.4rem);background:#191816;color:#e8ddcb;border:1px solid #5b5242;color-scheme:dark}
+dialog::backdrop{background:#090807a8}
+.dialog-title{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.05rem;background:#201e19;border-bottom:1px solid #514637}
+.dialog-title h2{margin:0;font-size:1.06rem}
+.controls{padding:.9rem 1.04rem;font-size:.88rem;line-height:1.5}
+.controls section{padding:0 0 .65rem;margin-bottom:.65rem;border-bottom:1px solid #3e372d}
+.controls h3{margin:0 0 .58rem;color:#d6bd9f;font-size:.96rem}
+label{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.5rem 0}
+label input[type=range]{width:min(14rem,55vw)}
+summary{cursor:pointer;color:#c5b49e}
+#preview{display:block;margin:.4rem 0;max-width:100%;height:auto}
+#status{white-space:pre-line;display:block;color:#dbc198;margin:.36rem 0}
+.hint{margin:.6rem 0;color:#bfb3a0}
+@media(max-width:430px){.opening{width:90vw;margin-left:5vw}.actions button{padding:.45rem .53rem;font-size:.82rem}}
