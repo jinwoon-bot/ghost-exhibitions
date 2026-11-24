@@ -6,7 +6,7 @@ import { Microphone } from '../site/works/yagwanggwi/microphone.mjs';
 
 const events = [];
 const score = new Score((...event) => events.push(event),()=>.4);
-score.step(2850);
+score.step(950);
 assert.equal(score.state,STATES.COUNTING);
 assert.deepEqual(events.at(-1),['count',1,0]);
 score.step(score.next);
@@ -15,18 +15,21 @@ let time = score.entered + 100;
 assert.equal(score.interrupt(time),true);
 assert.equal(score.count,0);
 assert.equal(score.state,STATES.INTERRUPTED);
+assert.equal(score.view(time).eyes,1);
+assert.equal(score.view(time).hitAge,0);
+assert.deepEqual(events.at(-1),['interruption',1,1],'the first accepted clap immediately signals its own response');
 assert.equal(score.interrupt(time+100),false);
 score.step(score.next);
-assert.deepEqual(events.at(-1),['count',1,0]);
-for (let strike=2;strike<=7;strike++) {
-  time += 1580;
+assert.deepEqual(events.at(-1),['count',1,1]);
+for (let strike=2;strike<=5;strike++) {
+  time += 520;
   assert.equal(score.interrupt(time),true);
-  assert.equal(score.view(time).eyes,strike===7 ? 3 : strike>=4 ? 2 : 1);
+  assert.equal(score.view(time).eyes,strike===5 ? 3 : strike>=3 ? 2 : 1);
 }
 assert.equal(score.state,STATES.REVEAL);
 assert.equal(score.interrupt(time+700),false);
-score.step(time+5555);
-score.step(time+6000);
+score.step(time+2745);
+score.step(time+3100);
 assert.equal(events.filter(([kind])=>kind==='last-line').length,1);
 score.step(score.next);
 assert.equal(score.state,STATES.RESET);
@@ -101,9 +104,11 @@ for (let t=0;t<=3*60*60*1000;t+=60) {
 }
 assert.ok(cycles>=90,'independent scenes reset repeatedly throughout the virtual shift');
 const asset = name => new URL('../site/works/yagwanggwi/assets/'+name,import.meta.url);
-const holes=JSON.parse(await readFile(asset('apertures.json'),'utf8'));
-assert.equal(holes.length,51);
-assert.ok(holes.every(([x,y,w,h])=>x>=650 && y>=246 && x+w<=1013 && y+h<=622));
+const eyes=JSON.parse(await readFile(asset('weave-eyes.json'),'utf8'));
+assert.equal(eyes.length,35);
+assert.ok(eyes.every(([x,y,w,h])=>x>=645 && y>=249 && x+w<=1015 && y+h<=625));
+const mask=await readFile(asset('weave-apertures.png'));
+assert.deepEqual([mask.readUInt32BE(16),mask.readUInt32BE(20)],[1672,941]);
 const voice=JSON.parse(await readFile(asset('voice/manifest.json'),'utf8'));
 assert.equal(voice.count.length,NUMBERS.length);
 assert.equal(voice.reveal,'last-line.wav');
@@ -111,4 +116,4 @@ for (const file of [...voice.count,voice.reveal].filter(Boolean)) {
   const wave=await readFile(asset('voice/'+file));
   assert.ok(wave.length>2400 && wave.toString('ascii',0,4)==='RIFF','locally bundled WAV '+file);
 }
-console.log('PASS score transitions, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+holes.length+' aligned apertures, '+voice.count.length+' count WAVs.');
+console.log('PASS immediate first-eye response, five-clap climax, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+eyes.length+' positions behind the weave, '+voice.count.length+' count WAVs.');

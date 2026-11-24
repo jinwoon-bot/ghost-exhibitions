@@ -17,7 +17,10 @@ html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
   overflow: hidden;
   background: #080807;
 }
-#frame img, #picture { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#frame img, #picture {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  transform: scale(var(--push, 1)); transform-origin: 49.7% 46%;
+}
 #welcome {
   align-items: center;
   background: linear-gradient(90deg, #060707ed 0%, #060707ac 26%, #06070707 63%), linear-gradient(0deg,#04060672,transparent 45%);

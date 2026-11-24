@@ -1,7 +1,7 @@
-import { STATES } from './score.mjs';
+import { STATES } from './score.mjs?v=clap-response';
 
 export const FRAME = { width:1672, height:941 };
-const sieve = { x:650, y:246, width:363, height:376 };
+const sieve = { x:645, y:249, width:370, height:376 };
 const clamp = (x, low=0, high=1) => Math.min(high,Math.max(low,x));
 function ease(a,b,x) {
   const t = clamp((x-a)/(b-a));
@@ -21,13 +21,22 @@ async function image(name) {
 function describe(box,index) {
   const [x,y,w,h] = box;
   const seed = index+1;
+  const depth = .52+noise(seed+17)*.46;
   return {
     x:x+w/2-sieve.x, y:y+h/2-sieve.y, w, h, seed,
-    tile:Math.floor(noise(seed)*4),
-    depth:.71+noise(seed+17)*.26,
+    tile:index ? Math.floor(noise(seed)*4) : 2,
+    depth,
+    angle:(noise(seed+8)-.5)*.36,
+    light:index ? 'brightness('+(1.43+depth*.83)+') saturate(.55)' : 'brightness(2.4) contrast(1.09) saturate(.35)',
     delay:noise(seed+33),
-    order:Math.hypot((x+w/2-850)*.87,y+h/2-420)+noise(seed+57)*77,
+    order:index ? Math.hypot((x+w/2-831)*.76,y+h/2-438)+noise(seed+57)*125 : -1,
   };
+}
+
+function attention(strikes, first, many, cap) {
+  if (strikes < first) return 0;
+  if (strikes < many) return Math.min(cap,1 + (strikes-first)*3);
+  return Math.min(cap,9 + (strikes-many)*7);
 }
 
 export class Scene {
@@ -44,12 +53,14 @@ export class Scene {
     this.last = 0;
     this.shoeVisible = 1;
     this.shoeProgress = 0;
+    this.darkness = 0;
+    this.push = 0;
     this.ready = this.load().catch(error => { onError(error.message); return false; });
   }
 
   async load() {
     const [shoe, eyeSheet, mask, response] = await Promise.all([
-      image('jipsin.png'), image('eye-sheet.jpg'), image('apertures.png'), fetch(url('apertures.json')),
+      image('jipsin.png'), image('eye-sheet.jpg'), image('weave-apertures.png'), fetch(url('weave-eyes.json')),
     ]);
     if (!response.ok) throw Error('체 구멍 마스크를 불러올 수 없습니다.');
     const boxes = await response.json();
@@ -82,10 +93,27 @@ export class Scene {
     if (!this.holes) return;
     const reveal = view.state === STATES.REVEAL;
     const afterReveal = view.state === STATES.RESET && view.returnFrom === STATES.REVEAL;
-    const light = (.033 + .013*Math.sin(now*.00057) + (reveal ? .073 * ease(0,5400,view.age) : 0));
+    const targetPush = (reveal ? .21 : view.eyes ? .115+view.eyes*.015 : 0) * (safe ? .25 : 1);
+    this.push += (targetPush-this.push)*(1-Math.exp(-dt/(targetPush>this.push ? 250 : 600)));
+    const scale = (1+this.push).toFixed(3);
+    if (scale !== this.scale) {
+      this.frame.style.setProperty('--push',scale);
+      this.scale = scale;
+    }
+    const light = .028 + .012*Math.sin(now*.00057);
     ctx.fillStyle = 'rgba(0,4,8,'+light+')';
     ctx.fillRect(0,0,FRAME.width,FRAME.height);
     this.drawShoes(ctx,view,dt,now);
+    const targetDarkness = (reveal ? .55 : view.eyes*.13) * (safe ? .69 : 1);
+    this.darkness += (targetDarkness-this.darkness)*(1-Math.exp(-dt/(targetDarkness>this.darkness ? 180 : 410)));
+    if (this.darkness > .006) {
+      const shadow = ctx.createRadialGradient(831,433,138,831,456,850);
+      shadow.addColorStop(0,'rgba(0,3,6,'+(this.darkness*.18)+')');
+      shadow.addColorStop(.47,'rgba(0,3,6,'+(this.darkness*.58)+')');
+      shadow.addColorStop(1,'rgba(0,2,5,'+this.darkness+')');
+      ctx.fillStyle = shadow;
+      ctx.fillRect(0,0,FRAME.width,FRAME.height);
+    }
     this.drawEyes(ctx,view,dt,now,low,safe,afterReveal);
   }
 
@@ -128,20 +156,23 @@ export class Scene {
     surf.clearRect(0,0,sieve.width,sieve.height);
     const amount = this.holes.length;
     const reveal = view.state === STATES.REVEAL;
-    const cap = safe ? Math.min(30,amount) : amount;
-    const goal = reveal ? Math.round(2+(cap-2)*ease(80,4940,view.age)) :
-      afterReveal ? cap*(1-ease(0,2600,view.age)) :
-      view.eyes === 2 ? Math.min(cap, 6 + Math.max(0,view.strikes-4)*3) : view.eyes === 1 ? 1 : 0;
-    const convergence = reveal ? ease(3750,5250,view.age) : 0;
+    const cap = safe ? Math.min(21,amount) : amount;
+    const awake = attention(view.strikes,view.first,view.many,cap);
+    const beforeReveal = Math.max(1,attention(view.strikes-1,view.first,view.many,cap));
+    const goal = reveal ? Math.round(beforeReveal+(cap-beforeReveal)*ease(0,1450,view.age)) :
+      afterReveal ? cap*(1-ease(0,1040,view.age)) : awake;
+    const convergence = reveal ? ease(1380,2310,view.age) : 0;
+    const listening = (1-ease(125,415,view.hitAge))*(safe ? .5 : 1);
     let visible = 0;
     for (let i=0;i<amount;i++) {
       const hole = this.holes[i];
       const target = i < goal ? 1 : 0;
-      this.levels[i] += (target-this.levels[i])*(1-Math.exp(-dt/(target ? 290+hole.delay*480 : 630)));
+      const response = i === 0 ? 58 : 92+hole.delay*155;
+      this.levels[i] += (target-this.levels[i])*(1-Math.exp(-dt/(target ? response : 370)));
       const opacity = this.levels[i];
       if (opacity < .025) continue;
       visible++;
-      this.eye(surf,hole,opacity,now,convergence,low);
+      this.eye(surf,hole,opacity,now,Math.max(convergence,listening),low,view.hitAge);
     }
     this.visibleEyes = visible;
     if (!visible) return;
@@ -151,22 +182,25 @@ export class Scene {
     ctx.drawImage(this.eyes,sieve.x,sieve.y);
   }
 
-  eye(ctx, hole, opacity, now, convergence, low) {
+  eye(ctx, hole, opacity, now, convergence, low, hitAge) {
     const {x,y,w,h,tile,seed,depth} = hole;
+    const first = seed === 1;
     const clock = (now*.001 / (3.1+noise(seed+14)*5.4) + seed*.362) % 1;
-    const blink = 1-ease(.001,.081,Math.abs(clock-.52));
-    const opening = 1-blink*.93;
-    const drift = 1-convergence*.88;
-    const gazeX = Math.sin(now*.0011 + seed*6.2)*w*.068*drift;
-    const gazeY = Math.sin(now*.00073 + seed*3.7)*h*.035*drift;
+    const blink = first && hitAge < 1450 ? 0 : (1-ease(.001,.062,Math.abs(clock-.52)))*(1-convergence*.88);
+    const opening = (.22+.78*ease(.03,.76,opacity))*(1-blink*.93);
+    const drift = 1-convergence;
+    const gazeX = (Math.sin(now*.0011+seed*6.2)*.075 + (noise(seed+51)-.5)*.11)*w*drift;
+    const gazeY = Math.sin(now*.00073+seed*3.7)*h*.073*drift;
     const sx = (tile%2)*500+38;
     const sy = (tile>1 ? 500 : 0) + [122,112,105,110][tile];
-    const width = w*1.25;
-    const height = Math.min(h*.90,w*.69)*opening;
+    const width = w*(first ? 1.64 : 1.04+depth*.25);
+    const height = Math.min(h*(first ? 1.46 : 1.04),w*.95)*opening;
     ctx.save();
-    ctx.globalAlpha = opacity*depth;
-    ctx.filter = low ? 'brightness(1.16)' : 'brightness(1.33) saturate(.72)';
-    ctx.drawImage(this.eyeSheet,sx,sy,424,262,x-width/2+gazeX,y-height/2+gazeY,width,height);
+    ctx.translate(x+gazeX,y+gazeY);
+    ctx.rotate(hole.angle*(1-convergence*.54));
+    ctx.globalAlpha = opacity*(first ? .98 : .42+depth*.57);
+    ctx.filter = low && !first ? 'brightness(1.81) saturate(.55)' : hole.light;
+    ctx.drawImage(this.eyeSheet,sx,sy,424,262,-width/2,-height/2,width,height);
     ctx.restore();
   }
 }

@@ -7,9 +7,9 @@ export const LAST_LINE = '이번엔 너를 셀게.';
 const limit = (value, min, max) => Math.min(max, Math.max(min, value));
 
 export function thresholds(values = {}) {
-  const first = limit(Math.round(Number(values.first) || 2), 1, 8);
-  const many = limit(Math.round(Number(values.many) || 4), first + 1, 11);
-  return { first, many, final: limit(Math.round(Number(values.final) || 7), many + 1, 15) };
+  const first = limit(Math.round(Number(values.first) || 1), 1, 8);
+  const many = limit(Math.round(Number(values.many) || 3), first + 1, 11);
+  return { first, many, final: limit(Math.round(Number(values.final) || 5), many + 1, 15) };
 }
 
 export class Score {
@@ -40,7 +40,7 @@ export class Score {
     this.spokenReveal = false;
     this.peak = 0;
     this.returnFrom = null;
-    this.enter(STATES.IDLE, now, 2850);
+    this.enter(STATES.IDLE, now, 950);
   }
 
   eyeStage(now) {
@@ -59,8 +59,8 @@ export class Score {
     if (this.interruptions.length >= this.settings.final) this.reveal(now);
     else {
       const anger = this.eyeStage(now);
-      this.enter(STATES.INTERRUPTED, now, 880 + anger * 195);
-      this.emit('interruption', anger);
+      this.enter(STATES.INTERRUPTED, now, 430 + anger * 130);
+      this.emit('interruption', this.interruptions.length, anger);
     }
     return true;
   }
@@ -68,7 +68,7 @@ export class Score {
   reveal(now) {
     this.peak = 3;
     this.spokenReveal = false;
-    this.enter(STATES.REVEAL, now, 8500);
+    this.enter(STATES.REVEAL, now, 5300);
     this.emit('reveal');
   }
 
@@ -80,12 +80,12 @@ export class Score {
 
   settle(now) {
     this.returnFrom = this.state;
-    this.enter(STATES.RESET, now, 3100);
+    this.enter(STATES.RESET, now, this.returnFrom === STATES.REVEAL ? 1450 : 3100);
     this.emit('reset');
   }
 
   step(now) {
-    if (this.state === STATES.REVEAL && !this.spokenReveal && now - this.entered >= 5550 && now < this.next) {
+    if (this.state === STATES.REVEAL && !this.spokenReveal && now - this.entered >= 2740 && now < this.next) {
       this.spokenReveal = true;
       this.emit('last-line');
     }
@@ -104,7 +104,8 @@ export class Score {
     return {
       state: this.state, count: this.count, total: this.total,
       strikes: this.interruptions.filter(time => now - time < 18000).length,
-      eyes: this.eyeStage(now), peak: this.peak, returnFrom:this.returnFrom,
+      eyes: this.eyeStage(now), peak: this.peak, returnFrom:this.returnFrom, hitAge:now-this.lastClap,
+      first:this.settings.first, many:this.settings.many,
       age: Math.max(0, now - this.entered),
     };
   }

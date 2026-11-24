@@ -1,4 +1,4 @@
-import { LAST_LINE, NUMBERS } from './score.mjs';
+import { LAST_LINE, NUMBERS } from './score.mjs?v=clap-response';
 
 const voiceRoot = new URL('./assets/voice/', import.meta.url);
 const audioFile = /^[a-z0-9_-]+\.(wav|mp3|ogg)$/i;
@@ -47,7 +47,7 @@ export class Sound {
     this.room = ctx.createGain();
     this.foley = ctx.createGain();
     this.pressure = ctx.createGain();
-    this.masterGate = ctx.createGain();
+    this.roomGate = ctx.createGain();
     const limiter = ctx.createDynamicsCompressor();
     limiter.threshold.value = -11;
     limiter.knee.value = 5;
@@ -59,8 +59,9 @@ export class Sound {
       const value = (i-512)/512, magnitude = Math.abs(value);
       return Math.sign(value) * (magnitude <= .76 ? magnitude : .76+(magnitude-.76)*.50);
     });
-    for (const bus of [this.voice, this.room, this.foley, this.pressure]) bus.connect(this.masterGate);
-    this.masterGate.connect(this.main).connect(limiter).connect(ceiling).connect(ctx.destination);
+    for (const bus of [this.room,this.pressure]) bus.connect(this.roomGate);
+    for (const bus of [this.roomGate,this.voice,this.foley]) bus.connect(this.main);
+    this.main.connect(limiter).connect(ceiling).connect(ctx.destination);
     this.atmos = [
       this.loop(makeSample(ctx, 6.6, (t, white, low, mid, channel) =>
         (low * .58 + mid * .12) * (.69 + .17 * Math.sin(t * 1.7 + channel * 1.4)) *
@@ -202,10 +203,10 @@ export class Sound {
     const buffer = this.recordings.get(String(slot));
     if (buffer) {
       this.play(buffer, {bus:this.voice, volume:reveal ? .61 : .53,
-        cutoff:reveal ? 6300 : 2150 + anger * 530,
+        cutoff:reveal ? 6600 : 1550 + anger * 580,
         pan:reveal ? .025 : -.20 + anger * .07,
         pitch:reveal ? .95 : .94 - anger * .033,
-        reflection:reveal ? .02 : .15-anger*.036, voice:true});
+        reflection:reveal ? 0 : .18-anger*.05, voice:true});
       return;
     }
     const voice = this.localKorean();
@@ -226,7 +227,7 @@ export class Sound {
     const now = this.ctx.currentTime;
     const sample = (name,opts) => this.play(this.bank[name],opts);
     if (type === 'count') {
-      this.masterGate.gain.setTargetAtTime(1,now,.40);
+      this.roomGate.gain.setTargetAtTime(1,now,.40);
       this.pressure.gain.setTargetAtTime(anger * .033,now,1.1);
       this.speak(count,anger);
       if (count % 3 !== 0) sample('touch',{volume:.19,pan:-.24,when:.52+Math.random()*.32,cutoff:1800});
@@ -236,25 +237,28 @@ export class Sound {
     this.stopVoice();
     for (const note of this.effects) this.stop(note);
     if (type === 'interruption') {
-      this.masterGate.gain.setTargetAtTime(.57,now,.095);
-      this.pressure.gain.setTargetAtTime(count * .052,now,1.2);
-      sample('breath',{volume:.12+count*.12,pan:-.14,when:.29,cutoff:850+count*310,pitch:1.32});
-      if (count) sample('scratch',{volume:.10+count*.08,pan:.20,when:.48,cutoff:2800,pitch:.9+count*.08});
+      this.roomGate.gain.setTargetAtTime(.10,now,.058);
+      this.pressure.gain.setTargetAtTime(anger*.063,now,.73);
+      const side = count%2 ? .24 : -.30;
+      sample('touch',{volume:.34,pan:side,cutoff:1880+count*220,pitch:.69+count*.058});
+      if (count > 1) sample('breath',{volume:.18,pan:side*.67,when:.12,cutoff:1400+anger*300,pitch:1.34});
+      if (anger > 1) sample('scratch',{volume:.20,pan:-side,when:.16,cutoff:2350,pitch:1.17});
     } else if (type === 'reveal') {
-      this.masterGate.gain.setTargetAtTime(.12,now,.16);
-      this.pressure.gain.setTargetAtTime(0,now,.30);
+      this.roomGate.gain.setTargetAtTime(.035,now,.082);
+      this.pressure.gain.setTargetAtTime(0,now,.25);
+      sample('touch',{volume:.31,pan:-.10,cutoff:1600,pitch:.65});
+      sample('wood',{volume:.27,pan:.21,cutoff:1850,when:.10,pitch:.76});
+      sample('breath',{volume:.24,pan:.08,cutoff:2070,when:.81,pitch:.89});
     } else if (type === 'last-line') {
-      this.masterGate.gain.setValueAtTime(.87,now);
       this.speak('reveal');
-      sample('breath',{volume:.15,pan:.06,cutoff:2200,pitch:.89});
     } else if (type === 'theft') {
-      this.masterGate.gain.setTargetAtTime(.83,now,.10);
+      this.roomGate.gain.setTargetAtTime(.83,now,.10);
       [ .71, 1.35, 5.46, 6.09, 6.85 ].forEach((when,i) =>
         sample('step',{volume:.37-i*.054,pan:-.22-i*.07,cutoff:1290-i*137,when,pitch:.97-i*.04}));
       sample('drag',{volume:.43,pan:-.32,cutoff:2400,when:1.77});
       sample('wood',{volume:.18,pan:-.50,cutoff:1320,when:4.25});
     } else if (type === 'reset') {
-      this.masterGate.gain.setTargetAtTime(1,now,.55);
+      this.roomGate.gain.setTargetAtTime(1,now,.55);
       this.pressure.gain.setTargetAtTime(0,now,.45);
     }
   }

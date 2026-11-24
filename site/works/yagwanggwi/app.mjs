@@ -1,6 +1,6 @@
-import { Score, STATES, thresholds } from './score.mjs';
-import { Scene } from './scene.mjs';
-import { Sound } from './sound.mjs';
+import { Score, STATES, thresholds } from './score.mjs?v=clap-response';
+import { Scene } from './scene.mjs?v=clap-response';
+import { Sound } from './sound.mjs?v=clap-response';
 import { Microphone } from './microphone.mjs';
 
 const element = id => document.getElementById(id);
@@ -30,7 +30,8 @@ microphone.configure(settings);
 function readSettings() {
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
-  const current = {...booleans,...thresholds(saved),device:typeof saved.device === 'string' ? saved.device.slice(0,512) : ''};
+  const oldPreset = !saved.reactionVersion && saved.first === 2 && saved.many === 4 && saved.final === 7;
+  const current = {...booleans,...thresholds(oldPreset ? undefined : saved),device:typeof saved.device === 'string' ? saved.device.slice(0,512) : ''};
   for (const [name,[min,max,start]] of Object.entries(slider)) {
     current[name] = Number.isFinite(saved[name]) ? Math.max(min,Math.min(max,saved[name])) : start;
   }
@@ -39,7 +40,7 @@ function readSettings() {
 }
 
 function saveSettings() {
-  try { localStorage.setItem(key,JSON.stringify(settings)); } catch {}
+  try { localStorage.setItem(key,JSON.stringify({...settings,reactionVersion:1})); } catch {}
 }
 
 function applySettings() {
