@@ -1,0 +1,27 @@
+#aimMap {
+  position: relative;
+  height: 22px;
+  background: #0c100d;
+  border: 1px solid #465242;
+}
+#aimZone {
+  position: absolute;
+  left: 50%;
+  width: 60%;
+  height: 100%;
+  transform: translateX(-50%);
+  background: #2b352a;
+  border-inline: 1px solid #7f947a;
+}
+#aimDot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #cbd3b5;
+}
+#operator fieldset select {
+  max-width: 100%;
+}

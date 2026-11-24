@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b0a">
+  <title>인물 영정 · 당신을 보는 영정</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../dokkaebi/style.css?v=2.3.0">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <main id="exhibition" aria-label="당신을 보는 인물 영정">
+    <div class="wall-grain" aria-hidden="true"></div>
+    <figure class="memorial">
+      <div class="frame">
+        <div class="inner-frame">
+          <div class="photograph">
+            <img id="portrait" src="./assets/portrait-human.webp" alt="짙은 한복을 입고 정면을 응시하는 한국 여성의 오래된 흑백 초상">
+            <canvas id="leftEye" aria-hidden="true"></canvas>
+            <canvas id="rightEye" aria-hidden="true"></canvas>
+          </div>
+        </div>
+        <i class="ribbon ribbon-left" aria-hidden="true"></i>
+        <i class="ribbon ribbon-right" aria-hidden="true"></i>
+      </div>
+    </figure>
+    <section id="startScreen" aria-label="작품 시작">
+      <div class="start-content">
+        <p class="eyebrow">당신을 보는 영정</p>
+        <h1>인물 영정</h1>
+        <button id="startCamera" class="start-primary" disabled>카메라로 시작</button>
+        <p class="permission-note">관객의 좌우 위치를 감지하려면 카메라를 허용해 주세요.</p>
+        <div class="start-options">
+          <button id="startDemo" disabled>마우스 시연</button>
+          <button id="cancelCamera" hidden>취소</button>
+          <button id="fullscreen">전체화면</button>
+        </div>
+        <p id="startupStatus" role="status">영정을 불러오는 중입니다.</p>
+      </div>
+    </section>
+    <button id="operatorHandle" type="button" aria-label="운영 설정" title="운영 설정 (D)">·</button>
+    <div id="notice" role="status" hidden></div>
+    <video id="camera" muted playsinline hidden></video>
+    <aside id="operator" aria-label="운영 설정" hidden>
+      <header><h2>전시 운영</h2><button id="closeOperator">닫기</button></header>
+      <dl id="statusValues">
+        <dt>입력</dt><dd id="inputStatus">대기</dd>
+        <dt>카메라</dt><dd id="cameraStatus">연결 전</dd>
+        <dt>관객</dt><dd id="viewStatus">관객 대기</dd>
+        <dt>후보</dt><dd id="viewCount">0</dd>
+        <dt>선택 횟수</dt><dd id="selectionCount">0</dd>
+        <dt>시선 위치</dt><dd id="gazeValue">0.000</dd>
+        <dt>분석 간격</dt><dd id="sampleRate">—</dd>
+      </dl>
+      <fieldset>
+        <legend>카메라</legend>
+        <label for="cameraSelect">사용할 카메라</label>
+        <select id="cameraSelect"><option value="">기본 카메라</option></select>
+        <button id="reconnectCamera" disabled>연결 / 다시 연결</button>
+        <button id="stopCamera">카메라 끄기</button>
+        <label class="check"><input id="mirror" type="checkbox" checked> 좌우 반전</label>
+      </fieldset>
+      <fieldset>
+        <legend>관객 선택</legend>
+        <label for="priority">첫 관객을 고르는 기준</label>
+        <select id="priority"><option value="center">중앙 우선</option><option value="nearest">가까운 사람 우선</option></select>
+        <label>중앙 관람 구역 너비 <output id="zoneValue">60%</output><input id="zone" type="range" min="30" max="100" step="5" value="60"></label>
+        <div id="aimMap" aria-hidden="true"><i id="aimZone"></i><i id="aimDot" hidden></i></div>
+        <label>최소 얼굴 너비 <output id="minWidthValue">5.5%</output><input id="minWidth" type="range" min="3.5" max="12" step=".5" value="5.5"></label>
+        <p class="help">구역 안에서 먼저 한 사람을 선택합니다. 화면에 크고 뚜렷하게 잡히는 거리에 서서 시험해 주세요.</p>
+      </fieldset>
+      <button id="resetGaze">정면으로 초기화 (R)</button>
+      <p class="help">D 운영 설정 · F 전체화면 · R 정면 초기화<br>카메라 영상을 저장하거나 전송하지 않습니다.</p>
+    </aside>
+  </main>
+</body>
+</html>
