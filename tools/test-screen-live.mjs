@@ -42,6 +42,14 @@ test("uncertain pixels feather without dropping a confident fingertip", () => {
   assert.ok(at(mask, 17, 20) > 0 && at(mask, 17, 20) < 160);
   assert.equal(at(mask, 18, 20), 0);
 });
+test("confident floor artifacts outside the pose cannot drag an actor's shadows away", () => {
+  const person = actor(.27, 14, 49, 25, true);
+  for (let y = 83; y < 89; y++) person.mask.fill(255, y * width + 86, y * width + 104);
+  const [mask] = splitMasks([person], width, height);
+  assert.equal(at(mask, 99, 86), 0);
+  assert.ok(Math.abs(mask.anchor.x - person.shape.feet.x) < .04);
+  assert.ok(Math.abs(mask.anchor.y - person.shape.feet.y) < .04);
+});
 test("landmarks require a visible torso and expose hands separately", () => {
   const pose = Array(33);
   pose[11] = { x: .25, y: .3, visibility: .95 };

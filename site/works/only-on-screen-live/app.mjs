@@ -399,5 +399,7 @@ navigator.mediaDevices?.addEventListener("devicechange", listCameras);
 window.addEventListener("pagehide", () => { stopInput(); void sound.stop(); });
 paper.onload = () => { stage.rebuild(settings, active()); dirty = true; };
 paper.src = new URL("./assets/hanji-wall.webp", import.meta.url).href;
+setStatus("카메라 연결 대기");
+for (const id of ["camera-start", "demo-start", "fullscreen", "operator-open"]) byId(id).disabled = false;
 void listCameras();
 requestAnimationFrame(tick);

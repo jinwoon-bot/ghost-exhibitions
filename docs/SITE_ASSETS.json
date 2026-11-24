@@ -1437,8 +1437,8 @@
     },
     {
       "path": "works/only-on-screen-live/app.mjs",
-      "bytes": 17669,
-      "sha256": "e32a944cad60fdedb52eec4244f34a7e6fd7cfc10f69755373e50012e6f6603a"
+      "bytes": 17814,
+      "sha256": "3bdbabd1dadd267b94408ddb1ec7b04b953a893fb970e39087f2abaf1b70a3df"
     },
     {
       "path": "works/only-on-screen-live/assets/hanji-wall.webp",
@@ -1447,13 +1447,13 @@
     },
     {
       "path": "works/only-on-screen-live/index.html",
-      "bytes": 4348,
-      "sha256": "a0c328e56df3740c7f09af11e47b9cbc7a46d28b47831d024e515e7c8b27fe56"
+      "bytes": 4385,
+      "sha256": "a4be8139d0114af58af0109ef5397fcc19181b19cfbbf4d171955feeb54c5f10"
     },
     {
       "path": "works/only-on-screen-live/masks.mjs",
-      "bytes": 4744,
-      "sha256": "175380c9106787fb35d2e750085d2499800357d8a3e77c5d76beed33fc688a98"
+      "bytes": 5445,
+      "sha256": "31f6e7cccf1c3abc7e9dc8d5b72a48391b01db85e34d8fda232082010602531d"
     },
     {
       "path": "works/only-on-screen-live/segment-worker.js",

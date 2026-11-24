@@ -35,12 +35,22 @@ export function splitMasks(people, width, height, threshold = .18) {
   const rows = new Float32Array(height);
   for (let x = 0; x < width; x++) columns[x] = (x + .5) / width;
   for (let y = 0; y < height; y++) rows[y] = (y + .5) / height;
+  const regions = people.map(({ shape }) => {
+    const padX = clamp(shape.height * .15, .04, .14);
+    const padY = clamp(shape.height * .10, .035, .09);
+    return {
+      x0: Math.floor((shape.left - padX) * width), x1: Math.ceil((shape.right + padX) * width),
+      y0: Math.floor((shape.top - padY) * height), y1: Math.ceil((shape.bottom + padY) * height),
+    };
+  });
   for (let y = 0; y < height; y++) {
     const offset = y * width;
     for (let x = 0; x < width; x++) {
       const index = offset + x;
       let best = -Infinity, owner = -1, raw = 0;
       for (let i = 0; i < people.length; i++) {
+        const region = regions[i];
+        if (x < region.x0 || x > region.x1 || y < region.y0 || y > region.y1) continue;
         const value = people[i].mask[index];
         if (value <= minimum) continue;
         const p = people[i].shape;
@@ -86,18 +96,20 @@ export function splitMasks(people, width, height, threshold = .18) {
       }
     }
     if (area < size * .003 || area > size * .82) return [];
-    const anchor = findContact(alpha, w, h, (shape.feet?.x ?? shape.center.x) * width - left);
+    const expectedX = (shape.feet?.x ?? shape.center.x) * width - left;
+    const expectedY = shape.feet ? clamp(shape.feet.y * height - top, 0, h - 1) : h - 1;
+    const anchor = findContact(alpha, w, h, expectedX, expectedY);
     return [{ x: left, y: top, w, h, alpha, area: area / size, shape,
       anchor: { x: (left + anchor.x) / width, y: (top + anchor.y) / height } }];
   });
 }
 
-function findContact(alpha, width, height, desiredX) {
+function findContact(alpha, width, height, desiredX, desiredY) {
   let best = -Infinity, contact = { x: width / 2, y: height - 1 };
-  for (let y = Math.floor(height * .73); y < height; y++) {
+  for (let y = Math.floor(Math.min(height * .73, desiredY * .88)); y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (alpha[y * width + x] < 145) continue;
-      const score = y - Math.abs(x - desiredX) * .5;
+      const score = y - Math.abs(x - desiredX) * .7 - Math.max(0, y - desiredY) * 1.7;
       if (score > best) {
         best = score;
         contact = { x, y };
