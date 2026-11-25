@@ -1,5 +1,5 @@
 import { containGeometry, coverGeometry } from "../only-on-screen/src/tracking.mjs";
-import { ShadowHold } from "./shadow-hold.mjs";
+import { ShadowHold } from "./shadow-hold.mjs?v=floor-rehearsal";
 
 const make = () => new OffscreenCanvas(1, 1);
 const size = (canvas, w, h) => {
@@ -120,7 +120,6 @@ export class Stage {
     this.subjects = [new Subject(), new Subject(), new Subject()];
     this.active = [];
     this.delay = new ShadowHold();
-    this.heldInk = make();
   }
   update(packet, frame, config, preset) {
     if (this.packet && (this.packet.width !== packet.width || this.packet.height !== packet.height)) this.delay.reset();
@@ -128,20 +127,21 @@ export class Stage {
     size(this.frame, frame.width, frame.height);
     this.frameCtx.drawImage(frame, 0, 0);
     this.rebuild(config, preset);
-    this.delay.update(this.active, performance.now(), person => {
+    this.delay.update(this.active, performance.now(), (person, previous) => {
       const source = this.subjects[this.active.indexOf(person)].ink;
-      size(this.heldInk, source.width, source.height);
-      const ctx = this.heldInk.getContext("2d");
+      const ink = previous?.ink ?? make();
+      size(ink, source.width, source.height);
+      const ctx = ink.getContext("2d");
       ctx.clearRect(0, 0, source.width, source.height);
       ctx.drawImage(source, 0, 0);
-      return { x: person.x, y: person.y, w: person.w, h: person.h };
+      return { ink, x: person.x, y: person.y, w: person.w, h: person.h };
     });
   }
   rebuild(config, preset) {
     this.active = (this.packet?.people ?? []).slice(0, preset.people);
     const palette = colors[config.tone] || colors.ink;
     for (const [i, person] of this.active.entries()) {
-      this.subjects[i].update(person, this.frame, this.packet, this.paper, palette, config.contrast, config.shadows > 2 && preset.people !== 1);
+      this.subjects[i].update(person, this.frame, this.packet, this.paper, palette, config.contrast, config.shadows > 2 && preset.output >= 960);
     }
     for (let i = this.active.length; i < this.subjects.length; i++) this.subjects[i].clear();
   }
@@ -153,7 +153,6 @@ export class Stage {
     this.packet = null;
     this.active = [];
     this.delay.reset();
-    size(this.heldInk, 1, 1);
   }
   prepareWall(width, height) {
     const hasTexture = this.paper.complete && this.paper.naturalWidth;
@@ -204,35 +203,34 @@ export class Stage {
     const fit = containGeometry(maskW, maskH, width, height);
     ctx.save();
     if (config.mirror) { ctx.translate(width, 0); ctx.scale(-1, 1); }
-    if (config.cameraBackground) {
-      ctx.globalAlpha = .5 * opacity;
-      ctx.filter = "grayscale(1) brightness(.6)";
-      ctx.drawImage(this.frame, fit.x, fit.y, fit.w, fit.h);
-      ctx.filter = "none";
-    }
     const scaleX = fit.w / maskW, scaleY = fit.h / maskH;
-    const delayedMix = this.delay.blend(now), delayed = this.delay.hold;
+    this.delay.lastPaint = now;
     for (const [index, person] of this.active.entries()) {
       const subject = this.subjects[index];
       const x = fit.x + person.x * scaleX, y = fit.y + person.y * scaleY;
       const w = person.w * scaleX, h = person.h * scaleY;
       const anchorX = fit.x + person.anchor.x * fit.w, anchorY = fit.y + person.anchor.y * fit.h;
+      const delayed = this.delay.get(person.id, now);
       for (let i = config.shadows - 1; i >= 0; i--) {
         const layer = shadows[i];
         ctx.save();
         ctx.translate(anchorX, anchorY);
         ctx.transform(1 + (layer.wide - 1) * config.spread, 0, layer.lean * config.spread,
           1 + (layer.tall - 1) * config.spread, 0, 0);
-        const weight= i === Math.min(1,config.shadows-1) && delayed?.id===person.id ? delayedMix : 0;
+        const weight= i === Math.min(1,config.shadows-1) ? (delayed?.weight ?? 0) : 0;
         const alpha = opacity * layer.opacity * config.strength;
         if (weight) {
           const pose = delayed.pose;
+          const lean = delayed.lean;
+          ctx.save();
+          ctx.transform(1, 0, lean, 1, 0, 0);
           ctx.globalAlpha = alpha * weight;
-          ctx.drawImage(this.heldInk, fit.x + pose.x * scaleX - anchorX, fit.y + pose.y * scaleY - anchorY,
+          ctx.drawImage(pose.ink, fit.x + pose.x * scaleX - anchorX, fit.y + pose.y * scaleY - anchorY,
             pose.w * scaleX, pose.h * scaleY);
+          ctx.restore();
         }
         ctx.globalAlpha = alpha * (1-weight);
-        ctx.drawImage(layer.soft && preset.people !== 1 ? subject.smoke : subject.ink,
+        ctx.drawImage(layer.soft && preset.output >= 960 && config.shadows > 2 ? subject.smoke : subject.ink,
           x - anchorX, y - anchorY, w, h);
         ctx.restore();
       }

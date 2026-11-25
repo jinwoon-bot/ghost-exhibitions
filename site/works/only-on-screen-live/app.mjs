@@ -1,18 +1,18 @@
 import { Camera } from "../only-on-screen/src/camera.mjs";
 import { RoomSound } from "../only-on-screen/src/sound.mjs";
-import { Stage } from "./stage.mjs?v=scene-polish";
+import { Stage } from "./stage.mjs?v=floor-rehearsal";
 import { Tracks } from "./tracks.mjs?v=distance-matte";
 
 const byId = id => document.getElementById(id);
 const defaults = {
-  quality: "auto", delegate: "CPU", cameraId: "", mirror: true, cameraBackground: false,
+  quality: "auto", delegate: "CPU", cameraId: "", mirror: true,
   shadows: 3, strength: .9, spread: 1.15, contrast: 1.12, tone: "ink", threshold: .2, sound: false, volume: .12,
 };
 const presets = {
   high: { people: 3, input: 768, hz: 30, output: 1280, edgeDetail: true },
   balanced: { people: 3, input: 576, hz: 18, output: 1120, edgeDetail: true },
-  medium: { people: 2, input: 480, hz: 12, output: 960, edgeDetail: true },
-  low: { people: 1, input: 384, hz: 10, output: 864 },
+  medium: { people: 3, input: 480, hz: 12, output: 960, edgeDetail: true },
+  low: { people: 3, input: 384, hz: 10, output: 864 },
 };
 const autoOrder = ["high", "balanced", "medium", "low"];
 const qualityNames = { high: "높음", balanced: "중간 · 3명 유지", medium: "보통", low: "낮음" };
@@ -193,7 +193,7 @@ function bootWorker(preferred = settings.delegate) {
     if (data.focused) stats.focused++;
     const composeStarted = performance.now();
     data.people = tracks.update(data.people, frame.started, active().people, data.inferenceMs);
-    if (data.people.length || settings.cameraBackground) {
+    if (data.people.length) {
       stage.update(data, snapshot, settings, active());
     } else stage.clear();
     record(stats.prepare, performance.now() - composeStarted);

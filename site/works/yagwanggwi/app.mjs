@@ -1,5 +1,5 @@
-import { Score, STATES, thresholds } from './score.mjs?v=double-clap';
-import { Scene } from './scene.mjs?v=approach-film';
+import { Score, STATES, thresholds } from './score.mjs?v=floor-rehearsal';
+import { Scene } from './scene.mjs?v=floor-rehearsal';
 import { Sound } from './sound.mjs?v=double-clap';
 import { Microphone } from './microphone.mjs?v=double-clap';
 import { DEFAULT_CLAP_INTERVAL } from './clap.mjs?v=double-clap';
@@ -12,13 +12,14 @@ const slider = {
   sensitivity:[.15,.95,.55], interval:[150,850,DEFAULT_CLAP_INTERVAL],
   master:[0,1,.73], voice:[0,1,.85], fx:[0,1,.57], room:[0,1,.32],
 };
-const booleans = {muted:false,safe:false,hideCursor:true,autoReset:true};
+const booleans = {muted:false,safe:false,hideCursor:true};
 const labels = {
   [STATES.IDLE]:'대기', [STATES.COUNTING]:'숫자 세기', [STATES.INTERRUPTED]:'방해받음',
   [STATES.AGITATED]:'짜증 누적', [STATES.LUNGE]:'야광귀 등장', [STATES.REVEAL]:'클라이맥스',
   [STATES.QUIET]:'정적', [STATES.RESET]:'진정 중',
 };
 let active = false, starting = false, disposed = false, preferredMic = true;
+let wakeLock, locking = false, micPending = false, nextReconnect = 0, connectedOnce = false;
 let error = '', fps = 0, frames = 0, clock = 0, drawAt = 0, sampleAt = 0, low = false, lowSince = 0;
 let settings = readSettings();
 const scene = new Scene(element('picture'), element('frame'), element('approach-film'), message => announce(message));
@@ -114,12 +115,28 @@ async function openAudio() {
 }
 
 async function attachMic() {
-  const ctx = sound.ctx?.state === 'running' ? sound.ctx : await openAudio();
-  if (!preferredMic || !active || disposed) return false;
-  if (!ctx) { microphone.stop('오디오 연결 실패 · Space로 체험'); return false; }
-  const ok = await microphone.start(ctx,settings.device);
-  await fillDevices();
-  return ok;
+  if (micPending || !preferredMic || !active || disposed) return false;
+  micPending = true;
+  try {
+    const ctx = sound.ctx?.state === 'running' ? sound.ctx : await openAudio();
+    if (!preferredMic || disposed) return false;
+    if (!ctx) { microphone.stop('오디오 연결 실패 · Space로 체험'); return false; }
+    const ok = await microphone.start(ctx, settings.device);
+    if (disposed) { microphone.stop(); return false; }
+    connectedOnce ||= ok;
+    await fillDevices();
+    return ok;
+  } finally { micPending = false; }
+}
+
+async function keepAwake() {
+  if (!active || locking || document.hidden || !navigator.wakeLock || (wakeLock && !wakeLock.released)) return;
+  locking = true;
+  try {
+    const lock = await navigator.wakeLock.request('screen');
+    if (disposed || document.hidden) await lock.release();
+    else wakeLock = lock;
+  } catch {} finally { locking = false; }
 }
 
 async function start(useMic, goFullScreen) {
@@ -132,6 +149,7 @@ async function start(useMic, goFullScreen) {
   await scene.ready;
   if (disposed) return false;
   active = true;
+  void keepAwake();
   starting = false;
   score.reset(performance.now());
   element('welcome').hidden = true;
@@ -165,6 +183,10 @@ function loop(now) {
   requestAnimationFrame(loop);
   if (document.hidden) return;
   if (active) score.step(now);
+  if (active && preferredMic && connectedOnce && !microphone.stream && now >= nextReconnect && !/권한이 거부/.test(microphone.status)) {
+    nextReconnect = now + 12000;
+    void attachMic();
+  }
   const isLow = low || settings.safe;
   if (!drawAt || now-drawAt >= (isLow ? 1000/30-1 : 1000/60-2)) {
     scene.resize(isLow);
@@ -253,12 +275,13 @@ document.addEventListener('visibilitychange',() => {
   if (!active || disposed) return;
   if (document.hidden) sound.ctx?.suspend().catch(()=>{});
   else {
+    void keepAwake();
     drawAt = clock = frames = 0;
     score.reset(performance.now());
     sound.ctx?.resume().then(()=>sound.event('reset')).catch(()=>announce('운영실에서 오디오를 다시 켜세요.'));
   }
 });
-window.addEventListener('pagehide',() => { disposed = true; microphone.stop(); sound.dispose(); }, {once:true});
+window.addEventListener('pagehide',() => { disposed = true; wakeLock?.release().catch(()=>{}); microphone.stop(); sound.dispose(); }, {once:true});
 window.addEventListener('pageshow',event => { if (event.persisted) location.reload(); });
 scene.ready.then(ok => {
   element('start').disabled = false;

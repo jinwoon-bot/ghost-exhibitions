@@ -6,6 +6,7 @@ export const STATES = Object.freeze({
 });
 export const NUMBERS = Object.freeze(['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열하나', '열둘']);
 export const LAST_LINE = '이번엔 너를 셀게.';
+export const IDLE_RESET_MS = 18000;
 const limit = (value, min, max) => Math.min(max, Math.max(min, value));
 
 export function thresholds(values = {}) {
@@ -19,14 +20,13 @@ export class Score {
     this.emit = emit;
     this.random = random;
     this.settings = thresholds();
-    this.autoReset = true;
+    this.round = 0;
     this.total = 0;
     this.reset(0);
   }
 
   configure(values) {
     this.settings = thresholds(values);
-    this.autoReset = values.autoReset !== false;
   }
 
   enter(state, now, delay) {
@@ -42,7 +42,7 @@ export class Score {
     this.spokenReveal = false;
     this.peak = 0;
     this.returnFrom = null;
-    this.enter(STATES.IDLE, now, 950);
+    this.enter(STATES.IDLE, now, Infinity);
   }
 
   eyeStage(now) {
@@ -59,16 +59,20 @@ export class Score {
     this.interruptions = this.interruptions.filter(time => now - time < 18000);
     this.interruptions.push(now);
     this.count = 0;
-    if (gap <= DOUBLE_CLAP_WINDOW) {
-      this.enter(STATES.LUNGE, now, 2020);
-      this.emit('lunge');
-    } else if (this.interruptions.length >= this.settings.final) this.reveal(now);
+    if (gap <= DOUBLE_CLAP_WINDOW) this.lunge(now);
+    else if (this.interruptions.length >= this.settings.final) this.reveal(now);
     else {
       const anger = this.eyeStage(now);
       this.enter(STATES.INTERRUPTED, now, 430 + anger * 130);
       this.emit('interruption', this.interruptions.length, anger);
     }
     return true;
+  }
+
+  lunge(now) {
+    this.variant = this.round++ % 3;
+    this.enter(STATES.LUNGE, now, 2220);
+    this.emit('lunge', this.variant);
   }
 
   reveal(now) {
@@ -91,14 +95,20 @@ export class Score {
   }
 
   step(now) {
+    if (this.state === STATES.IDLE) return;
+    if (![STATES.RESET,STATES.REVEAL,STATES.LUNGE].includes(this.state) && now - this.lastClap >= IDLE_RESET_MS && Number.isFinite(this.lastClap)) {
+      this.settle(now);
+      return;
+    }
     if (this.state === STATES.REVEAL && !this.spokenReveal && now - this.entered >= 2740 && now < this.next) {
       this.spokenReveal = true;
       this.emit('last-line');
     }
     if (now < this.next) return;
-    if (this.state === STATES.RESET) { if (this.autoReset) this.reset(now); return; }
+    if (this.state === STATES.RESET) { this.reset(now); return; }
     if (this.state === STATES.LUNGE || this.state === STATES.REVEAL || this.state === STATES.QUIET) { this.settle(now); return; }
     if (this.count >= NUMBERS.length) { this.quiet(now); return; }
+    if (this.count >= 2 && this.interruptions.length) { this.lunge(now); return; }
     const anger = this.eyeStage(now);
     const hold = 1390 + this.random() * 900 + (this.count % 4 === 2 ? 410 : 0) - anger * 155;
     this.enter(anger ? STATES.AGITATED : STATES.COUNTING, now, hold);
@@ -109,6 +119,7 @@ export class Score {
   view(now) {
     return {
       state: this.state, count: this.count, total: this.total,
+      variant: this.variant ?? 0,
       strikes: this.interruptions.filter(time => now - time < 18000).length,
       eyes: this.eyeStage(now), peak: this.peak, returnFrom:this.returnFrom, hitAge:now-this.lastClap,
       first:this.settings.first, many:this.settings.many,

@@ -19,12 +19,12 @@
       <div class="setup-note"><span class="dot"></span><p>현재 장비 없는 가상 센서 모드<br><small>실제 전화기·ESP32 연결로 표시하지 않습니다.</small></p></div>
       <button id="start" disabled class="primary">오디오 활성화하고 시작 <span>↗</span></button>
       <button id="previewStart" disabled class="quiet">장비 없이 한 통화 듣기</button>
-      <p class="fine"><a href="./compare.html">창귀 변조 비교</a> · <a id="editionLink" href="./?edition=classic">이전 전시판</a> · <a href="./library.html?v=4.2.0">음원 보관함</a></p>
+      <p class="fine"><a href="./compare.html">창귀 변조 비교</a> · <a id="editionLink" href="./?edition=classic">이전 전시판</a> · <a href="./library.html?v=floor-rehearsal">음원 보관함</a></p>
       <button id="openSetup" disabled class="quiet">설정 먼저 보기</button><p id="setupError" class="error" role="alert"></p>
       <p class="fine">운영자가 한 번 시작하면 관객 조작 화면은 숨겨집니다.<br>여섯 귀신의 사전 제작 음성·배경음과 추가20편의 짧은 통화가 포함되어 있습니다. 전시 중에는 인터넷이나 음성 API를 사용하지 않습니다.</p>
     </div>
   </section>
-  <section id="previewControls" hidden aria-label="장비 없는 전화 시연"><span>가상 전화 시연 · 실제 센서 미연결</span><label>다음 통화 <select id="previewEpisode" aria-label="통화 연출"><option value="auto">자동 선택 · 기존26+신규4 · 희귀 히든2</option><option value="classic">기존 전체 대사</option></select></label><label>다음 발신자 <select id="previewGhost" aria-label="시연 발신자"><option value="random">회차마다 다른 귀신</option></select></label><div><button id="previewAnswer">수화기 들기</button><button id="previewHangup">수화기 내려놓기</button><button id="previewNext">다음 관객</button><button id="previewExit">시연 닫기</button><a href="./library.html?v=4.2.0">모든 음원 모아 듣기</a></div></section>
+  <section id="previewControls" hidden aria-label="장비 없는 전화 시연"><span>가상 전화 시연 · 실제 센서 미연결</span><label>다음 통화 <select id="previewEpisode" aria-label="통화 연출"><option value="auto">이전 연출 자동 선택 · 30편</option><option value="classic">기존 전체 대사</option></select></label><label>다음 발신자 <select id="previewGhost" aria-label="시연 발신자"><option value="random">회차마다 다른 귀신</option></select></label><div><button id="previewAnswer">수화기 들기</button><button id="previewHangup">수화기 내려놓기</button><button id="previewNext">다음 관객</button><button id="previewExit">시연 닫기</button><a href="./library.html?v=4.2.0">모든 음원 모아 듣기</a></div></section>
   <button id="operatorHandle" aria-label="운영자 패널 열기" title="D · 운영자 패널">···</button>
   <aside id="panel" class="panel" aria-label="전시 운영자 패널" hidden>
     <a class="studio-link" href="./studio.html">Voice Studio · 목소리 제작 / A·B 비교 ↗</a><div class="panel-head"><div><span class="eyebrow">CONTROL ROOM <b id="operatorVersion">V5</b></span><h2>전화 운영실</h2></div><button id="closePanel" class="icon-button" aria-label="운영자 패널 닫기">×</button></div>
@@ -88,5 +88,5 @@
     <details class="log-wrap"><summary>최근 기록 · <span id="logCount">0</span></summary><ol id="log"></ol></details>
     <p class="panel-foot">D 운영실 · F 전체화면 · R 초기화 · Esc 시험 중단<br>가상 센서 / 실제 하드웨어 시험은 별도</p>
   </aside>
-  <script type="module" src="./js/main.js?v=scene-polish"></script>
+  <script type="module" src="./js/main.js?v=floor-rehearsal"></script>
 </body></html>

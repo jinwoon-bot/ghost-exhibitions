@@ -1,6 +1,6 @@
 import { Camera } from '../src/camera.mjs';
 import { FaceInput } from './detector.mjs';
-import { COPY, FINALE, Episode, Proximity, clamp, smooth } from './episode.mjs?v=scene-polish';
+import { COPY, FINALE, Episode, Proximity, clamp, smooth } from './episode.mjs?v=floor-rehearsal';
 import { BroadcastAudio } from './audio.mjs?v=hard-cut';
 import { NewsPicture, SignalPicture, clearPhoto, drawCover, loadImage, webcamPortrait } from './visual.mjs?v=hard-cut';
 import { DistanceReadings, minimumRange, rangeLimit } from './distance.mjs';
@@ -29,6 +29,7 @@ let demo = 0, manual = false, cameraWanted = false, chosenHeadline = -1;
 let boot = performance.now(), lastFrame = 0, lastStatus = 0, lastAudio = 0;
 let intensity = 0, lastPhase = 'normal', typed = 0;
 let detectedAt = null, lastIdentMs = null, lastNoticeMs = null;
+let wakeLock = null, wakePending = false;
 
 function loadSettings() {
   let data = {};
@@ -122,8 +123,8 @@ function clearPortrait() {
   delete screen.dataset.portrait;
 }
 
-function resetEpisode() {
-  episode.reset();
+function resetEpisode(armed = true) {
+  episode.reset(armed);
   clearPortrait();
   manual = false;
   typed = 0;
@@ -224,14 +225,26 @@ async function devices() {
 }
 
 function scheduleRetry() {
-  if (!cameraWanted || retryAt || retryCount >= 3) return;
-  retryAt = performance.now() + 1600 * (retryCount + 1);
+  if (!cameraWanted || retryAt) return;
+  retryAt = performance.now() + Math.min(12000,1600 * (retryCount + 1));
+}
+
+async function keepScreenAwake() {
+  if (!cameraWanted || document.hidden || wakePending || !navigator.wakeLock || (wakeLock && !wakeLock.released)) return;
+  wakePending = true;
+  try {
+    const lock = await navigator.wakeLock.request('screen');
+    if (!cameraWanted) await lock.release();
+    else wakeLock = lock;
+  } catch {} finally { wakePending = false; }
 }
 
 function stopInputs() {
   generation++;
   busy = false;
   cameraWanted = false;
+  wakeLock?.release().catch(() => {});
+  wakeLock = null;
   retryAt = 0;
   retryCount = 0;
   camera.stop();
@@ -264,13 +277,14 @@ async function connect(retry = false) {
     await face.start(settings.lowLight);
     if (request !== generation) return false;
     retryCount = 0;
+    void keepScreenAwake();
     return true;
   } catch (error) {
     if (request !== generation) return false;
     camera.stop();
     face.stop();
     cameraState = error.message;
-    if (retry) scheduleRetry();
+    if (retry && !/권한이 거부|접근이 차단|Permission denied/i.test(error.message)) scheduleRetry();
     return false;
   } finally {
     if (request === generation) {
@@ -353,7 +367,8 @@ function frame(now) {
   intensity = prox.update(now, step, settings.far, settings.near, override);
   const present = manual || (mode === 'demo' && demo >= .34) ||
     (mode === 'camera' && cameraWanted && prox.present(now));
-  if (episode.update(step, intensity, present)) resetEpisode();
+  const outcome = episode.update(step, intensity, present);
+  if (outcome) resetEpisode(outcome === 'departure' || !present);
   const { phase, age, alpha } = episode;
   if (phase !== lastPhase) {
     if (phase === 'ident') {
@@ -365,6 +380,7 @@ function frame(now) {
       }
     }
     if (phase === 'reveal') audio.shutter();
+    if (phase === 'leaving') clearPortrait();
     if (phase === 'scare') audio.scare();
     if (phase === 'cooldown') {
       manual = false;
@@ -544,7 +560,7 @@ document.addEventListener('visibilitychange', () => {
     clearObservation();
     prox.filtered = 0;
     resetEpisode();
-  }
+  } else void keepScreenAwake();
 });
 window.addEventListener('pagehide', () => {
   stopInputs();

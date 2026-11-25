@@ -1,8 +1,8 @@
 import { CameraInput } from '../js/camera.js';
 import { cameraHelp } from '../js/environment.js';
 import { ScreenAwake } from '../js/awake.js';
-import { PoseHistory } from './history.mjs?v=scene-polish';
-import { ExhibitionPicture } from './picture.mjs?v=scene-polish';
+import { PoseHistory } from './history.mjs?v=floor-rehearsal';
+import { ExhibitionPicture } from './picture.mjs?v=floor-rehearsal';
 import { ExhibitionSound } from './sound.mjs';
 
 const element = id => document.getElementById(id);

@@ -8,67 +8,71 @@ export class ShadowHold {
   constructor() { this.reset(); }
 
   reset() {
-    this.raised = new Map();
-    this.pending = null;
-    this.hold = null;
-    this.next = 0;
+    this.tracks = new Map();
+    this.lastPaint = -Infinity;
   }
 
   update(people, now, capture) {
-    if (this.hold) {
-      const person = people.find(person => person.id === this.hold.id);
-      if (!person || separated(this.hold.center, person.shape.center)) this.hold = null;
-      if (this.hold || now < this.next) return;
+    const visible = new Set(people.map(person => person.id));
+    for (const id of this.tracks.keys()) if (!visible.has(id)) this.tracks.delete(id);
+    for (const person of people) this.observe(person, now, capture);
+  }
+
+  observe(person, now, capture) {
+    const { id, shape } = person;
+    let track = this.tracks.get(id);
+    if (!track) {
+      track = { raised: null, pending: null, hold: null, next: 0 };
+      this.tracks.set(id, track);
     }
-    if (now < this.next) return;
-    if (this.pending) {
-      const { id, center, wrist } = this.pending;
-      const person = people.find(person => person.id === id);
-      const height = person ? offset(person, wrist) : null;
-      if (!person || height === null || separated(center, person.shape.center) || now - this.pending.captured > 780) {
-        this.pending = null;
-        this.raised.delete(id);
+    if (track.hold && (now >= track.hold.until || separated(track.hold.center, shape.center))) track.hold = null;
+    if (track.hold || now < track.next) return;
+    if (track.pending) {
+      const { center, wrist, captured } = track.pending;
+      const height = offset(person, wrist);
+      if (height === null || separated(center, shape.center) || now - captured > 780) {
+        track.raised = track.pending = null;
       } else if (height < -.035) {
-        this.hold = { ...this.pending, until: now + 510 };
-        this.pending = null;
-        this.raised.clear();
-        this.next = now + 2800;
+        track.hold = { ...track.pending, from: now, until: now + 860 };
+        track.raised = track.pending = null;
+        track.next = now + 2800;
         return;
       } else {
         if (height > .10) {
-          this.pending.pose = capture(person);
-          this.pending.captured = now;
+          track.pending.pose = capture(person, track.pending.pose);
+          track.pending.captured = now;
         }
         return;
       }
     }
-    const visible = new Set(people.map(person => person.id));
-    for (const id of this.raised.keys()) if (!visible.has(id)) this.raised.delete(id);
-    for (const person of people) {
-      const left = offset(person, 0), right = offset(person, 1);
-      const wrist = (left ?? -1) > (right ?? -1) ? 0 : 1;
-      if (person.shape.height < .29 || (offset(person, wrist) ?? 0) < .12) {
-        this.raised.delete(person.id);
-        continue;
-      }
-      const center = person.shape.center;
-      const first = this.raised.get(person.id);
-      if (!first || first.wrist !== wrist || separated(first.center, center)) {
-        this.raised.set(person.id, { time: now, center, wrist });
-      } else if (now - first.time >= 170) {
-        this.pending = { id: person.id, center, wrist, pose: capture(person), captured: now };
-        return;
-      }
+    const left = offset(person, 0), right = offset(person, 1);
+    const wrist = (left ?? -1) > (right ?? -1) ? 0 : 1;
+    if (shape.height < .29 || (offset(person, wrist) ?? 0) < .12) {
+      track.raised = null;
+      return;
+    }
+    const { center } = shape, first = track.raised;
+    if (!first || first.wrist !== wrist || separated(first.center, center)) {
+      track.raised = { time: now, center, wrist };
+    } else if (now - first.time >= 170) {
+      track.pending = { id, center, wrist, pose: capture(person), captured: now };
     }
   }
 
-  blend(now) {
-    if (!this.hold) return 0;
-    this.lastPaint = now;
-    if (now >= this.hold.until) { this.hold = null; return 0; }
-    const remaining = Math.min(1, (this.hold.until - now) / 175);
-    return remaining ** 2 * (3 - 2 * remaining);
+  get(id, now) {
+    const track = this.tracks.get(id), hold = track?.hold;
+    if (!hold) return null;
+    if (now >= hold.until) {
+      track.hold = null;
+      return null;
+    }
+    const remainder = Math.min(1, (hold.until - now) / 175);
+    const phase = Math.max(0, Math.min(1, (now - hold.from) / (hold.until - hold.from)));
+    return { pose: hold.pose, weight: remainder ** 2 * (3 - 2 * remainder),
+      lean: (hold.wrist === 0 ? -.13 : .13) * Math.sin(Math.PI * phase) ** 2 };
   }
 
-  needsPaint(now) { return this.hold && now >= this.hold.until - 175 && now - (this.lastPaint ?? -Infinity) >= 33; }
+  needsPaint(now) {
+    return now - this.lastPaint >= 33 && Array.from(this.tracks.values()).some(track => track.hold);
+  }
 }

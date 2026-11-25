@@ -1,9 +1,9 @@
-import {defaults,loadConfig,saveConfig,sanitize} from './lib/config.mjs?v=scene-polish';
+import {defaults,loadConfig,saveConfig,sanitize} from './lib/config.mjs?v=floor-rehearsal';
 import {Camera} from './lib/camera.mjs';
 import {Vision} from './lib/vision.mjs';
 import {SeatDetector,reasons} from './lib/seat.mjs';
 import {Interaction,phaseNames} from './lib/interaction.mjs';
-import {Scene} from './lib/scene-film.mjs?v=scene-polish';
+import {Scene} from './lib/scene-film.mjs?v=floor-rehearsal';
 import {Metrics} from './lib/metrics.mjs';
 import {WeddingFoley} from './lib/foley.mjs';
 const $=id=>document.getElementById(id);

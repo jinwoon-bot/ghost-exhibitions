@@ -1,6 +1,13 @@
 import {ease} from './interaction.mjs';
 import {appURL} from './paths.mjs';
 const image=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('귀신 시작 이미지를 읽지 못했습니다.'));im.src=src;});
+const makeCanvas=(width,height)=>Object.assign(document.createElement('canvas'),{width,height});
+const watchPlans=[
+ {songaksi:[.38,2.30,11,5],mongdal:[1.15,3.1,-9,7]},
+ {songaksi:[1.25,3.3,-8,8],mongdal:[.35,2.4,13,4]},
+ {songaksi:[.68,2.6,8,8],mongdal:[.96,2.9,-12,6]}
+];
+const gesture=(time,start,end)=>ease((time-start)/.48)*(1-ease((time-end+.52)/.52));
 const usable=v=>v.readyState>=2&&!v.seeking;
 const finished=v=>v.ended||(v.duration>0&&v.currentTime>=v.duration-.04);
 // Follow the contact point as the source takes a step toward the camera.
@@ -11,7 +18,7 @@ export function groundAt(name,kind,progress){
  return points[from]+((points[from+1]??points[from])-points[from])*(index-from);
 }
 export class Scene{
- constructor(container,onError){this.container=container;this.onError=onError;this.actors={};this.ready=false;this.lastState='INIT';this.generation=0;this.events=[];this.artStatus='walking-reveal-film-v2';this.failed=false;}
+ constructor(container,onError){this.container=container;this.onError=onError;this.actors={};this.ready=false;this.lastState='INIT';this.generation=0;this.events=[];this.artStatus='walking-reveal-continuous-v3';this.watchRound=-1;this.failed=false;}
  event(type,extra={}){this.events.push({type,at:performance.now(),...extra});if(this.events.length>600)this.events.splice(0,100);}
  async load(v,url){
   v.src=url;v.load();
@@ -30,12 +37,15 @@ export class Scene{
    const create=kind=>{const v=document.createElement('video');v.className='film-video';v.dataset.kind=kind;v.muted=true;v.playsInline=true;v.preload='auto';v.disablePictureInPicture=true;v.setAttribute('aria-hidden','true');return v;};
    const walk=create('walk'),reveal=create('reveal'),ground=document.createElement('span');
    ground.className='film-ground';
-   el.append(ground,poster,walk,reveal);this.container.append(el);
-   const a={el,ground,poster,walk,reveal,spec,active:'poster',walkStarted:false,revealStarted:false,lastProgress:performance.now(),lastTime:0};this.actors[name]=a;
+   const display=makeCanvas(576,1024),stable=makeCanvas(576,1024),sample=makeCanvas(36,64);
+   display.className='film-composite';display.setAttribute('aria-hidden','true');
+   el.append(ground,poster,walk,reveal,display);this.container.append(el);
+   const a={el,ground,poster,walk,reveal,spec,active:'poster',walkStarted:false,revealStarted:false,lastProgress:performance.now(),lastTime:0,
+    display:display.getContext('2d'),stable:stable.getContext('2d'),sample:sample.getContext('2d',{willReadFrequently:true}),
+    sampleTime:-1,sampleKind:'',coverage:0,validFrames:0,heldFrames:0,lastWatch:-Infinity,animated:false};this.actors[name]=a;
    await this.load(walk,spec.walk);await this.load(reveal,spec.reveal);
   }
-  // 실제 alpha-video 합성 경로까지 낮은 불투명도로 미리 그린다.
-  // canvas 썸네일 준비만으로는 첫 표시 때의 영상 합성이 준비되지 않았다.
+  // 전시에서 사용하는 합성 캔버스를 첫 등장 전에 준비한다.
   for(const a of Object.values(this.actors))await this.warm(a);
   this.rearm();this.beginMeasurement();this.ready=true;this.event('ready');
  }
@@ -43,14 +53,52 @@ export class Scene{
   a.el.style.cssText='position:absolute;left:0;top:0;width:288px;height:512px;opacity:0.001';a.poster.style.visibility='hidden';
   for(const v of [a.walk,a.reveal]){
    v.style.opacity='1';
-   try{await v.play();await new Promise(resolve=>{let count=0;const timeout=setTimeout(resolve,1200);const frame=()=>{if(++count>=2){clearTimeout(timeout);resolve();}else v.requestVideoFrameCallback(frame);};if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(frame);else requestAnimationFrame(()=>requestAnimationFrame(resolve));});v.pause();if(v.currentTime!==0){await new Promise(resolve=>{const timeout=setTimeout(resolve,2000);v.addEventListener('seeked',()=>{clearTimeout(timeout);resolve();},{once:true});v.currentTime=0;});}await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
+   try{await v.play();await new Promise(resolve=>{let count=0;const timeout=setTimeout(resolve,1200);const frame=()=>{if(++count>=2){clearTimeout(timeout);resolve();}else v.requestVideoFrameCallback(frame);};if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(frame);else requestAnimationFrame(()=>requestAnimationFrame(resolve));});v.pause();this.capture(a,v);this.paint(a);if(v.currentTime!==0){await new Promise(resolve=>{const timeout=setTimeout(resolve,2000);v.addEventListener('seeked',()=>{clearTimeout(timeout);resolve();},{once:true});v.currentTime=0;});}await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
    catch(e){this.event('warm-skipped',{message:e.message});v.pause();}v.style.opacity='0';
   }
   a.el.style.opacity='0';a.poster.style.visibility='visible';
  }
  beginMeasurement(){for(const a of Object.values(this.actors))for(const v of [a.walk,a.reveal]){const q=v.getVideoPlaybackQuality?.();v.measurementBaseline=q?{total:q.totalVideoFrames,dropped:q.droppedVideoFrames}:{total:0,dropped:0};}}
  fail(message){if(this.failed)return;this.failed=true;this.event('error',{message});this.onError(message);}
- activate(a,kind){a.active=kind;a.lastTime=a[kind].currentTime;a.lastProgress=performance.now();a.poster.style.visibility='hidden';a.walk.style.opacity=kind==='walk'?'1':'0';a.reveal.style.opacity=kind==='reveal'?'1':'0';}
+ capture(a,v){
+  if(!usable(v)||v.videoWidth!==576)return false;
+  const kind=v.dataset.kind;
+  if(a.sampleKind===kind&&a.sampleTime===v.currentTime)return false;
+  a.sampleKind=kind;a.sampleTime=v.currentTime;
+  a.sample.clearRect(0,0,36,64);
+  a.sample.drawImage(v,0,0,36,64);
+  const pixels=a.sample.getImageData(0,0,36,64).data;
+  let coverage=0,brightness=0;
+  for(let i=0;i<pixels.length;i+=4){
+   if(pixels[i+3]<=105)continue;
+   coverage++;
+   brightness+=pixels[i]+pixels[i+1]+pixels[i+2];
+  }
+  if(coverage<110||coverage>2010||coverage<a.coverage*.58||brightness<coverage*30){
+   a.heldFrames++;
+   return false;
+  }
+  a.coverage=coverage;a.validFrames++;
+  a.stable.globalCompositeOperation='copy';
+  a.stable.drawImage(v,0,0);
+  return true;
+ }
+ paint(a,movement=0,chin=0,grip=0){
+  const ctx=a.display,source=a.stable.canvas;
+  ctx.clearRect(0,0,576,1024);
+  if(Math.abs(movement)+Math.abs(chin)+Math.abs(grip)<.15){ctx.drawImage(source,0,0);return;}
+  // 얼굴 위쪽부터 어깨, 손목에서 이동량을 줄여 가리개와 발의 기준 위치를 유지한다.
+  const displacement=y=>chin*ease(y/90)*(1-ease((y-130)/194));
+  for(let top=0;top<656;top+=8){
+   const center=top+4;
+   const lean=movement*(1-ease((center-72)/244));
+   const hands=grip*ease((center-330)/112)*(1-ease((center-574)/78));
+   const y=top+displacement(top);
+   ctx.drawImage(source,0,top,576,8,lean+hands,y,576,top+8+displacement(top+8)-y+.10);
+  }
+  ctx.drawImage(source,0,656,576,368,0,656,576,368);
+ }
+ activate(a,kind){a.active=kind;if(this.capture(a,a[kind]))this.paint(a);a.lastTime=a[kind].currentTime;a.lastProgress=performance.now();a.poster.style.visibility=a.coverage>0?'hidden':'visible';a.walk.style.opacity=kind==='walk'?'1':'0';a.reveal.style.opacity=kind==='reveal'?'1':'0';}
  begin(a,kind,rate,name){
   const v=a[kind],key=kind+'Started';if(a[key]||!usable(v)||this.failed)return;
   a[key]=true;v.playbackRate=Math.max(.75,Math.min(1.25,rate));const generation=this.generation;
@@ -60,13 +108,13 @@ export class Scene{
   v.play().then(()=>{if(generation!==this.generation){v.pause();return;}if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(visible);else visible();}).catch(e=>{if(generation===this.generation)this.fail('귀신 영상 재생을 시작하지 못했습니다: '+e.message);});
  }
  rearm(){
-  this.generation++;for(const a of Object.values(this.actors)){a.el.style.opacity='0';for(const v of [a.walk,a.reveal]){v.pause();if(v.currentTime!==0)v.currentTime=0;v.playbackRate=1;}a.walkStarted=a.revealStarted=false;a.active='poster';a.poster.style.visibility='visible';a.walk.style.opacity=a.reveal.style.opacity='0';}this.failed=false;this.event('hidden-reset');
+  this.generation++;for(const a of Object.values(this.actors)){a.el.style.opacity='0';for(const v of [a.walk,a.reveal]){v.pause();if(v.currentTime!==0)v.currentTime=0;v.playbackRate=1;}a.walkStarted=a.revealStarted=false;a.active='poster';a.poster.style.visibility='visible';a.display.clearRect(0,0,576,1024);a.coverage=0;a.sampleTime=-1;a.sampleKind='';a.animated=false;a.walk.style.opacity=a.reveal.style.opacity='0';}this.failed=false;this.event('hidden-reset');
  }
  gate(){return {walkComplete:this.ready&&Object.values(this.actors).every(a=>a.walkStarted&&finished(a.walk)),revealComplete:this.ready&&Object.values(this.actors).every(a=>a.revealStarted&&finished(a.reveal))};}
  render(now,visual,config,state){
   if(!this.ready)return;
   const changed=state!==this.lastState;
-  if(changed){this.event('phase',{state});if(state==='RESET'||(state==='IDLE'&&this.lastState==='INIT'))this.rearm();if(state==='GHOST_ENTER')this.enterAt=now;}
+  if(changed){this.event('phase',{state});if(state==='RESET'||(state==='IDLE'&&this.lastState==='INIT'))this.rearm();if(state==='GHOST_ENTER')this.enterAt=now;if(state==='GHOST_WATCH'){this.watchAt=now;this.watchRound++;this.event('watch-plan',{plan:this.watchRound%watchPlans.length});}}
   const height=this.container.clientHeight;
   for(const [name,a] of Object.entries(this.actors)){
    const p=config.actors[name],h=height*p.height,w=h*576/1024;
@@ -81,6 +129,23 @@ export class Scene{
    }
    if(state==='GHOST_ENTER')this.begin(a,'walk',Math.max(...Object.values(this.actors).map(x=>x.walk.duration))/config.timing.enter,name);
    if(state==='GHOST_REVEAL'&&(name==='songaksi'||this.actors.songaksi.reveal.currentTime>=config.timing.offset))this.begin(a,'reveal',a.reveal.duration/config.timing.reveal,name);
+   const source=a[a.active];
+   if(visual.opacity>0&&source instanceof HTMLVideoElement){
+    if(this.capture(a,source)){a.poster.style.visibility='hidden';this.paint(a);}
+    if(state==='GHOST_WATCH'&&now-a.lastWatch>=30){
+     const time=(now-this.watchAt)/1000;
+     const [start,end,shift,chin]=watchPlans[this.watchRound%watchPlans.length][name];
+     const head=gesture(time,start,end);
+     const lateTime=name==='songaksi'?5.1:5.85;
+     const late=gesture(time,lateTime,lateTime+1.9);
+     const sway=shift*(head-.57*late);
+     const nod=chin*(head+.42*late);
+     const grip=Math.sign(shift)*(4*gesture(time,start+.55,end+.25)-5*late);
+     const moving=Math.abs(sway)+Math.abs(nod)+Math.abs(grip)>=.15;
+     if(moving||a.animated)this.paint(a,sway,nod,grip);
+     a.lastWatch=now;a.animated=moving;
+    }else if(state!=='GHOST_WATCH'&&a.animated){this.paint(a);a.animated=false;}
+   }
    if(['GHOST_ENTER','GHOST_REVEAL','EXIT'].includes(state)){
     const v=a[a.active];if(v instanceof HTMLVideoElement&&!v.paused&&!v.ended){if(v.currentTime>a.lastTime+.002){a.lastTime=v.currentTime;a.lastProgress=now;}else if(now-a.lastProgress>3500)this.fail('귀신 영상 프레임이 멈췄습니다. 연출을 종료합니다.');}
    }
@@ -89,5 +154,5 @@ export class Scene{
  }
  async setClip(name,url){const a=this.actors[name];if(!a)return;this.rearm();await this.load(a.reveal,url);this.event('temporary-reveal',{actor:name});}
  async setImage(name,url){await image(url);const a=this.actors[name];if(a)a.poster.src=url;}
- snapshot(){const clip=v=>{const q=v.getVideoPlaybackQuality?.(),b=v.measurementBaseline||{total:0,dropped:0};return{time:v.currentTime,duration:v.duration,quality:q?{totalFrames:q.totalVideoFrames-b.total,droppedFrames:q.droppedVideoFrames-b.dropped,baseline:b}:null};};return {artStatus:this.artStatus,ready:this.ready,failed:this.failed,actors:Object.fromEntries(Object.entries(this.actors).map(([name,a])=>[name,{active:a.active,walk:clip(a.walk),reveal:clip(a.reveal)}])),events:this.events};}
+ snapshot(){const clip=v=>{const q=v.getVideoPlaybackQuality?.(),b=v.measurementBaseline||{total:0,dropped:0};return{time:v.currentTime,duration:v.duration,quality:q?{totalFrames:q.totalVideoFrames-b.total,droppedFrames:q.droppedVideoFrames-b.dropped,baseline:b}:null};};return {artStatus:this.artStatus,ready:this.ready,failed:this.failed,actors:Object.fromEntries(Object.entries(this.actors).map(([name,a])=>[name,{active:a.active,validFrames:a.validFrames,heldFrames:a.heldFrames,walk:clip(a.walk),reveal:clip(a.reveal)}])),events:this.events};}
 }

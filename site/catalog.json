@@ -41,7 +41,7 @@
     "id": "ghost-phone",
     "title": "귀신의 전화",
     "tagline": "수화기 너머, 끊지 못한 이야기.",
-    "description": "귀신들의 통화와 83편의 음원을 한곳에서 들을 수 있습니다.",
+    "description": "여섯 귀신의 점진적 변조 통화와 이전 음원 보관함을 들을 수 있습니다.",
     "input": "오디오 · 화면 버튼",
     "entry": "works/ghost-phone/index.html",
     "extra": "works/ghost-phone/library.html"

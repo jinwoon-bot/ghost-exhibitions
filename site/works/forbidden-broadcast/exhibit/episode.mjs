@@ -14,7 +14,7 @@ export const COPY = [
   { start: 4.72, step: .084, text: '본인은 아직 실종 사실을 모릅니다.' },
 ];
 export const READ_TIME = COPY.at(-1).start + Array.from(COPY.at(-1).text).length * COPY.at(-1).step + .78;
-export const FINALE = { ident: 1.08, corridor: 2.30, silence: .42, rush: .60, blackout: .45 };
+export const FINALE = { ident: 1.65, corridor: 2.30, silence: .54, rush: .82, blackout: .58, cooldown: 1.15 };
 
 export class Proximity {
   constructor() {
@@ -51,11 +51,12 @@ export class Proximity {
 export class Episode {
   constructor() { this.reset(); }
 
-  reset() {
+  reset(armed = true) {
     this.phase = 'normal';
     this.age = 0;
     this.dossierTime = 0;
     this.leaveTime = 0;
+    this.armed = armed;
     this.alpha = { ident: 0, notice: 0, reveal: 0, interrupt: 0 };
   }
 
@@ -67,9 +68,11 @@ export class Episode {
   update(dt, p, present) {
     this.age += dt;
     this.leaveTime = present ? 0 : this.leaveTime + dt;
-    if (!['normal', 'leaving'].includes(this.phase) && this.leaveTime >= .49) {
+    if (this.phase === 'normal' && this.leaveTime >= .35) this.armed = true;
+    if (!['normal', 'leaving'].includes(this.phase) && this.leaveTime >= .36) {
       this.enter('leaving');
-    } else if (this.phase === 'normal' && present) {
+    } else if (this.phase === 'normal' && this.armed && present) {
+      this.armed = false;
       this.enter('ident');
     } else if (this.phase === 'ident' && present && this.age >= FINALE.ident) {
       this.enter('notice');
@@ -83,6 +86,8 @@ export class Episode {
       this.enter('cut');
     } else if (this.phase === 'cut' && this.age >= FINALE.blackout) {
       this.enter('cooldown');
+    } else if (this.phase === 'cooldown' && this.age >= FINALE.cooldown) {
+      return 'cycle-complete';
     }
     const notice = this.phase === 'notice' ? 1 : 0;
     const reveal = this.phase === 'reveal' ? 1 : 0;
@@ -91,6 +96,6 @@ export class Episode {
     this.alpha.ident = this.phase === 'ident' ? 1 : 0;
     this.alpha.interrupt = this.phase === 'scare' || this.phase === 'cut' ? 1 : 0;
 
-    return this.phase === 'leaving' && Math.max(...Object.values(this.alpha)) < .025;
+    return this.phase === 'leaving' && Math.max(...Object.values(this.alpha)) < .025 ? 'departure' : null;
   }
 }

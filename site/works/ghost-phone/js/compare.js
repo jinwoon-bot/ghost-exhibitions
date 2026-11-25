@@ -1,5 +1,5 @@
-import {SoundDesk} from './audio.js?v=scene-polish';
-import {progressiveCalls} from './progressive.js?v=scene-polish';
+import {SoundDesk} from './audio.js?v=floor-rehearsal';
+import {progressiveCalls} from './progressive.js?v=floor-rehearsal';
 
 const desk=new SoundDesk(), call=progressiveCalls[0];
 const buttons=[...document.querySelectorAll('[data-profile]')];

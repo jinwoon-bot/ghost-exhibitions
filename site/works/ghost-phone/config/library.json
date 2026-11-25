@@ -1,7 +1,7 @@
 {
   "version": 1,
   "release": "all-audio-v4.2",
-  "count": 83,
+  "count": 81,
   "newVoiceActors": 0,
   "newPaidRequests": 5,
   "additionalPurchases": 0,
@@ -9,7 +9,6 @@
   "groups": [
     "새 공포 대사",
     "새 웃음 연출",
-    "크리스마스 히든",
     "최신 전체 대사",
     "추가 짧은 통화",
     "추가 잡음 연출",
@@ -86,38 +85,6 @@
       "callUrl": "./?episode=n04&v=4.2.0",
       "originalUnmodified": true,
       "source": "assets/audio/night/n04.mp3",
-      "aliases": []
-    },
-    {
-      "id": "clip-9278585d4268c2a4",
-      "actorId": "songaksi",
-      "actorName": "손각시",
-      "group": "크리스마스 히든",
-      "kind": "voice",
-      "title": "손각시 · 크리스마스 히든",
-      "description": "너도 나랑 같구나. 크리스마스에도… 혼자구나. (웃음) 이제… 둘이네.",
-      "file": "assets/audio/night/h01.mp3",
-      "bytes": 241581,
-      "sha256": "9278585d4268c2a401f6108531c790422894f735714ea2753668740e9759bc56",
-      "callUrl": "./?episode=h01&v=4.2.0",
-      "originalUnmodified": true,
-      "source": "assets/audio/night/h01.mp3",
-      "aliases": []
-    },
-    {
-      "id": "clip-525040eb3a77bb37",
-      "actorId": "mongdal",
-      "actorName": "몽달귀신",
-      "group": "크리스마스 히든",
-      "kind": "voice",
-      "title": "몽달귀신 · 크리스마스 히든",
-      "description": "너도 나랑 같구나. 크리스마스… 결국 아무도 안 왔구나. (웃음) 나는 왔는데.",
-      "file": "assets/audio/night/h02.mp3",
-      "bytes": 265389,
-      "sha256": "525040eb3a77bb379411d16512ce0b951be9a33e9594b8a500b67495aef1a947",
-      "callUrl": "./?episode=h02&v=4.2.0",
-      "originalUnmodified": true,
-      "source": "assets/audio/night/h02.mp3",
       "aliases": []
     },
     {
@@ -1368,5 +1335,5 @@
     }
   ],
   "credit": "AI 음성: ElevenLabs · 비상업적 이용·출처 표시 조건 유지. 배경음: 기존 CC0 소스. 관객 녹음 없음.",
-  "note": "이전77편은 그대로 보존하고 신규6편을 별도 추가. 동일 바이트 복사본만 목록에서 하나로 묶음. 원본 파일 삭제 없음."
+  "note": "이전 음원 보관함. 크리스마스 대사 두 편은 전시 및 청취 목록에서 제외했습니다."
 }

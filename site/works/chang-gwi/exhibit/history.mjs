@@ -1,5 +1,5 @@
 import { refineMask } from '../js/mask.js';
-import { cleanCutout } from './cutout.mjs';
+import { cleanCutout } from './cutout.mjs?v=floor-rehearsal';
 
 const GRID_WIDTH = 64;
 const GRID_HEIGHT = 36;

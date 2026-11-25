@@ -1,10 +1,10 @@
-import {ExhibitionProgram} from './exhibition.js?v=scene-polish';
+import {ExhibitionProgram} from './exhibition.js?v=floor-rehearsal';
 import {migrateVoices} from './voices.js?v=4.2.0';
 import {AdminLock} from './admin.js?v=4.2.0';
 import {VoiceBank} from './bank.js?v=4.2.0';
-import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=scene-polish';
-import {SoundDesk,VoiceService,wait} from './audio.js?v=scene-polish';
-import {PROGRESSIVE_HAUNT,progressiveCalls} from './progressive.js?v=scene-polish';
+import {Telephone,NoRepeat,normalizeSettings,validateGhosts} from './core.js?v=floor-rehearsal';
+import {SoundDesk,VoiceService,wait} from './audio.js?v=floor-rehearsal';
+import {PROGRESSIVE_HAUNT,progressiveCalls} from './progressive.js?v=floor-rehearsal';
 import {SerialInput} from './serial.js?v=4.2.0';
 const $=id=>document.getElementById(id),version='5.0.0';
 const params=new URLSearchParams(location.search);
@@ -16,6 +16,7 @@ const choice=new NoRepeat(),desk=new SoundDesk(),adminLock=new AdminLock(),voice
 function log(message){const text=String(message).slice(0,350);logs.push({at:new Date().toLocaleTimeString('ko-KR'),text});if(logs.length>70)logs.shift();$('log').replaceChildren(...logs.slice().reverse().map(x=>{const li=document.createElement('li');li.textContent=x.at+' · '+x.text;return li;}));$('logCount').textContent=logs.length;}
 function notice(s){if(s.error){$('voiceError').textContent=s.error;log('음성 대체/오류: '+s.error);}if(s.text){$('voiceState').textContent=s.text;lastVoice=s.text;}if(s.mode)$('voiceState').dataset.mode=s.mode;}
 const voices=new VoiceService({desk,status:notice}); voices.bank=voiceBank;
+let progressiveTurn=0,rotatingVoices=0,lastProgressive=null;
 let preview=false,lastPhoneState='IDLE',starting=false,playingProgressive=false;
 const program=new ExhibitionProgram({desk,status:s=>{if(s.phase)document.body.dataset.phase=s.phase;if(s.episode)document.body.dataset.episode=s.episode;if(s.episodeKind)document.body.dataset.episodeKind=s.episodeKind;if(s.episodeTitle)document.body.dataset.episodeTitle=s.episodeTitle;if(s.scene)document.body.dataset.scene=s.scene;if(s.actor)document.body.dataset.actor=s.actor;if(s.playbackStarted){document.body.dataset.audio='playing';log('실제 음원 재생 · '+s.actor+' · '+s.scene);}if(s.lineEvent)document.body.dataset.line=s.lineEvent;if(s.text)notice({text:s.text});if(s.warning)log(s.warning);}});
 const phone=new Telephone({settings,onChange:changed});
@@ -30,7 +31,21 @@ function reloadSharedSettings(){try{const saved=localStorage.getItem('ghost-phon
 function selectedProgressive(){
   if(classicEdition)return null;
   const requested=preview?$('previewEpisode').value:settings.progressiveEnabled&&settings.mode==='mp3'?settings.progressiveCall:null;
-  return progressiveCalls.find(call=>call.id===requested)||(!preview&&requested?progressiveCalls[0]:null);
+  if(requested==='line-noise')return noiseCall();
+  if(requested!=='rotate')return progressiveCalls.find(call=>call.id===requested);
+  const ghost=preview?$('previewGhost').value:settings.ghost;
+  const enabled=progressiveCalls.filter(call=>config.ghosts.some(actor=>actor.id===call.actorId&&actor.enabled));
+  const pool=ghost==='random'?enabled:enabled.filter(call=>call.actorId===ghost);
+  if(ghost==='random'&&++progressiveTurn%4===0){const noise=noiseCall();if(noise)return noise;}
+  if(!pool.length)return null;
+  let call=pool[rotatingVoices++%pool.length];
+  if(pool.length>1&&call.id===lastProgressive)call=pool[rotatingVoices++%pool.length];
+  lastProgressive=call.id;
+  return call;
+}
+function noiseCall(){
+  const scene=program.getEpisode('s14');
+  return scene?{id:'line-noise',actor:'빈 회선',title:'목소리 없는 전화 · 빈 승강장',file:scene.file,noiseOnly:true}:null;
 }
 function changed(snapshot){const previous=lastPhoneState,wasProgressive=playingProgressive;playingProgressive=false;lastPhoneState=snapshot.state;stopEverything();document.body.dataset.phase='idle';document.body.dataset.line='idle';document.body.dataset.audio='idle';if(previous==='CONNECTED'&&snapshot.state!=='CONNECTED')program.close();if(snapshot.state==='RINGING')program.ring();if(snapshot.state==='IDLE'&&externalDirty)reloadSharedSettings();refresh();log(snapshot.state+' · '+snapshot.reason);$('voiceError').textContent='';
   if(snapshot.state==='RINGING'){try{desk.startRing(settings.ringVolume);notice({text:'전화벨 재생 중 · 수화기 대기'});}catch(e){notice({error:e.message,text:'벨 재생 실패'});}}
@@ -98,17 +113,25 @@ async function init(){
       if(!g){g={...structuredClone(shipped.ghosts[0]),id:actor.id,name:actor.name,lines:[{id:'recorded_first',text:actor.spokenText}],candidates:undefined,preferred:undefined,enabled:true};config.ghosts.push(g);}
       if(!g.mp3.length){g.mp3=[actor.voice];g.rate=1;}if(g.mp3.includes(actor.voice)&&g.mode==='browser')g.mode='mp3';
     }
-    try{if(localStorage.getItem('ghost-phone:exhibition-edition')!=='3'){
+    try{
+      if(localStorage.getItem('ghost-phone:progressive-program')!=='6'){
+        if(settings.progressiveCall==='changgwi-crossing')settings.progressiveCall='rotate';
+        localStorage.setItem('ghost-phone:progressive-program','6');persist();
+      }
+      if(localStorage.getItem('ghost-phone:exhibition-edition')!=='3'){
       if(settings.mode==='browser')settings.mode='mp3';settings.directed=true;localStorage.setItem('ghost-phone:exhibition-edition','3');persist();
     }}catch{settings.mode='mp3';}
     $('previewGhost').replaceChildren(new Option('회차마다 다른 귀신','random'),...program.catalog.actors.map(a=>new Option(a.name,a.id)));
-    $('previewEpisode').replaceChildren(new Option('자동 선택 · 기존26+신규4 · 희귀 히든2','auto'),new Option('기존 여섯 귀신 전체 대사','classic'),...program.signals.episodes.map(e=>new Option(e.title+' · '+(e.kind==='voice'?'짧은 음성':'잡음만'),e.id)),...program.night.episodes.map(e=>new Option(e.title+' · '+(e.hidden?'히든 대사':e.kind==='laughter'?'웃음':'새 대사'),e.id)));
+    $('previewEpisode').replaceChildren(new Option('이전 연출 자동 선택 · 30편','auto'),new Option('기존 여섯 귀신 전체 대사','classic'),...program.signals.episodes.map(e=>new Option(e.title+' · '+(e.kind==='voice'?'짧은 음성':'잡음만'),e.id)),...program.night.episodes.map(e=>new Option(e.title+' · '+(e.hidden?'히든 대사':e.kind==='laughter'?'웃음':'새 대사'),e.id)));
     const requested=params.get('episode');
-    $('progressiveCall').replaceChildren(...progressiveCalls.map(call=>new Option(call.title,call.id)));
-    if(!progressiveCalls.some(call=>call.id===settings.progressiveCall))settings.progressiveCall=progressiveCalls[0].id;
-    if(!classicEdition)$('previewEpisode').prepend(...progressiveCalls.map(call=>new Option(call.title+' · 점진적 변조',call.id)));
+    const progressiveOptions=()=>[new Option('교대 통화 · 귀신 6종과 가끔 빈 회선','rotate'),
+      ...progressiveCalls.map(call=>new Option(call.title+' · 점진적 변조',call.id)),
+      ...(noiseCall()?[new Option(noiseCall().title,'line-noise')]:[])];
+    $('progressiveCall').replaceChildren(...progressiveOptions());
+    if(!Array.from($('progressiveCall').options).some(option=>option.value===settings.progressiveCall))settings.progressiveCall='rotate';
+    if(!classicEdition)$('previewEpisode').prepend(...progressiveOptions());
     if(program.getEpisode(requested)){$('previewEpisode').value=requested;$('previewGhost').value=program.getEpisode(requested).actorId;}
-    else if(!classicEdition)$('previewEpisode').value=progressiveCalls.some(call=>call.id===requested)?requested:settings.progressiveEnabled?settings.progressiveCall:'auto';
+    else if(!classicEdition)$('previewEpisode').value=Array.from($('progressiveCall').options).some(option=>option.value===requested)?requested:settings.progressiveEnabled?settings.progressiveCall:'auto';
     const requestedActor=params.get('actor');if(classicEdition&&program.catalog.actors.some(actor=>actor.id===requestedActor)){
       $('previewEpisode').value='classic';$('previewGhost').value=requestedActor;
     }

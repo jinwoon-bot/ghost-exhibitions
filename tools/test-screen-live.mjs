@@ -146,28 +146,23 @@ test("a slow inference can reconnect the same visitor without showing a stale ma
   assert.deepEqual(tracks.update([], 850, 3, 570), []);
   assert.notEqual(tracks.update([obs(.52)], 1900, 3, 570)[0].id, first.id);
 });
-test('only one shadow retains its raised arm and releases it after that person lowers the arm', () => {
+test('three visitors independently leave a held arm and a leaning shadow', () => {
   const beat = new ShadowHold();
-  const pose = (id, x, wristY) => ({id, shape:{center:{x,y:.46},height:.65,wrists:[{x,y:wristY},null]}});
-  const person = pose(1,.27,.28), neighbor = pose(2,.65,.63);
-  beat.update([person,neighbor],0,p => p);
-  beat.update([person,neighbor],210,p => p);
-  beat.update([pose(1,.27,.62),neighbor],320,p => p);
-  assert.equal(beat.hold.id,1);
-  assert.equal(beat.hold.pose.shape.wrists[0].y,.28);
-  assert.equal(beat.blend(570),1);
-  assert.ok(beat.blend(760)>0 && beat.blend(760)<1);
-  assert.equal(beat.blend(830),0);
-  assert.equal(beat.hold,null);
-
-  beat.update([person,neighbor],3400,p => p);
-  beat.update([person,neighbor],3600,p => p);
-  beat.update([neighbor],3700,p => p);
-  assert.equal(beat.hold,null);
-
-  beat.update([person,neighbor],4200,p => p);
-  beat.update([person,neighbor],4400,p => p);
-  beat.update([pose(1,.27,.43),neighbor],4800,p => p);
-  beat.update([pose(1,.27,.62),neighbor],5300,p => p);
-  assert.equal(beat.hold,null);
+  const pose = (id, x, wristY, side=0) => ({id, shape:{center:{x,y:.46},height:.65,
+    wrists:side===0?[{x,y:wristY},null]:[null,{x,y:wristY}]}});
+  const three = [pose(1,.24,.28),pose(2,.50,.28,1),pose(3,.77,.28)];
+  beat.update(three,0,p => p);
+  beat.update(three,210,p => p);
+  beat.update([pose(1,.24,.63),pose(2,.50,.63,1),pose(3,.77,.63)],320,p => p);
+  assert.equal(beat.get(1,570).pose.shape.wrists[0].y,.28);
+  assert.ok(beat.get(1,685).lean<-.07);
+  assert.ok(beat.get(2,685).lean>.07);
+  assert.equal(beat.get(3,685).weight,1);
+  assert.ok(beat.get(3,1100).weight>0 && beat.get(3,1100).weight<1);
+  assert.equal(beat.get(3,1180),null);
+  beat.update([three[0]],3400,p => p);
+  assert.equal(beat.get(2,3400),null);
+  beat.update([three[0]],3600,p => p);
+  beat.update([pose(1,.45,.62)],3700,p => p);
+  assert.equal(beat.get(1,3700),null);
 });

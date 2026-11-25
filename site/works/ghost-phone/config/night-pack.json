@@ -1,7 +1,7 @@
 {
   "version": 1,
   "release": "night-pack-v4.2",
-  "hiddenProbability": 0.02,
+  "hiddenProbability": 0,
   "minimumCallsBetweenHidden": 8,
   "clips": [
     {
@@ -66,40 +66,6 @@
       "bytes": 95661,
       "sha256": "bc6e061a113820fa687540a93df9db96c157016eed2947ab27705866c2b65d1f",
       "duration": 5.976,
-      "timing": {
-        "arrival": 450,
-        "listen": 700,
-        "after": 500
-      }
-    },
-    {
-      "id": "h01",
-      "actorId": "songaksi",
-      "kind": "voice",
-      "hidden": true,
-      "title": "손각시 · 크리스마스 히든",
-      "spokenText": "너도 나랑 같구나. 크리스마스에도… 혼자구나. (웃음) 이제… 둘이네.",
-      "file": "assets/audio/night/h01.mp3",
-      "bytes": 241581,
-      "sha256": "9278585d4268c2a401f6108531c790422894f735714ea2753668740e9759bc56",
-      "duration": 15.096,
-      "timing": {
-        "arrival": 450,
-        "listen": 700,
-        "after": 500
-      }
-    },
-    {
-      "id": "h02",
-      "actorId": "mongdal",
-      "kind": "voice",
-      "hidden": true,
-      "title": "몽달귀신 · 크리스마스 히든",
-      "spokenText": "너도 나랑 같구나. 크리스마스… 결국 아무도 안 왔구나. (웃음) 나는 왔는데.",
-      "file": "assets/audio/night/h02.mp3",
-      "bytes": 265389,
-      "sha256": "525040eb3a77bb379411d16512ce0b951be9a33e9594b8a500b67495aef1a947",
-      "duration": 16.584,
       "timing": {
         "arrival": 450,
         "listen": 700,

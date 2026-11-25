@@ -8,6 +8,8 @@ export function smooth(from, to, value) {
   return t * t * (3 - 2 * t);
 }
 
+const cutoutOpacity = alpha => 255 * smooth(34, 225, alpha);
+
 function noise(x, y, seed) {
   const a = Math.floor(x), b = Math.floor(y);
   const u = smooth(0, 1, x - a), v = smooth(0, 1, y - b);
@@ -88,7 +90,7 @@ export function createInkStamp(snapshot, texture, seed, budget, drift = 0, lift 
       tone[i * 3 + channel] = value;
       paint.data[i * 4 + channel] = value;
     }
-    paint.data[i * 4 + 3] = 255 * smooth(53, 239, pixels[i]);
+    paint.data[i * 4 + 3] = cutoutOpacity(pixels[i]);
     threshold[i] = Math.round(thresholdAt(limit(field[i] / depth), x, y, w, h, seed, ink, wind, lift) * 255);
   }
   ctx.putImageData(paint, 0, 0);
@@ -130,11 +132,11 @@ export function paintErosion(stamp, snapshot, progress, strength = 1) {
   const tearing = Math.min(strength, 1.35) * smooth(.01, .085, progress);
   for (let i = 0; i < threshold.length; i++) {
     const remaining = threshold[i] - cut;
-    const a = 255 * smooth(53, 239, snapshot.pixels[i]) * limit((remaining + 7) / 9);
+    const a = cutoutOpacity(snapshot.pixels[i]) * limit((remaining + 7) / 9);
     paint.data[i * 4 + 3] = a;
     if (!a) continue;
     const torn = (1 - smooth(1, 20, remaining)) * tearing;
-    const glow = contour[i] / 255 * rim * .16 + torn * (.12 + textureTone[i] * .0019);
+    const glow = contour[i] / 255 * rim * .21 + torn * (.12 + textureTone[i] * .0019);
     for (let channel = 0; channel < 3; channel++) {
       const value = tone[i * 3 + channel] * (1 - torn * .25);
       paint.data[i * 4 + channel] = value + (228 + channel * 13 - value) * glow;

@@ -2,3 +2,5 @@
 .film-actor img.film-poster{mask-image:none;transform:none}.film-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;pointer-events:none}.film-poster{object-fit:contain}.film-actor{transform:none;contain:layout style}
 .film-ground{position:absolute;left:50%;height:3.3%;transform:translate(-50%,-45%);border-radius:50%;background:radial-gradient(ellipse,rgba(14,10,8,.91),rgba(15,12,10,.33) 48%,transparent 73%);pointer-events:none}
 body.performing #hud:not(:hover):not(:focus-within){opacity:0}
+
+.film-video{opacity:0!important}.film-composite{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}

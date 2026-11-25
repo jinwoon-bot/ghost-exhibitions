@@ -7,13 +7,13 @@
     },
     {
       "path": "catalog.json",
-      "bytes": 2441,
-      "sha256": "15805e7fa087dbcb498f1d880c0b73f3ea871a97c2484a3575469b14180b71f3"
+      "bytes": 3013,
+      "sha256": "5a325f65a75be5ebc3bdd45e216d56a118e949c04617184ec222ff5d596579e6"
     },
     {
       "path": "index.html",
-      "bytes": 2569,
-      "sha256": "f479b685a80309e5fbf38543a5ed80aacd21ff9dee7c0e3bdd333204e49f3cce"
+      "bytes": 2614,
+      "sha256": "bb9a552c9d1bf41525e59b807ac5ca2c61ce84a55ec4dbf05b39002e46caf539"
     },
     {
       "path": "media/news-loop-v2.mp4",
@@ -32,8 +32,8 @@
     },
     {
       "path": "portal.mjs",
-      "bytes": 3307,
-      "sha256": "c28a56d70981e97c3dc4402d2b897a8ffe3ac47436da512c27a30a25f1abda2c"
+      "bytes": 3371,
+      "sha256": "7c1b03a380965962be9ec900c25d13b6c4c3e723e538b8f492f070a2f6f2d290"
     },
     {
       "path": "shared/mediapipe/models/face_landmarker.task",
@@ -79,6 +79,76 @@
       "path": "works/chang-gwi/ASSET_HASHES.json",
       "bytes": 3868,
       "sha256": "5755d241010b50b82174df2b28ece29d59a1ce5cc2ea4bfb37f7714a8af9f97f"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/app.mjs",
+      "bytes": 15009,
+      "sha256": "d913d7b8e4384fa7352b5573e5a9b42bd48e079a9815551c5eaee9b0246c0966"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/assets/ambient.wav",
+      "bytes": 1058444,
+      "sha256": "87d3617d1c291817aedb4e4c1c8e16d0c147093f752347b3d18dea61b4fdf625"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/assets/hanji-fibers.png",
+      "bytes": 3255057,
+      "sha256": "c7227057611cef0f7c3e149019064853e80e215696e385e80cb9753679cbe83f"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/assets/hanji-tear.wav",
+      "bytes": 46350,
+      "sha256": "d661bd7f12027e54c3d6d4a6c18b40837b6138c484c6e70e506dd6bb04ccc5eb"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/assets/ink-bloom.png",
+      "bytes": 2923648,
+      "sha256": "5a78a0fd7bb5d50997024189696506ce085eac5803c9de361c7f832e90eace56"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/cutout.mjs",
+      "bytes": 3130,
+      "sha256": "1a1ad577307ccbed047136e1d7377fa6e65b7980068a98956c931e16c90eeff9"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/foreground.mjs",
+      "bytes": 6984,
+      "sha256": "8db851a712ee28d8fd4ea0d3e41659b991455507549a4042fc8984f08329441c"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/history.mjs",
+      "bytes": 7505,
+      "sha256": "47867a4e3aab445f44d4207d82dbac7d128329e2bbfc4d9176e0613f578fafc9"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/index.html",
+      "bytes": 3816,
+      "sha256": "4fc6bd2825577d7e1eb80da77127081ac3bccd2a64b9c83acfa4357545425585"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/material.mjs",
+      "bytes": 7870,
+      "sha256": "fd1927c5a04999e3e061380982fbf3ab6ea4772b3d22a53b6438b7ca591dc81d"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/picture.mjs",
+      "bytes": 5315,
+      "sha256": "f2abbafefeb2c9b49b19d2d4caec8853eb523acd9f45340f499e23dafaeb9ad3"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/plume.mjs",
+      "bytes": 9362,
+      "sha256": "ed30d8f4eb0b9c4b7681c071d3c2433c856e29f63652c50484eb909ccc40a50a"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/sound.mjs",
+      "bytes": 2362,
+      "sha256": "6818808a483c7eb893a56ef785e977323d9a9e56a147963070b1630c0acbf289"
+    },
+    {
+      "path": "works/chang-gwi/exhibit/style.css",
+      "bytes": 2811,
+      "sha256": "dd93b96fbeffaa30025de535839a4e25af081413f451f1643f64f0a45401aa79"
     },
     {
       "path": "works/chang-gwi/index.html",
@@ -192,8 +262,8 @@
     },
     {
       "path": "works/chang-gwi/js/vision-worker.js",
-      "bytes": 6745,
-      "sha256": "ad90acbb0d3e7465737d800563fc378bb7bcb86cd244b1f471cefb0a6a21adc9"
+      "bytes": 7087,
+      "sha256": "7403c929372eddbcc2742c08c0fb05b3e6c27e2d1dcbfbd23899a127dceca592"
     },
     {
       "path": "works/chang-gwi/models/cpu/group1-shard1of1.bin",
@@ -337,8 +407,8 @@
     },
     {
       "path": "works/dokkaebi/assets/portrait-dokkaebi-eyes.json",
-      "bytes": 757,
-      "sha256": "954d127324a3f3cbc40da5fdbd832457c0cc960b6c0bc3709988ae66c7c47ce8"
+      "bytes": 813,
+      "sha256": "f6c14d06a049cfd3d1cebe32235b7957242e77701c85805223c69910abd39209"
     },
     {
       "path": "works/dokkaebi/assets/portrait-dokkaebi.webp",
@@ -347,18 +417,18 @@
     },
     {
       "path": "works/dokkaebi/bootstrap.js",
-      "bytes": 1161,
-      "sha256": "315e24d73f32087b4cc9d4054afdae4d0a760dcc794cd911d2a636b5e7d34e62"
+      "bytes": 1168,
+      "sha256": "50d0f95fc3750f879d3fe4d4c9105652d54f0075b402357e695f1aeb2bf44427"
     },
     {
       "path": "works/dokkaebi/index.html",
-      "bytes": 6868,
-      "sha256": "b1a1203e034dd4f4e823cd5d80d37587a058065e1a6b5c4c038df227c8ba0752"
+      "bytes": 6875,
+      "sha256": "52100c8fe2128605961be9db5be2504dd8543f40784f2b2e4d8a6109ca5286ab"
     },
     {
       "path": "works/dokkaebi/lib/eye-composite.mjs",
-      "bytes": 4479,
-      "sha256": "c2074186c684e73b29bb08db4829e95288651a920a74d169557e7a89c57be4a6"
+      "bytes": 4764,
+      "sha256": "be9e2561a89ea8f793546761a2e56cad7e7a37ff3e3821c09523de1432a6212e"
     },
     {
       "path": "works/dokkaebi/lib/gaze.js",
@@ -372,8 +442,8 @@
     },
     {
       "path": "works/dokkaebi/script.js",
-      "bytes": 22096,
-      "sha256": "9b0f92e3b5689e5024d29191d54967fb2c2d85c7f6d87ec995161d3aa5b9c9ce"
+      "bytes": 22118,
+      "sha256": "ee35b024e644b7e74e04dc5e5aef9786dbc068386c4dca200ad96c08c4954c61"
     },
     {
       "path": "works/dokkaebi/style.css",
@@ -432,8 +502,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/app.mjs",
-      "bytes": 18844,
-      "sha256": "97d6a75e9273334e5e1961dbf0b12bfe99e7a0fcfada794862eead9e5efd36f6"
+      "bytes": 22978,
+      "sha256": "fd96e5f3995410b65868d0c392af1940805b8c1ae06399179dac839a9ee7927e"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/assets/anchor-plate.png",
@@ -461,6 +531,11 @@
       "sha256": "9a9e5a342c430c3fcf01a408b680f4405d5bf4ac659c931be35f8a1b27ea69c9"
     },
     {
+      "path": "works/forbidden-broadcast/exhibit/assets/hall-close.webp",
+      "bytes": 46388,
+      "sha256": "3ad217524da9aeee166c3cda01ef09bca1a9bfed7db424baf58ab1f34ad7f0ca"
+    },
+    {
       "path": "works/forbidden-broadcast/exhibit/assets/hall-day.jpg",
       "bytes": 349531,
       "sha256": "a52aae923689c4ef00525e0c7b69789b7a07522fb43b5737d794581c201415ac"
@@ -473,12 +548,12 @@
     {
       "path": "works/forbidden-broadcast/exhibit/assets/news.json",
       "bytes": 5655,
-      "sha256": "d266d7ae24362b93b6c725f1143d94769953b675176b75c3763c85b6b0f25e8f"
+      "sha256": "e35445613e313502862c313f365fd62aee6954a76ea1bf62e31bf0af21c79028"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/assets/news.wav",
-      "bytes": 2739066,
-      "sha256": "7de34a9700dc91e0dbf6ce4a669695f78ff6d36f7cf0f91bf4161af464fcc3bc"
+      "bytes": 2740448,
+      "sha256": "d2d70750cc3e71537f7649c795661a6b9baed4c502a4e9cf1ea26b25e45aecf7"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/assets/sample-portrait.jpg",
@@ -487,8 +562,8 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/audio.mjs",
-      "bytes": 5338,
-      "sha256": "89343eb11b09a6b9ab976d9633d7a603df7dc036db07e41747ebe58fbe83d96c"
+      "bytes": 5643,
+      "sha256": "cb34cd5978a64fd1fdd1e416721e43c70cfe2b63d302c3609454f2589e15c8dc"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/detector.mjs",
@@ -496,9 +571,14 @@
       "sha256": "c5fe07c8e34a84a94e4cdf8b86e5f0e64ff0b4ae8d36b850bd6800d8c640a6b7"
     },
     {
+      "path": "works/forbidden-broadcast/exhibit/distance.mjs",
+      "bytes": 1067,
+      "sha256": "ae1ad1672433ac73a41d95b60729bb6ce706944e4191954e6b09b696b31bff47"
+    },
+    {
       "path": "works/forbidden-broadcast/exhibit/episode.mjs",
-      "bytes": 2718,
-      "sha256": "f51d0626c1c407c93f35d16b3f8d6047a39f01c1a68ef074a51f70e91a275880"
+      "bytes": 3749,
+      "sha256": "3e2124412858d73501698803f4a3d7fc676d21046f8bbad8a3cfd68801d434f3"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/face-worker.js",
@@ -507,23 +587,23 @@
     },
     {
       "path": "works/forbidden-broadcast/exhibit/index.html",
-      "bytes": 5435,
-      "sha256": "0fa84deafc560a9de4d134f1138b20383a32359be5763b2f7629be0c468e051c"
+      "bytes": 6641,
+      "sha256": "486d9294d0de1049f8e6175bac21f8a82574e77d376c5b0790a64c07f9768ca9"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/program.json",
       "bytes": 1138,
-      "sha256": "8a9c8755ab8ee3e3dc054d3e153bc7df4cf898e22816e75e60ba52415fe202c0"
+      "sha256": "e7018b17643b826ac618adaceb2714dd3827283a1d98e0935c5a61b973959a3e"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/style.css",
-      "bytes": 6291,
-      "sha256": "fe95262c472fb449a21ca4573d4aac390588eb733d1669cdd0f8cd863c352227"
+      "bytes": 9647,
+      "sha256": "7da8718a532c2c4e109544fa27b2438c8f385395ed70d40eaabdb2c62c4755f1"
     },
     {
       "path": "works/forbidden-broadcast/exhibit/visual.mjs",
-      "bytes": 6197,
-      "sha256": "05f08c2fb345d29693a2da1919f04030c67d0f8e3fb8365193cc9b995143a2b8"
+      "bytes": 6360,
+      "sha256": "f95d8b9177b025108bb4ae82312fc8e8eb547d8dc960bc1908ee7ec9421d1b61"
     },
     {
       "path": "works/forbidden-broadcast/index.html",
@@ -872,18 +952,8 @@
     },
     {
       "path": "works/ghost-phone/assets/audio/night/CREDITS.md",
-      "bytes": 1006,
-      "sha256": "e53b3f06d038542abd0be7bcd30f77e47362e7b8d81fb362ecabbe19464dc183"
-    },
-    {
-      "path": "works/ghost-phone/assets/audio/night/h01.mp3",
-      "bytes": 241581,
-      "sha256": "9278585d4268c2a401f6108531c790422894f735714ea2753668740e9759bc56"
-    },
-    {
-      "path": "works/ghost-phone/assets/audio/night/h02.mp3",
-      "bytes": 265389,
-      "sha256": "525040eb3a77bb379411d16512ce0b951be9a33e9594b8a500b67495aef1a947"
+      "bytes": 1069,
+      "sha256": "4af7de8a4b2936f399dd3e63ba2b409cce7104b8793475ae84000a3fa5afcc9c"
     },
     {
       "path": "works/ghost-phone/assets/audio/night/n01.mp3",
@@ -904,6 +974,41 @@
       "path": "works/ghost-phone/assets/audio/night/n04.mp3",
       "bytes": 95661,
       "sha256": "bc6e061a113820fa687540a93df9db96c157016eed2947ab27705866c2b65d1f"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/changgwi-crossing.wav",
+      "bytes": 987884,
+      "sha256": "bbac90e804218e8831eb3b14e5b46d2992b5da0714225234049809ae2fd961f8"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/gogwandaemyeon-floor.wav",
+      "bytes": 931436,
+      "sha256": "6d56b4d25ee938ab58cc831ad73c06953db65fc93cca4da44b06ac2270311180"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/mongdal-floor.wav",
+      "bytes": 808396,
+      "sha256": "e103e085289eab54d395c06dc80ab5a7e9b3e5dc2406d3ec57aa646fe6edbaf7"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/seongju-floor.wav",
+      "bytes": 929230,
+      "sha256": "dde3aacea5a8beaa0810ca396f6c07dc61defbbbd7ec65049890e20e569eca8e"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/songaksi-floor.wav",
+      "bytes": 937610,
+      "sha256": "39fe52a455fcfab0d8ae63db3cfb9b267526afeae47eda3c36a8f1eb139ac514"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/SOURCE.md",
+      "bytes": 4460,
+      "sha256": "873905ad659324c9df42a68abb58e1081516acbe57d78baf474bc0963ab7b8ec"
+    },
+    {
+      "path": "works/ghost-phone/assets/audio/progressive/yeopjeon-floor.wav",
+      "bytes": 896156,
+      "sha256": "16d93f464bc35942e317006cd508cd428cb0d93715b8b270aed7221222735c33"
     },
     {
       "path": "works/ghost-phone/assets/audio/README.txt",
@@ -1091,6 +1196,16 @@
       "sha256": "90a2e1c083cb59fdaf7cb281f58d2d4b64663229fc723ee642de9eb09bf3d6ce"
     },
     {
+      "path": "works/ghost-phone/compare.css",
+      "bytes": 1521,
+      "sha256": "e00a4049a471b63f5b9e38f5bcd1d158828062a789f3296082135dff64e14cab"
+    },
+    {
+      "path": "works/ghost-phone/compare.html",
+      "bytes": 2611,
+      "sha256": "87a499a4579f9657271e42a14de9c484c9982031ecab756978f3e439a38ab163"
+    },
+    {
       "path": "works/ghost-phone/config/exhibition.json",
       "bytes": 4642,
       "sha256": "41f115a0cc17dee2056dc6f5ac88981946c423f5875fa2b6fd465c0603c8f84e"
@@ -1102,13 +1217,13 @@
     },
     {
       "path": "works/ghost-phone/config/library.json",
-      "bytes": 56390,
-      "sha256": "3ed09e9a0b3d53d6ad06fc486512161531b6379603f523a7bbf156423f09c83d"
+      "bytes": 55017,
+      "sha256": "eb14ebe2f341a6c6532a1dfa67d8786719f6b067ca03ad30883ac8754ed9b1b5"
     },
     {
       "path": "works/ghost-phone/config/night-pack.json",
-      "bytes": 3556,
-      "sha256": "3a8544a23d23f514bd5d5e2bbfda910047331a09db647c059654f6d48a6f74d7"
+      "bytes": 2447,
+      "sha256": "ab6818e36279ac4d45962b553d441436061798253b66b072113307ff358ffd5c"
     },
     {
       "path": "works/ghost-phone/config/repertoire.json",
@@ -1122,8 +1237,8 @@
     },
     {
       "path": "works/ghost-phone/index.html",
-      "bytes": 13324,
-      "sha256": "ea97da1a119ed11a22ae050b15d000d1a02d792f9d13f6ac75c863016c47e1a9"
+      "bytes": 14439,
+      "sha256": "7ef4f57b11a4e4bad725874d1460c69ca23065b4edc9709663617d26b4be6553"
     },
     {
       "path": "works/ghost-phone/js/admin.js",
@@ -1142,8 +1257,8 @@
     },
     {
       "path": "works/ghost-phone/js/audio.js",
-      "bytes": 13795,
-      "sha256": "68e657bd322ed272719c8b863f2d0fcfbb83b75d15facfc5f37bd33e023e7199"
+      "bytes": 15451,
+      "sha256": "eeb267ee157ba80e1e9b2b7677b11ea691e4c938a6f81ce6177e8e663d229f36"
     },
     {
       "path": "works/ghost-phone/js/bank.js",
@@ -1156,9 +1271,14 @@
       "sha256": "c1163ddb32e6f7c00451b19e92ad9bfa1bc0e51c3f572d5cede96bd698b2cdbb"
     },
     {
+      "path": "works/ghost-phone/js/compare.js",
+      "bytes": 2525,
+      "sha256": "bb01e29b5c14ab39a259219ff92dd729d967e80db4ce01bc82fa3808a49ac02a"
+    },
+    {
       "path": "works/ghost-phone/js/core.js",
-      "bytes": 6779,
-      "sha256": "96e6dc4510e009efa995d3033580fd26540515154a16a569074bbb4015e98c5b"
+      "bytes": 7372,
+      "sha256": "ddfe2a3f5cef71383d789093ecaa892d04dca6dce67ade450194266638f706d3"
     },
     {
       "path": "works/ghost-phone/js/effects.js",
@@ -1172,13 +1292,13 @@
     },
     {
       "path": "works/ghost-phone/js/exhibition.js",
-      "bytes": 7947,
-      "sha256": "9f426134149eb980c0c0a8a69eaa7b73ba308eccb53cfbc95b7197616f671608"
+      "bytes": 9556,
+      "sha256": "977c5e640c65ed1ee1444d459fd6fbc69d04777009425cb7c6c7e6a811946b9b"
     },
     {
       "path": "works/ghost-phone/js/library-page.js",
-      "bytes": 6288,
-      "sha256": "6d3c2de986ee6a809b7914487481b37522deac109811d35e66e657a840a78389"
+      "bytes": 6298,
+      "sha256": "38881f5f92787702a54344f9631a651f2850275163bce7e8e2f2a39bfd0b90fc"
     },
     {
       "path": "works/ghost-phone/js/library.js",
@@ -1197,13 +1317,18 @@
     },
     {
       "path": "works/ghost-phone/js/main.js",
-      "bytes": 23941,
-      "sha256": "943692f87470ddb1c847dbba28e42656e6f4033cdece4e876ae4d42e9941a62d"
+      "bytes": 28100,
+      "sha256": "6e5ef7e245109699975d6cfc8c5a7efb29d47c085886b350e53dcbb8295d1762"
     },
     {
       "path": "works/ghost-phone/js/night-pack.js",
-      "bytes": 2569,
-      "sha256": "c7c5c9230003868c93f7d38772c6d7c1a5ade73f296c72c6c70ff6e4132807a5"
+      "bytes": 2544,
+      "sha256": "64282cd001203d6076961197e0f3568d09539b0ada1e55cccda0c96f4da3a04e"
+    },
+    {
+      "path": "works/ghost-phone/js/progressive.js",
+      "bytes": 7121,
+      "sha256": "1ba498900ba0896f9b0d9bca762e19bd0fbfc374c420fbeee69b5d44cd7bf547"
     },
     {
       "path": "works/ghost-phone/js/repertoire.js",
@@ -1252,8 +1377,8 @@
     },
     {
       "path": "works/ghost-phone/library.html",
-      "bytes": 3536,
-      "sha256": "13344aff49d542eb4976bab15952b2c1e6b28fa6e64f5af5f48d83e405bb6466"
+      "bytes": 3265,
+      "sha256": "87303e2bb752d5aac4eb22e0087d78943e40d118fdfcd2a20c5bcdb8cebee75a"
     },
     {
       "path": "works/ghost-phone/signals.html",
@@ -1272,8 +1397,8 @@
     },
     {
       "path": "works/ghost-phone/style.css",
-      "bytes": 9259,
-      "sha256": "3dbaaa76c9eda47b33dbcbeb40740c1e6b821c848a32e08f9d565fbca981564e"
+      "bytes": 9519,
+      "sha256": "464f9d5024eca07dde048af1a44ce86415a9b3822c3b9aba934e2fb1888db5cf"
     },
     {
       "path": "works/ghost-phone/THIRD_PARTY_NOTICES.md",
@@ -1282,13 +1407,13 @@
     },
     {
       "path": "works/human-portrait/app.mjs",
-      "bytes": 13516,
-      "sha256": "ddbc2881d8c27cb1344ba67936cf9e06f6f66f07a87a93ff4d07574f4723c8b8"
+      "bytes": 13554,
+      "sha256": "9e891a0b19eb25bb64046bbab0fb61ace54cfb592f61cd1fe8e87680b9e6b34e"
     },
     {
       "path": "works/human-portrait/assets/eyes.json",
-      "bytes": 641,
-      "sha256": "c21f31a323af5552ddf5020eb22cb1361676f36207ee712215dfd6f38a574686"
+      "bytes": 697,
+      "sha256": "765bd6cc3e61ed9833d9c0f841ecc63cfb1ad77233dd52412dce6c52ffeeaff2"
     },
     {
       "path": "works/human-portrait/assets/portrait-human.webp",
@@ -1302,8 +1427,8 @@
     },
     {
       "path": "works/human-portrait/index.html",
-      "bytes": 4275,
-      "sha256": "04589f3da3ca442b858276e561589072ff8f4d480218fc88eca14752e519174a"
+      "bytes": 4290,
+      "sha256": "af74854f15772f951b27b76471b01a1ed56db82b05331e10be0b0ae429cf6eaa"
     },
     {
       "path": "works/human-portrait/style.css",
@@ -1437,8 +1562,8 @@
     },
     {
       "path": "works/only-on-screen-live/app.mjs",
-      "bytes": 19656,
-      "sha256": "6ab94f51561f3c1684d8a707ef785e43b9d79b5c4736d2173e742c430524c6ef"
+      "bytes": 19639,
+      "sha256": "767f6bfe8663aada1e3c391436c69dcc6c1cfbfe26be0e6f9ac757d3106ead0b"
     },
     {
       "path": "works/only-on-screen-live/assets/hanji-wall.webp",
@@ -1452,8 +1577,8 @@
     },
     {
       "path": "works/only-on-screen-live/index.html",
-      "bytes": 4624,
-      "sha256": "1d900625e1c6b5715cf21aa1ea80835f34c3af109da1317382426bbdf2d519ec"
+      "bytes": 4504,
+      "sha256": "0951fedff82cf189e6e2ca4ac0ee9a7b8a28f73717504045ab087260243ca5fa"
     },
     {
       "path": "works/only-on-screen-live/masks.mjs",
@@ -1466,9 +1591,14 @@
       "sha256": "53be005ad1f70e5eca22471e7469432bd2d5b5f42ff63d946d37728238cba042"
     },
     {
+      "path": "works/only-on-screen-live/shadow-hold.mjs",
+      "bytes": 2858,
+      "sha256": "0fe777f985af6768ebfcef72336728f7df3c0db1ea9a39801902aa3c5013d7ee"
+    },
+    {
       "path": "works/only-on-screen-live/stage.mjs",
-      "bytes": 9347,
-      "sha256": "0171ee357ffde871729e43dc2aa78003f061e14337ff08603e362ac6bae95186"
+      "bytes": 10483,
+      "sha256": "269c80a6cbeff6f795cea521a26d0469cf0419071ce72a51d4564f8df9f19923"
     },
     {
       "path": "works/only-on-screen-live/style.css",
@@ -1542,8 +1672,8 @@
     },
     {
       "path": "works/wedding/app.mjs",
-      "bytes": 18467,
-      "sha256": "0c8c3f8e6f27a793db73252b8f67e941323fb32abc0215ecc9dd84a313170633"
+      "bytes": 19100,
+      "sha256": "5ee7135d12b8a0735ecf26b9c12cf06b0e815906339df475e6043972f0b3f425"
     },
     {
       "path": "works/wedding/assets/characters/manifest.json",
@@ -1617,18 +1747,28 @@
     },
     {
       "path": "works/wedding/index.html",
-      "bytes": 8299,
-      "sha256": "2d358672d37ee16f960a92a6b5662c1731bdd9948cb79c6099b9baf369e8ee50"
+      "bytes": 8594,
+      "sha256": "a34e164d295ff56f93c669d9544ab4e5c1bb0f765d06e96b50af2a14effc338f"
+    },
+    {
+      "path": "works/wedding/lib/camera-light.mjs",
+      "bytes": 2130,
+      "sha256": "848f2919c01c9af50ee8d6bd95bc633f57e18c4c3128ce444c271d3e830dc44a"
     },
     {
       "path": "works/wedding/lib/camera.mjs",
-      "bytes": 3286,
-      "sha256": "4757e941f3941e056174ab9c7d0fc8bab3bb57c93ae18086e86e5b1a535e18af"
+      "bytes": 3547,
+      "sha256": "fcf1ee1ccd7ef8c2cf9df4ec552ea1b3806e81b6c21bd96f87caccae70f8eb41"
     },
     {
       "path": "works/wedding/lib/config.mjs",
-      "bytes": 2959,
-      "sha256": "03fbeb16e5eecf4c375c312dfd1d465cb5d9eeb941aaaee3ec337ef2179f6e33"
+      "bytes": 3084,
+      "sha256": "f9672385bb87bc139add590a30238f60abf6589aeab503a1e9a0f9e912951b9e"
+    },
+    {
+      "path": "works/wedding/lib/foley.mjs",
+      "bytes": 3511,
+      "sha256": "3487a887c433f2365f0029620f85c46aba92be86517691afdde411247f55dd06"
     },
     {
       "path": "works/wedding/lib/interaction.mjs",
@@ -1647,8 +1787,8 @@
     },
     {
       "path": "works/wedding/lib/scene-film.mjs",
-      "bytes": 8269,
-      "sha256": "a8ac291681d198570a7725f35b14815eb88da05397d98a14b3edc162cb839733"
+      "bytes": 12666,
+      "sha256": "cb21ddabce240f7d1a2d529c5eda2523b4e2c3e22e128aa2eaef21e4ed64a4d4"
     },
     {
       "path": "works/wedding/lib/scene.mjs",
@@ -1692,13 +1832,183 @@
     },
     {
       "path": "works/wedding/style.css",
-      "bytes": 6237,
-      "sha256": "0cd393250a165919f24a4b4b1c420c7904fd58aca773a0ff50cc24486fd702f3"
+      "bytes": 6634,
+      "sha256": "434d1d01af9447cab83c763d352dbf70780ad9d1b4d413d11914d9ca3bf37b7e"
     },
     {
       "path": "works/wedding/vision-worker.js",
-      "bytes": 2804,
-      "sha256": "fed32d01130cbdc74f8902be3f67d25e31b7b8dd157392751d262f20e1bcff6f"
+      "bytes": 2698,
+      "sha256": "dca89be05aa9b5cf71168ad97166efe6b6e8f9d2c2453d014c4c61384240ccaa"
+    },
+    {
+      "path": "works/yagwanggwi/app.mjs",
+      "bytes": 11607,
+      "sha256": "fb54d5092dfb94849b4f4c861df39d3588ae06a1360111d84b39c8a164692ecb"
+    },
+    {
+      "path": "works/yagwanggwi/assets/apertures.json",
+      "bytes": 817,
+      "sha256": "7f43dba9418f138254f63ddaa44c0c599c61953c799e6016385436fdd7c39dd9"
+    },
+    {
+      "path": "works/yagwanggwi/assets/apertures.png",
+      "bytes": 13765,
+      "sha256": "f96247882dc9ba5b4863c788e79e8035b1f46cb9ae5d24cd8abb8a3047c7db05"
+    },
+    {
+      "path": "works/yagwanggwi/assets/eye-night.jpg",
+      "bytes": 81181,
+      "sha256": "f3884431b42cf2f49cfa8fed96f198f02d3f76a7d861e6f4604a116e5368457e"
+    },
+    {
+      "path": "works/yagwanggwi/assets/eye-sheet.jpg",
+      "bytes": 71794,
+      "sha256": "6ec79c5a612d049ff56cf4b572f093d87e584eb1d50031cfd635c0d7104dddaf"
+    },
+    {
+      "path": "works/yagwanggwi/assets/gate-oremi.jpg",
+      "bytes": 441010,
+      "sha256": "a5228bf20330cc2f89501e97dc10a4d678f8adf3d929d6e1105fbc3bdffbc87b"
+    },
+    {
+      "path": "works/yagwanggwi/assets/gate.jpg",
+      "bytes": 391776,
+      "sha256": "8aa75dd1813ced0805362caaf5650ce0e15fe8ac78dffd46fda3e76c31a33ddd"
+    },
+    {
+      "path": "works/yagwanggwi/assets/jipsin.png",
+      "bytes": 259434,
+      "sha256": "da3b2cdb36f6f981f9fce077baac5b0368b51a79b82f4264a5a7fe6790786088"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-01.wav",
+      "bytes": 72500,
+      "sha256": "085353d49b6c56fccc50029d13df4f078a1de07fdb2e9199938528a2936d0217"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-02.wav",
+      "bytes": 63378,
+      "sha256": "7e5c5f5389dc3243633c68bfbcd434d3643928873487a2680d7e92ae9c9b97d1"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-03.wav",
+      "bytes": 44234,
+      "sha256": "60280f1c0f1ce9d508e2b5f2718c4d95a7f8b6e1b1056674edfef70d19f54323"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-04.wav",
+      "bytes": 73198,
+      "sha256": "4054d2ced85d16e95ab6f728fbde08f16765699b704956e0c68a8bb7e7643870"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-05.wav",
+      "bytes": 44996,
+      "sha256": "b63a8fab37089b9fa77cd966845a50f889c1c934a97377e1fc0253fa021b5436"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-06.wav",
+      "bytes": 48276,
+      "sha256": "55b8917bda3ddb54c62ac6435403c2a04bfc4a8c1b8a152b11602e0415851c5c"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-07.wav",
+      "bytes": 46358,
+      "sha256": "6883d4e3303ac2a6bc54717892e341d0bc43d02c4931da481e75948710e42732"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-08.wav",
+      "bytes": 52098,
+      "sha256": "a412b648d943cf861dd1789a07b7d53b2aa5b75d62c1bdfc19bc156ef3c0bb3f"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-09.wav",
+      "bytes": 62282,
+      "sha256": "fa07764eb84115716bbae90a4f065e756a6907463e4723ff6cb490f9bb80fab5"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-10.wav",
+      "bytes": 58998,
+      "sha256": "d0165c100cc0f12defb984ac6da7e319efe09bd826eb5999d6ed20e8247422ba"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-11.wav",
+      "bytes": 71334,
+      "sha256": "b694824b924b3a5958c57f792d435d0092a2bad6ae2c579b9bd255e211bdbd86"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/count-12.wav",
+      "bytes": 78560,
+      "sha256": "c71e0484503da6701311b40b6f18851f48cf8d34d69f944a45556ef2c81c965f"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/last-line.wav",
+      "bytes": 170424,
+      "sha256": "7819d604010cdd6eabb8d59094150c476932ac3e190d99570588a4147ee5a418"
+    },
+    {
+      "path": "works/yagwanggwi/assets/voice/manifest.json",
+      "bytes": 289,
+      "sha256": "6ea1ddfd329f84e10f99d1f4db4ad8941e6dece6f064e0082b3ef4cfdf3a5161"
+    },
+    {
+      "path": "works/yagwanggwi/assets/weave-apertures.png",
+      "bytes": 89842,
+      "sha256": "ece64a446ec195c50875fe53477641e1a69ceb0b467ae8fa84419d7f4ff9609e"
+    },
+    {
+      "path": "works/yagwanggwi/assets/weave-eyes.json",
+      "bytes": 561,
+      "sha256": "9470b265c0d8ff308935909e4abbe98335a2fb53b7c85095fa9f2feb624980bb"
+    },
+    {
+      "path": "works/yagwanggwi/assets/yagwanggwi-approach.mp4",
+      "bytes": 822762,
+      "sha256": "04d3c5cf5a61ec33d85f2a9cb12ebf35c182cd4efa056cf576731181274256da"
+    },
+    {
+      "path": "works/yagwanggwi/assets/yagwanggwi-lunge.png",
+      "bytes": 1941389,
+      "sha256": "296a27cf79ae022de742e11f57b0bd98c5a8712b6b93efd7217cb80e9e6c970e"
+    },
+    {
+      "path": "works/yagwanggwi/clap-worklet.mjs",
+      "bytes": 605,
+      "sha256": "1ee24a3b7361982b65b8490680a997d87abbcbec934cade13e38f3435fe6d0a8"
+    },
+    {
+      "path": "works/yagwanggwi/clap.mjs",
+      "bytes": 3361,
+      "sha256": "125010c944a97167d9d03b494ee278326c7d9f7a95102487ec37e9d09b8be1ba"
+    },
+    {
+      "path": "works/yagwanggwi/index.html",
+      "bytes": 4872,
+      "sha256": "5b5fac28a1534bfc6b0f5add095040ff0f4c7868fa43036ef58ee93e6e40809b"
+    },
+    {
+      "path": "works/yagwanggwi/microphone.mjs",
+      "bytes": 5049,
+      "sha256": "7020fefc0839cfa63a4c0aacbd4b066183cc3853b25cc8b6a1b81c44b829f9f7"
+    },
+    {
+      "path": "works/yagwanggwi/scene.mjs",
+      "bytes": 11724,
+      "sha256": "2ec0ae516ee6016240aa70558ef1112a98face4159fff14b550ff5abd5923323"
+    },
+    {
+      "path": "works/yagwanggwi/score.mjs",
+      "bytes": 4522,
+      "sha256": "f528eac8478449fea93c0534965c0c67054fe1c66cff5161864a01485890d719"
+    },
+    {
+      "path": "works/yagwanggwi/sound.mjs",
+      "bytes": 12460,
+      "sha256": "9963ab2906edc22c13bf87e185bab8bc90b0e8b870c33939bba68f29eecad43d"
+    },
+    {
+      "path": "works/yagwanggwi/style.css",
+      "bytes": 4142,
+      "sha256": "fc181dc01781bec06ea599a198c2816d1e4ac7823a775e617da234e273dcacda"
     }
   ]
 }

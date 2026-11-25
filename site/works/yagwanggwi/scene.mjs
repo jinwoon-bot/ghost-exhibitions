@@ -1,4 +1,4 @@
-import { STATES } from './score.mjs?v=double-clap';
+import { STATES } from './score.mjs?v=floor-rehearsal';
 
 const stage = { x:600, y:205, size:460 };
 const sieve = { x:645, y:249, width:370, height:376 };
@@ -143,7 +143,7 @@ export class Scene {
     ctx.globalAlpha = 1;
     this.drawShadow(ctx,view,dt,safe);
     this.drawEyes(ctx,view,dt,now,low,safe,afterReveal);
-    if (lunge) this.drawLunge(ctx,view.age,safe);
+    if (lunge) this.drawLunge(ctx,view.age,safe,view.variant);
     else if (this.lungeMode) {
       this.lungeMode = this.clipAttempt = null;
       this.clip.pause();
@@ -151,7 +151,7 @@ export class Scene {
     }
   }
 
-  drawLunge(ctx,age,safe) {
+  drawLunge(ctx,age,safe,variant) {
     const behind = ease(0,90,age)*(1-ease(100,230,age));
     if (behind > .01) {
       const surf = this.eyeContext;
@@ -167,7 +167,7 @@ export class Scene {
     }
 
     if (!this.lungeMode) {
-      this.lungeMode = safe || this.clip.readyState < 2 ? 'still' : 'video';
+      this.lungeMode = safe || variant !== 0 || this.clip.readyState < 2 ? 'still' : 'video';
       if (this.lungeMode === 'video') {
         this.clip.currentTime = age < 42 ? 0 : age/1000;
         this.clip.hidden = false;
@@ -195,13 +195,15 @@ export class Scene {
     const retreat = ease(420,1400,age);
     const depth = advance*(1-retreat);
     const front = ease(82,safe ? 440 : 215,age)*(1-ease(1050,1770,age));
-    const size = 345+depth*(safe ? 60 : 255);
+    const side = safe || variant === 0 ? 0 : variant === 1 ? -1 : 1;
+    const hover = ease(220,430,age)*(1-ease(860,1420,age));
+    const size = 345+depth*(safe ? 60 : variant === 1 ? 151 : 255)+hover*(variant === 2 ? 76 : 0);
     const nod = Math.sin(age*.031)*Math.exp(-age/176)*depth*(safe ? 0 : 10);
-    const x = (2+nod)*100/stage.size;
-    const y = (89.4-depth*80)*100/stage.size;
+    const x = (2+nod+side*(1-ease(110,580,age))*128+side*hover*28)*100/stage.size;
+    const y = (89.4-depth*80-hover*(variant === 2 ? 60 : 12))*100/stage.size;
     this.apparition.hidden = false;
     this.apparition.style.opacity = front.toFixed(3);
-    this.apparition.style.transform = `translate3d(${x}%,${y}%,0) scale(${size/stage.size})`;
+    this.apparition.style.transform = `translate3d(${x}%,${y}%,0) rotate(${(side*(1-ease(180,960,age))*8).toFixed(1)}deg) scale(${size/stage.size})`;
   }
 
   drawShadow(ctx,view,dt,safe) {

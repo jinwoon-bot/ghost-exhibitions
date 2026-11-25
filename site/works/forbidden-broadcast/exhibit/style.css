@@ -48,8 +48,8 @@ body{display:grid;place-items:center;font-family:"Malgun Gothic","Apple SD Gothi
 @keyframes hall-creep{from{transform:scale(1)}to{transform:scale(1.065)}}
 #shock-cut{background:#020303}
 #shock-cut .feed{filter:saturate(.62) contrast(1.16) brightness(1.09)}
-#screen[data-phase=scare] .close-frame{transform-origin:50% 45%;animation:lens-rush .60s both}
-@keyframes lens-rush{0%{transform:translateY(1.5%) scale(1.015);animation-timing-function:cubic-bezier(.44,.04,.98,.54)}19%{transform:translate(-1.8%,-1.2%) scale(1.27);animation-timing-function:cubic-bezier(.06,.81,.2,1)}54%{transform:translate(.25%,0) scale(1.145)}100%{transform:scale(1.135)}}
+#screen[data-phase=scare] .close-frame{transform-origin:50% 54%;animation:lens-rush .82s both}
+@keyframes lens-rush{0%{opacity:.05;transform:translate(3%,18%) scale(1.05) rotate(4deg);animation-timing-function:cubic-bezier(.51,.03,.92,.33)}24%{opacity:1;transform:translate(-2.7%,-2%) scale(1.25) rotate(-2.2deg);animation-timing-function:cubic-bezier(.13,.7,.15,1)}47%{opacity:1;transform:translate(.7%,.5%) scale(1.19) rotate(.9deg)}77%{opacity:1;transform:translate(-2%,3%) scale(1.34) rotate(-.8deg)}100%{opacity:.77;transform:translate(-2%,3%) scale(1.36) rotate(-.8deg)}}
 .tear{position:absolute;inset:0;background:center/cover url('assets/hall-close.webp');filter:contrast(1.45) saturate(.43);opacity:0}
 #screen[data-phase=scare] .tear{animation:tape-tear 175ms steps(1,end) both}
 @keyframes tape-tear{0%{opacity:.82;clip-path:inset(37% 0 50%);transform:translateX(4%)}43%{opacity:.72;clip-path:inset(49% 0 44%);transform:translateX(-3%)}100%{opacity:0;transform:none}}

@@ -1,23 +1,20 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { Score, STATES, NUMBERS, thresholds } from '../site/works/yagwanggwi/score.mjs';
+import { Score, STATES, NUMBERS, thresholds, IDLE_RESET_MS } from '../site/works/yagwanggwi/score.mjs';
 import { ClapDetector, DEFAULT_CLAP_INTERVAL, DOUBLE_CLAP_WINDOW } from '../site/works/yagwanggwi/clap.mjs';
 import { Microphone } from '../site/works/yagwanggwi/microphone.mjs';
 
 const events = [];
 const score = new Score((...event) => events.push(event),()=>.4);
-score.step(950);
-assert.equal(score.state,STATES.COUNTING);
-assert.deepEqual(events.at(-1),['count',1,0]);
-score.step(score.next);
-assert.equal(score.count,2);
-let time = score.entered + 100;
+for (const time of [950,9000,120000]) score.step(time);
+assert.equal(score.state,STATES.IDLE);
+assert.equal(events.length,0,'quiet standby does not begin by itself');
+let time = 120100;
 assert.equal(score.interrupt(time),true);
-assert.equal(score.count,0);
 assert.equal(score.state,STATES.INTERRUPTED);
 assert.equal(score.view(time).eyes,1);
 assert.equal(score.view(time).hitAge,0);
-assert.deepEqual(events.at(-1),['interruption',1,1],'the first accepted clap immediately signals its own response');
+assert.deepEqual(events.at(-1),['interruption',1,1]);
 assert.equal(score.interrupt(time+100),false);
 score.step(score.next);
 assert.deepEqual(events.at(-1),['count',1,1]);
@@ -36,23 +33,25 @@ assert.equal(score.state,STATES.RESET);
 assert.equal(score.view(score.entered).returnFrom,STATES.REVEAL);
 score.step(score.next);
 assert.equal(score.state,STATES.IDLE);
-for (let n=0;n<NUMBERS.length;n++) { score.step(score.next); assert.equal(score.count,n+1); }
-score.step(score.next);
-assert.equal(score.state,STATES.QUIET);
-score.step(score.next);
-assert.equal(score.state,STATES.RESET);
+for (let variant=0;variant<6;variant++) {
+  time=score.entered+100;
+  assert.equal(score.interrupt(time),true);
+  score.step(score.next);
+  score.step(score.next);
+  score.step(score.next);
+  assert.equal(score.state,STATES.LUNGE,'one clap finishes the scene');
+  assert.equal(score.view(score.entered).variant,variant%3);
+  score.step(score.next);
+  assert.equal(score.state,STATES.RESET);
+  score.step(score.next);
+  assert.equal(score.state,STATES.IDLE);
+}
+time=score.entered+100;
+score.interrupt(time);
+score.step(time+IDLE_RESET_MS+20);
+assert.equal(score.state,STATES.RESET,'unfinished scene expires after inactivity');
 score.step(score.next);
 assert.equal(score.state,STATES.IDLE);
-score.configure({autoReset:false});
-score.quiet(score.next);
-score.step(score.next);
-score.step(score.next);
-assert.equal(score.state,STATES.RESET,'operator can hold the settled scene');
-score.reset(score.next + 100);
-assert.equal(score.state,STATES.IDLE);
-score.quiet(score.next);
-assert.equal(score.interrupt(score.entered+200),true,'a clap can break the quiet ending');
-assert.equal(score.state,STATES.INTERRUPTED);
 assert.deepEqual(thresholds({first:8,many:2,final:3}),{first:8,many:9,final:10});
 
 const doubleEvents = [];
@@ -148,4 +147,4 @@ for (const file of [...voice.count,voice.reveal].filter(Boolean)) {
   const wave=await readFile(asset('voice/'+file));
   assert.ok(wave.length>2400 && wave.toString('ascii',0,4)==='RIFF','locally bundled WAV '+file);
 }
-console.log('PASS first eye, double-clap lunge, five-clap climax, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+eyes.length+' weave positions, '+voice.count.length+' count WAVs.');
+console.log('PASS one-clap start, three lunge variants, inactivity recovery, five-clap climax, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+eyes.length+' weave positions, '+voice.count.length+' count WAVs.');

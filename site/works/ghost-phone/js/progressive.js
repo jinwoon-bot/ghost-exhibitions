@@ -7,7 +7,13 @@ export const progressiveCalls = [{
   title: '창귀 · 길 건너편',
   file: 'assets/audio/progressive/changgwi-crossing.wav',
   finalAt: 18.54,
-}];
+},
+  {id:"songaksi-floor",actorId:"songaksi",actor:"손각시",title:"손각시 · 옆에 비워 둔 자리",file:"assets/audio/progressive/songaksi-floor.wav",finalAt:15.69},
+  {id:"mongdal-floor",actorId:"mongdal",actor:"몽달귀신",title:"몽달귀신 · 문을 닫아 주세요",file:"assets/audio/progressive/mongdal-floor.wav",finalAt:12.8},
+  {id:"gogwandaemyeon-floor",actorId:"gogwandaemyeon",actor:"고관대면",title:"고관대면 · 사진을 돌려 주세요",file:"assets/audio/progressive/gogwandaemyeon-floor.wav",finalAt:14.39},
+  {id:"yeopjeon-floor",actorId:"yeopjeon",actor:"엽전사귀",title:"엽전사귀 · 천천히 세어 보세요",file:"assets/audio/progressive/yeopjeon-floor.wav",finalAt:14.07},
+  {id:"seongju-floor",actorId:"seongju",actor:"성주신",title:"성주신 · 집에 들어오시면",file:"assets/audio/progressive/seongju-floor.wav",finalAt:14.48},
+];
 
 const unit = n => Math.max(0, Math.min(1, n));
 const smooth = n => unit(n) ** 2 * (3 - 2 * unit(n));
@@ -19,7 +25,8 @@ export function hauntIntensity(seconds, duration, {start = 7, speed = 1, max = 1
     return max * smooth((seconds - onset) / 1.4);
   }
   const onset = Math.min(start, Math.max(0, duration - 4));
-  const span = Math.max(.4, (duration - onset - 3.4) / speed);
+  const peakAt = Math.min(duration - 1.4, (finalAt ?? duration - 5.4) + 2);
+  const span = Math.max(.4, (peakAt - onset) / speed);
   return max * smooth((seconds - onset) / span);
 }
 
@@ -121,7 +128,7 @@ export class ProgressiveHaunt {
       [drive.gain, x => 1 + 1.8 * x],
       [rough.gain, x => .28 * x ** 1.6],
       [rumble.gain, (x,t) => .43 * smooth((x - .24) / .76) * (1 - .19 * diction(x,t))],
-      [depth.gain, x => .28 * x ** 1.35],
+      [depth.gain, x => .32 * x ** 1.35],
       [wobble.frequency, (x, t) => 7 + 12 * x + 2.2 * x * Math.sin(t * 2.7)],
       [hissLevel.gain, (x, t) => {
         const interference = smooth((x - .59) / .41);
