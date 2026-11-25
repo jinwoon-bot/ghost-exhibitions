@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';import path from 'node:path';import {fileURLToPath} from 'node:url';import {execFileSync} from 'node:child_process';import {createHash} from 'node:crypto';import vm from 'node:vm';
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),site=path.join(repo,'site'),files=[];
 async function walk(dir){for(const item of await fs.readdir(dir,{withFileTypes:true})){const p=path.join(dir,item.name);if(item.isSymbolicLink())throw Error('Symlink not allowed: '+p);if(item.isDirectory())await walk(p);else{const b=await fs.readFile(p);files.push({path:path.relative(site,p).replaceAll('\\','/'),bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}}}await walk(site);
-const available=new Set(files.map(f=>f.path)),catalog=JSON.parse(await fs.readFile(path.join(site,'catalog.json'),'utf8'));if(catalog.length!==7)throw Error('Seven works required');
+const available=new Set(files.map(f=>f.path)),catalog=JSON.parse(await fs.readFile(path.join(site,'catalog.json'),'utf8'));if(catalog.length!==8)throw Error('Eight works required');
 for(const work of catalog)for(const p of [work.entry,work.extra].filter(Boolean))if(!available.has(p))throw Error('Missing entry '+p);
 let syntaxChecks=0,links=0;const failures=[];
 for(const f of files){if(/(^|\/)(\.env[^/]*|node_modules|\.git)(\/|$)|\.(exe|zip|blend|mov|psd)$/i.test(f.path))failures.push('Unwanted deployment file '+f.path);if(f.bytes>100*1024*1024)failures.push('File exceeds GitHub limit '+f.path);

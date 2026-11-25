@@ -26,7 +26,7 @@ Windows 전시 PC, Chrome 또는 Edge, 1920×1080 화면이나 프로젝터, 마
 3. **전시 시작**을 누르고 마이크 권한을 허용합니다. 전체 화면이 제한된 브라우저에서는 F11을 사용합니다.
 4. 마이크가 없으면 **Space**로 손뼉을 대신합니다. 시작 화면에서도 Space로 키보드 시연을 시작할 수 있습니다.
 
-공개 전시는 브라우저에서 바로 실행할 수 있습니다. 로컬 HTTP는 loopback 주소를 사용하고 배포본은 Pages HTTPS를 사용합니다. [귀신 7종 통합 전시](https://jinwoon-bot.github.io/ghost-exhibitions/) · [야광귀 바로 열기](https://jinwoon-bot.github.io/ghost-exhibitions/works/yagwanggwi/)
+공개 전시는 브라우저에서 바로 실행할 수 있습니다. 로컬 HTTP는 loopback 주소를 사용하고 배포본은 Pages HTTPS를 사용합니다. [한국 귀신 통합 전시](https://jinwoon-bot.github.io/ghost-exhibitions/) · [야광귀 바로 열기](https://jinwoon-bot.github.io/ghost-exhibitions/works/yagwanggwi/)
 
 캔버스와 배경은 원래 구도를 유지하며 화면에 맞춥니다. 좁은 화면에서는 남는 공간에 검은 여백을 둡니다. 앱을 실행할 때 서버는 정적 파일만 전달합니다. 외부 CDN, 실시간 생성 모델, API 키, 웹캠은 필요하지 않습니다.
 

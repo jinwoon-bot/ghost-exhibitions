@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-11-25T02:47:28.765Z",
-  "works": 7,
-  "files": 402,
-  "bytes": 137923937,
-  "syntaxChecks": 128,
-  "htmlLinks": 77,
+  "checkedAt": "2026-11-25T04:46:21.584Z",
+  "works": 8,
+  "files": 427,
+  "bytes": 161589265,
+  "syntaxChecks": 135,
+  "htmlLinks": 80,
   "workerSharedRoutes": 12,
   "failures": []
 }

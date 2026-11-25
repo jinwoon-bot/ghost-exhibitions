@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b0d">
+  <title>손돌바람</title>
+  <link rel="stylesheet" href="./style.css?v=river-travel">
+</head>
+<body>
+  <main id="theatre" aria-label="손돌바람" data-phase="CALM">
+    <div id="screen" aria-hidden="true">
+      <canvas id="water"></canvas>
+      <canvas id="stage"></canvas>
+      <video id="cut" src="./assets/sondol-reveal.mp4" muted playsinline preload="auto" hidden></video>
+    </div>
+    <section id="entry" aria-labelledby="title">
+      <h1 id="title">손돌바람</h1>
+      <p>바람을 불어보세요.</p>
+      <div class="actions">
+        <button id="start" type="button">전시 시작</button>
+        <button id="preview" class="quiet" type="button">키보드 시연</button>
+      </div>
+      <p class="keynote">마이크가 없으면 Space를 길게 누르세요.</p>
+    </section>
+    <output id="notice" role="status"></output>
+  </main>
+  <dialog id="operator" aria-labelledby="operator-title">
+    <header>
+      <h2 id="operator-title">손돌바람 운영실</h2>
+      <form method="dialog"><button>닫기</button></form>
+    </header>
+    <div class="boards">
+      <section>
+        <h3>입력</h3>
+        <label>마이크 <select id="device"><option value="">기본 마이크</option></select></label>
+        <output id="mic-status" aria-live="polite">연결 대기</output>
+        <label>입력 레벨 <meter id="level" min="0" max="1" aria-label="마이크 입력 레벨"></meter></label>
+        <label>바람 강도 <meter id="gust" min="0" max="1" aria-label="현재 바람 강도"></meter></label>
+        <label class="range">민감도 <input id="sensitivity" type="range" min=".15" max=".95" step=".01"><output id="sensitivity-value"></output></label>
+        <label class="range">최소 지속 <input id="minimum" type="range" min="100" max="650" step="10"><output id="minimum-value"></output></label>
+        <label class="range">수동 바람 <input id="manual" type="range" min="0" max="1" step=".01" value="0"><output id="manual-value">0%</output></label>
+        <div class="actions">
+          <button id="connect" type="button">마이크 연결</button>
+          <button id="calibrate" type="button">소음 재측정</button>
+          <button id="keyboard" type="button">키보드 모드</button>
+        </div>
+        <p class="note">마이크에서 15~25cm 거리를 두고 숨을 불어보세요.</p>
+      </section>
+      <section>
+        <h3>장면</h3>
+        <dl><dt>현재 장면</dt><dd id="phase">잔잔한 물길</dd><dt>바람 누적</dt><dd id="charge">0%</dd></dl>
+        <label class="range">폭풍 시작 <input id="storm" type="range" min=".12" max=".65" step=".01"><output id="storm-value"></output></label>
+        <label class="range">배 소실 <input id="lost" type="range" min=".70" max="1.65" step=".01"><output id="lost-value"></output></label>
+        <label class="range">파도 <input id="waves" type="range" min=".30" max="1.45" step=".01"><output id="waves-value"></output></label>
+        <label class="range">배 흔들림 <input id="boat" type="range" min=".25" max="1.55" step=".01"><output id="boat-value"></output></label>
+        <label class="range">물안개 <input id="mist" type="range" min="0" max="1" step=".01"><output id="mist-value"></output></label>
+        <div class="actions">
+          <button id="storm-test" type="button">폭풍 시연</button>
+          <button id="lost-test" type="button">배 소실</button>
+          <button id="hand-test" type="button">손 등장</button>
+          <button id="ghost-test" type="button">원혼 등장</button>
+          <button id="reset" type="button">전체 초기화</button>
+        </div>
+      </section>
+      <section>
+        <h3>음향</h3>
+        <label class="range">전체 <input id="master" type="range" min="0" max="1" step=".01"><output id="master-value"></output></label>
+        <label class="range">물결 <input id="water-volume" type="range" min="0" max="1" step=".01"><output id="water-value"></output></label>
+        <label class="range">바람 <input id="wind-volume" type="range" min="0" max="1" step=".01"><output id="wind-value"></output></label>
+        <label class="range">효과음 <input id="effects" type="range" min="0" max="1" step=".01"><output id="effects-value"></output></label>
+        <label class="check"><input id="muted" type="checkbox"> 음소거</label>
+        <output id="audio-status"></output>
+      </section>
+      <section>
+        <h3>전시</h3>
+        <label class="check"><input id="low" type="checkbox"> 저사양 모드</label>
+        <label class="check"><input id="autoReset" type="checkbox"> 장면 자동 초기화</label>
+        <output id="performance"></output>
+        <output id="media-status"></output>
+        <div class="actions">
+          <button id="fullscreen" type="button">전체 화면</button>
+          <button id="resume" type="button">오디오 다시 켜기</button>
+        </div>
+        <p class="note">D 운영실 · F 전체 화면 · Space 바람</p>
+      </section>
+    </div>
+  </dialog>
+  <script type="module" src="./app.mjs?v=river-travel"></script>
+</body>
+</html>

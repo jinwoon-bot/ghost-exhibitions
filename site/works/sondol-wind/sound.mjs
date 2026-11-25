@@ -1,0 +1,133 @@
+import { CUT, PHASE, smooth } from './score.mjs';
+
+const files = {
+  calm:'sea-calm.wav', near:'wind-near.wav', gale:'wind-gale.wav', surf:'sea-breakers.wav',
+  creak:'ferry-creak.wav', wash:'ferry-wash.wav', hand:'hand-emerges.wav', drips:'water-drips-revenant.wav',
+};
+const ambient = {calm:'water',surf:'water',near:'wind',gale:'wind'};
+
+export class Sound {
+  constructor() {
+    this.buffers = new Map();
+    this.loops = new Map();
+    this.active = new Set();
+    this.ready = false;
+    this.serial = 0;
+    this.cutCues = new Set();
+  }
+
+  open() {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return null;
+    if (!this.context) {
+      const ctx = this.context = new Audio();
+      this.master = ctx.createGain();
+      this.beds = ctx.createGain();
+      this.water = ctx.createGain();
+      this.wind = ctx.createGain();
+      this.effects = ctx.createGain();
+      const limit = ctx.createDynamicsCompressor();
+      limit.threshold.value = -13;
+      limit.ratio.value = 9;
+      this.master.connect(limit).connect(ctx.destination);
+      this.water.connect(this.beds);
+      this.wind.connect(this.beds);
+      this.beds.connect(this.master);
+      this.effects.connect(this.master);
+      this.master.gain.value = this.beds.gain.value = 0;
+      this.loading = this.load(ctx);
+    }
+    this.context.resume().catch(()=>{});
+    return this.context;
+  }
+
+  async load(ctx) {
+    await Promise.allSettled(Object.entries(files).map(async ([name,file])=>{
+      const response = await fetch(new URL('./assets/sound/'+file,import.meta.url));
+      if (!response.ok) throw Error(file);
+      const buffer = await ctx.decodeAudioData(await response.arrayBuffer());
+      if (ctx.state==='closed') return;
+      this.buffers.set(name,buffer);
+      if (ambient[name]) {
+        const source = ctx.createBufferSource();
+        const gain = ctx.createGain();
+        gain.gain.value=0;
+        source.buffer=buffer;
+        source.loop=true;
+        source.connect(gain).connect(this[ambient[name]]);
+        source.start();
+        this.loops.set(name,{source,gain});
+      }
+    }));
+    this.ready = true;
+  }
+
+  play(name,volume,pan=0,offset=0) {
+    const ctx=this.context, buffer=this.buffers.get(name);
+    if (ctx?.state!=='running' || !buffer || offset>=buffer.duration) return;
+    const source=ctx.createBufferSource(), mix=ctx.createGain(), place=ctx.createStereoPanner();
+    source.buffer=buffer;
+    mix.gain.value=volume;
+    place.pan.value=pan;
+    source.connect(mix).connect(place).connect(this.effects);
+    this.active.add(source);
+    source.onended=()=>{
+      this.active.delete(source);
+      source.disconnect();
+      mix.disconnect();
+      place.disconnect();
+    };
+    source.start(0,offset);
+  }
+
+  cancel() {
+    for (const source of this.active) source.stop();
+    this.active.clear();
+  }
+
+  update(view,settings) {
+    const ctx=this.context;
+    if (ctx?.state!=='running') return;
+    const now=ctx.currentTime;
+    const wet=view.wind;
+    const set=(node,level,time=.14)=>node?.gain.setTargetAtTime(level,now,time);
+    set(this.master,settings.muted ? 0 : settings.master);
+    set(this.water,settings.water);
+    set(this.wind,settings.wind);
+    set(this.effects,settings.effects);
+    if (view.inCut && !this.wasCut) {
+      this.beds.gain.cancelScheduledValues(now);
+      this.beds.gain.setValueAtTime(0,now);
+    } else set(this.beds,view.inCut ? 0 : view.recover,.36);
+    this.wasCut=view.inCut;
+    set(this.loops.get('calm')?.gain,.82-wet*.55);
+    set(this.loops.get('near')?.gain,smooth(.03,.68,wet)*(.91-wet*.45));
+    set(this.loops.get('gale')?.gain,smooth(.34,1,wet)*.82);
+    set(this.loops.get('surf')?.gain,smooth(.14,.97,wet)*.88);
+    if (view.serial!==this.serial) {
+      this.serial=view.serial;
+      this.cutCues.clear();
+      this.cancel();
+    }
+    if (view.state!==this.lastState) {
+      if (view.state===PHASE.BOAT_LOST) this.play('wash',.84,.23);
+      this.lastState=view.state;
+    }
+    if (wet>.47 && !view.inCut && view.state!==PHASE.BOAT_LOST && now>(this.nextCreak??0) && this.buffers.has('creak')) {
+      this.play('creak',wet*.48,.21);
+      this.nextCreak=now+2.8+Math.random()*1.9;
+    }
+    if (view.inCut) for (const [name,at] of [['hand',CUT.handSound],['drips',CUT.drips]]) {
+      if (view.cut<at || this.cutCues.has(name)) continue;
+      if (this.buffers.has(name)) {
+        this.play(name,settings.muted ? 0 : .87,name==='hand' ? -.16 : .025,view.cut-at);
+        this.cutCues.add(name);
+      }
+    }
+  }
+
+  close() {
+    this.cancel();
+    this.context?.close().catch(()=>{});
+  }
+}
