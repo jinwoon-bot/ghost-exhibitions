@@ -1,4 +1,4 @@
-import { LAST_LINE, NUMBERS } from './score.mjs?v=clap-response';
+import { LAST_LINE, NUMBERS } from './score.mjs?v=sieve-dark';
 
 const voiceRoot = new URL('./assets/voice/', import.meta.url);
 const audioFile = /^[a-z0-9_-]+\.(wav|mp3|ogg)$/i;
@@ -67,7 +67,7 @@ export class Sound {
         (low * .58 + mid * .12) * (.69 + .17 * Math.sin(t * 1.7 + channel * 1.4)) *
         envelope(t, .34, .43, 6.6), 8051, 2), this.room, 480),
       this.loop(makeSample(ctx, 5.1, (t, white, low) =>
-        (.094 * Math.sin(t * Math.PI * 2 * 57) + low * .48) *
+        (.11 * Math.sin(t * Math.PI * 2 * 57) + .047 * Math.sin(t * Math.PI * 2 * 111.4) + low * .48) *
         (.64 + .26 * Math.sin(t * 1.9)) * envelope(t, .42, .50, 5.1), 341), this.pressure, 125),
     ];
     this.pressure.gain.value = 0;
@@ -76,14 +76,18 @@ export class Sound {
         .10*Math.sin(t*2*Math.PI*590)*Math.exp(-t*43), 807),
       scratch: makeSample(ctx,1.05,(t,w,l,m) => (m*.92+(w-m)*.19)*
         (.13 + .78*Math.max(0,Math.sin(t*36+.8*Math.sin(t*19)))**3)*envelope(t,.09,.22,1.05), 245),
-      breath: makeSample(ctx,1.55,(t,w,l,m) => (l*.38+m*.74+w*.059)*
-        (.61+.16*Math.sin(t*17.9))*envelope(t,.31,.63,1.55), 414),
+      breath: makeSample(ctx,1.83,(t,w,l,m) =>
+        (l*.49 + m*.71 + (w-m)*.082) *
+        (.67+.21*Math.sin(t*13.9+Math.sin(t*6.3))+.065*Math.sin(t*102)) *
+        Math.sin(Math.PI*Math.min(1,t/1.83))**1.35, 414),
       wood: makeSample(ctx,.90,(t,w,l,m) => (m*.66 + .08*Math.sin(t*1700+t*t*250))*
         (.21+.29*Math.sin(t*27)**2)*envelope(t,.13,.34,.90), 97),
-      drag: makeSample(ctx,3.8,(t,w,l,m) => (m*.69+(w-m)*.11)*
-        (.19+.83*Math.max(0,Math.sin(6.2*t+.65*Math.sin(t*3.7)))**2)*envelope(t,.17,.48,3.8), 400),
-      step: makeSample(ctx,.24,(t,w,l,m) => Math.exp(-t*20)*
-        (l*.71+m*.44+.26*Math.sin(Math.PI*2*(78*t-71*t*t))), 218),
+      reed: makeSample(ctx,1.45,(t,w,l,m) => {
+        const phase = 2*Math.PI*(216*t-37*t*t)+1.3*Math.sin(t*12);
+        const strain = .15+.85*Math.max(0,Math.sin(t*9.5+.8*Math.sin(t*17)))**2;
+        return (m*.58+(w-m)*.09+.11*Math.sin(phase)+.02*Math.sin(phase*2.73)) *
+          strain*envelope(t,.08,.44,1.45);
+      }, 579),
     };
   }
 
@@ -143,7 +147,7 @@ export class Sound {
     if (settings.muted || !settings.voice || !settings.master) this.stopVoice();
   }
 
-  play(buffer, { bus=this.foley, volume=.2, pitch=1, pan=0, cutoff=4500, when=0, voice=false, reflection=0 } = {}) {
+  play(buffer, { bus=this.foley, volume=.2, pitch=1, pan=0, panEnd=pan, cutoff=4500, when=0, voice=false, reflection=0 } = {}) {
     if (!buffer || this.ctx?.state !== 'running') return;
     const ctx = this.ctx, start = ctx.currentTime + when;
     const source = ctx.createBufferSource(), tone = ctx.createBiquadFilter();
@@ -153,7 +157,8 @@ export class Sound {
     tone.type = 'lowpass';
     tone.frequency.value = cutoff;
     tone.Q.value = .32;
-    panner.pan.value = pan;
+    panner.pan.setValueAtTime(pan,start);
+    if (panEnd !== pan) panner.pan.linearRampToValueAtTime(panEnd,start+buffer.duration/pitch);
     trim.gain.setValueAtTime(0,start);
     trim.gain.linearRampToValueAtTime(volume,start+.021);
     source.connect(tone).connect(trim).connect(panner).connect(bus);
@@ -227,8 +232,8 @@ export class Sound {
     const now = this.ctx.currentTime;
     const sample = (name,opts) => this.play(this.bank[name],opts);
     if (type === 'count') {
-      this.roomGate.gain.setTargetAtTime(1,now,.40);
-      this.pressure.gain.setTargetAtTime(anger * .033,now,1.1);
+      this.roomGate.gain.setTargetAtTime(anger ? .51 : 1,now,.67);
+      this.pressure.gain.setTargetAtTime(anger * .085,now,1.1);
       this.speak(count,anger);
       if (count % 3 !== 0) sample('touch',{volume:.19,pan:-.24,when:.52+Math.random()*.32,cutoff:1800});
       if (count % 4 === 3) sample('wood',{volume:.18,pan:.35,when:.72,cutoff:1230});
@@ -237,26 +242,25 @@ export class Sound {
     this.stopVoice();
     for (const note of this.effects) this.stop(note);
     if (type === 'interruption') {
-      this.roomGate.gain.setTargetAtTime(.10,now,.058);
-      this.pressure.gain.setTargetAtTime(anger*.063,now,.73);
-      const side = count%2 ? .24 : -.30;
-      sample('touch',{volume:.34,pan:side,cutoff:1880+count*220,pitch:.69+count*.058});
-      if (count > 1) sample('breath',{volume:.18,pan:side*.67,when:.12,cutoff:1400+anger*300,pitch:1.34});
-      if (anger > 1) sample('scratch',{volume:.20,pan:-side,when:.16,cutoff:2350,pitch:1.17});
+      this.roomGate.gain.setTargetAtTime(.065,now,.064);
+      this.pressure.gain.setTargetAtTime(anger*.100,now,.73);
+      const side = count%2 ? -.27 : .24;
+      sample('touch',{volume:.29,pan:side,cutoff:1580+count*220,pitch:.73+count*.043});
+      sample('breath',{volume:.23+anger*.050,pan:side*.83,panEnd:side*.11,when:.074,cutoff:1650+anger*360,pitch:1.23});
+      if (anger > 1) sample('reed',{volume:.23,pan:-side,panEnd:side*.32,when:.14,cutoff:1820,pitch:.87});
     } else if (type === 'reveal') {
-      this.roomGate.gain.setTargetAtTime(.035,now,.082);
+      this.roomGate.gain.setTargetAtTime(.02,now,.095);
       this.pressure.gain.setTargetAtTime(0,now,.25);
-      sample('touch',{volume:.31,pan:-.10,cutoff:1600,pitch:.65});
-      sample('wood',{volume:.27,pan:.21,cutoff:1850,when:.10,pitch:.76});
-      sample('breath',{volume:.24,pan:.08,cutoff:2070,when:.81,pitch:.89});
+      sample('touch',{volume:.27,pan:-.12,cutoff:1470,pitch:.66});
+      sample('reed',{volume:.27,pan:.31,panEnd:-.16,cutoff:1950,when:.095,pitch:.81});
+      sample('scratch',{volume:.16,pan:-.29,panEnd:.035,cutoff:2300,when:.48,pitch:.79});
+      sample('breath',{volume:.40,pan:-.38,panEnd:.025,cutoff:2780,when:.55,pitch:.92});
     } else if (type === 'last-line') {
       this.speak('reveal');
-    } else if (type === 'theft') {
-      this.roomGate.gain.setTargetAtTime(.83,now,.10);
-      [ .71, 1.35, 5.46, 6.09, 6.85 ].forEach((when,i) =>
-        sample('step',{volume:.37-i*.054,pan:-.22-i*.07,cutoff:1290-i*137,when,pitch:.97-i*.04}));
-      sample('drag',{volume:.43,pan:-.32,cutoff:2400,when:1.77});
-      sample('wood',{volume:.18,pan:-.50,cutoff:1320,when:4.25});
+    } else if (type === 'quiet') {
+      this.roomGate.gain.setTargetAtTime(.14,now,.65);
+      this.pressure.gain.setTargetAtTime(0,now,.35);
+      sample('reed',{volume:.13,pan:.13,panEnd:.31,when:.68,cutoff:950,pitch:.77});
     } else if (type === 'reset') {
       this.roomGate.gain.setTargetAtTime(1,now,.55);
       this.pressure.gain.setTargetAtTime(0,now,.45);

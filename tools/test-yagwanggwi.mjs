@@ -38,18 +38,21 @@ score.step(score.next);
 assert.equal(score.state,STATES.IDLE);
 for (let n=0;n<NUMBERS.length;n++) { score.step(score.next); assert.equal(score.count,n+1); }
 score.step(score.next);
-assert.equal(score.state,STATES.SHOE_THEFT);
+assert.equal(score.state,STATES.QUIET);
 score.step(score.next);
 assert.equal(score.state,STATES.RESET);
 score.step(score.next);
 assert.equal(score.state,STATES.IDLE);
 score.configure({autoReset:false});
-score.theft(score.next);
+score.quiet(score.next);
 score.step(score.next);
 score.step(score.next);
 assert.equal(score.state,STATES.RESET,'operator can hold the settled scene');
 score.reset(score.next + 100);
 assert.equal(score.state,STATES.IDLE);
+score.quiet(score.next);
+assert.equal(score.interrupt(score.entered+200),true,'a clap can break the quiet ending');
+assert.equal(score.state,STATES.INTERRUPTED);
 assert.deepEqual(thresholds({first:8,many:2,final:3}),{first:8,many:9,final:10});
 
 const meter = [];

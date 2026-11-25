@@ -1,6 +1,6 @@
-import { Score, STATES, thresholds } from './score.mjs?v=clap-response';
-import { Scene } from './scene.mjs?v=clap-response';
-import { Sound } from './sound.mjs?v=clap-response';
+import { Score, STATES, thresholds } from './score.mjs?v=sieve-dark';
+import { Scene } from './scene.mjs?v=sieve-dark';
+import { Sound } from './sound.mjs?v=sieve-dark';
 import { Microphone } from './microphone.mjs';
 
 const element = id => document.getElementById(id);
@@ -15,7 +15,7 @@ const booleans = {muted:false,safe:false,hideCursor:true,autoReset:true};
 const labels = {
   [STATES.IDLE]:'대기', [STATES.COUNTING]:'숫자 세기', [STATES.INTERRUPTED]:'방해받음',
   [STATES.AGITATED]:'짜증 누적', [STATES.REVEAL]:'클라이맥스',
-  [STATES.SHOE_THEFT]:'신발 도난', [STATES.RESET]:'진정 중',
+  [STATES.QUIET]:'정적', [STATES.RESET]:'진정 중',
 };
 let active = false, starting = false, disposed = false, preferredMic = true;
 let error = '', fps = 0, frames = 0, clock = 0, drawAt = 0, sampleAt = 0, low = false, lowSince = 0;
@@ -226,7 +226,7 @@ element('keyboard').onclick = () => {
 };
 element('clap-test').onclick = () => operate(clap);
 element('reveal').onclick = () => operate(() => { score.reveal(performance.now()); report(); });
-element('theft').onclick = () => operate(() => { score.theft(performance.now()); report(); });
+element('quiet').onclick = () => operate(() => { score.quiet(performance.now()); report(); });
 element('reset').onclick = () => {
   if (!active) return;
   score.reset(performance.now());

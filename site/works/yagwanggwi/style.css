@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  background: #070808;
+  background: #000;
   color: #e5dfd0;
   font-family: "Malgun Gothic", system-ui, sans-serif;
 }
@@ -12,23 +12,22 @@ html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 #theatre.cursorless { cursor: none; }
 #frame {
   position: relative;
-  width: min(100vw, calc(100dvh * 1672 / 941));
-  aspect-ratio: 1672 / 941;
-  overflow: hidden;
-  background: #080807;
+  width: min(82vw, 76dvh, 940px);
+  aspect-ratio: 1;
 }
-#frame img, #picture {
+#picture {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block;
-  transform: scale(var(--push, 1)); transform-origin: 49.7% 46%;
+  transform: scale(var(--push, 1)); transform-origin: 50% 50%;
 }
 #welcome {
-  align-items: center;
-  background: linear-gradient(90deg, #060707ed 0%, #060707ac 26%, #06070707 63%), linear-gradient(0deg,#04060672,transparent 45%);
+  align-items: end;
+  justify-items: start;
+  pointer-events: none;
 }
-.invitation { margin-left: clamp(1.25rem,9vw,11rem); padding: 1rem 0; }
+.invitation { margin: 0 0 clamp(1.25rem,5vh,4rem) clamp(1.25rem,6vw,8rem); pointer-events: auto; }
 h1 {
-  margin: 0 0 2.1rem;
-  font: 400 clamp(3.4rem,7.6vw,8rem)/.94 Batang, "Noto Serif KR", "Nanum Myeongjo", serif;
+  margin: 0 0 1.35rem;
+  font: 400 clamp(2.9rem,5.1vw,5rem)/.94 Batang, "Noto Serif KR", "Nanum Myeongjo", serif;
   letter-spacing: -.10em;
   text-shadow: 0 4px 24px #000b;
 }
@@ -80,5 +79,9 @@ output { color: #cdbfa6; }
 .hint { line-height: 1.55; color: #b4aa99; }
 @media (max-width: 640px) {
   .boards { grid-template-columns: 1fr; }
-  #welcome { background: linear-gradient(90deg,#060707de,#06070732); }
+}
+@media (max-width: 840px) and (orientation: portrait) {
+  #theatre:has(#welcome:not([hidden])) #frame { transform: translateY(-10dvh); }
+  #welcome { justify-items: center; text-align: center; }
+  .invitation { margin-left: 0; }
 }
