@@ -16,14 +16,7 @@ html,body { width:100%; height:100%; margin:0; overflow:hidden; }
   overflow:hidden;
   background:#11191e url("./assets/sea-calm.png") center/cover no-repeat;
 }
-#screen canvas,#cut { position:absolute; inset:0; display:block; width:100%; height:100%; }
-#cut {
-  object-fit:fill;
-  opacity:0;
-  pointer-events:none;
-  mask-image:radial-gradient(ellipse 42% 70% at 51.5% 58%,#000 62%,transparent 100%);
-}
-#cut[data-focus="hand"] { mask-image:radial-gradient(ellipse 29% 41% at 41.5% 84%,#000 57%,transparent 100%); }
+#screen canvas { position:absolute; inset:0; display:block; width:100%; height:100%; }
 #theatre.active { cursor:none; }
 #entry {
   position:absolute;

@@ -1,4 +1,4 @@
-import { CUT, PHASE, smooth } from './score.mjs';
+import { CUT, PHASE, windBands } from './score.mjs?v=soft-reveal';
 
 const files = {
   calm:'sea-calm.wav', near:'wind-near.wav', gale:'wind-gale.wav', surf:'sea-breakers.wav',
@@ -89,7 +89,7 @@ export class Sound {
     const ctx=this.context;
     if (ctx?.state!=='running') return;
     const now=ctx.currentTime;
-    const wet=view.wind;
+    const {breeze,swell,gale}=windBands(view.wind);
     const set=(node,level,time=.14)=>node?.gain.setTargetAtTime(level,now,time);
     set(this.master,settings.muted ? 0 : settings.master);
     set(this.water,settings.water);
@@ -100,27 +100,27 @@ export class Sound {
       this.beds.gain.setValueAtTime(0,now);
     } else set(this.beds,view.inCut ? 0 : view.recover,.36);
     this.wasCut=view.inCut;
-    set(this.loops.get('calm')?.gain,.82-wet*.55);
-    set(this.loops.get('near')?.gain,smooth(.03,.68,wet)*(.91-wet*.45));
-    set(this.loops.get('gale')?.gain,smooth(.34,1,wet)*.82);
-    set(this.loops.get('surf')?.gain,smooth(.14,.97,wet)*.88);
+    set(this.loops.get('calm')?.gain,.80-.32*swell-.19*gale,.32);
+    set(this.loops.get('near')?.gain,.30*breeze+.17*swell-.11*gale,.32);
+    set(this.loops.get('gale')?.gain,.59*gale,.38);
+    set(this.loops.get('surf')?.gain,.26*swell+.42*gale,.36);
     if (view.serial!==this.serial) {
       this.serial=view.serial;
       this.cutCues.clear();
       this.cancel();
     }
     if (view.state!==this.lastState) {
-      if (view.state===PHASE.BOAT_LOST) this.play('wash',.84,.23);
+      if (view.state===PHASE.BOAT_LOST) this.play('wash',.58,.23);
       this.lastState=view.state;
     }
-    if (wet>.47 && !view.inCut && view.state!==PHASE.BOAT_LOST && now>(this.nextCreak??0) && this.buffers.has('creak')) {
-      this.play('creak',wet*.48,.21);
+    if (swell>.56 && !view.inCut && view.state!==PHASE.BOAT_LOST && now>(this.nextCreak??0) && this.buffers.has('creak')) {
+      this.play('creak',(.19*swell+.12*gale),.21);
       this.nextCreak=now+2.8+Math.random()*1.9;
     }
     if (view.inCut) for (const [name,at] of [['hand',CUT.handSound],['drips',CUT.drips]]) {
       if (view.cut<at || this.cutCues.has(name)) continue;
       if (this.buffers.has(name)) {
-        this.play(name,settings.muted ? 0 : .87,name==='hand' ? -.16 : .025,view.cut-at);
+        this.play(name,name==='hand' ? .44 : .68,name==='hand' ? -.16 : .025,view.cut-at);
         this.cutCues.add(name);
       }
     }

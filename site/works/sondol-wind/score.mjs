@@ -2,13 +2,38 @@ export const PHASE = Object.freeze({
   CALM:'CALM', WIND:'WIND', STORM:'STORM', BOAT_LOST:'BOAT_LOST',
   SILENCE:'SILENCE', HAND_REVEAL:'HAND_REVEAL', GHOST_REVEAL:'GHOST_REVEAL', RECOVERY:'RECOVERY',
 });
-export const CUT = Object.freeze({hand:2.86, ghost:5.14, handSound:2.98, drips:7.82, end:13.22});
+export const CUT = Object.freeze({hand:3, ghost:6.25, handSound:3.7, drips:10.9, end:18.35});
+export const DRIP_OFFSETS = [0,.85,1.79,3.05];
 export const DEFAULTS = Object.freeze({sensitivity:.57, minimum:210, storm:.31, lost:1, waves:1, boat:1, mist:.67,
   master:.75, water:.64, wind:.57, effects:.75, muted:false, low:false, autoReset:true, device:''});
 export const clamp = (n,a=0,b=1) => Math.min(b,Math.max(a,n));
 export function smooth(a,b,n) {
   const t = clamp((n-a)/(b-a));
   return t*t*(3-2*t);
+}
+
+export function windBands(value) {
+  return {
+    label:value>=.70 ? '강' : value>=.39 ? '중' : value>=.052 ? '약' : '대기',
+    breeze:smooth(.045,.39,value),
+    swell:smooth(.27,.69,value),
+    gale:smooth(.64,1,value),
+  };
+}
+
+export function keyboardWind(seconds) {
+  return .37*smooth(0,.75,seconds)+.29*smooth(.65,1.90,seconds)+.34*smooth(1.55,3.15,seconds);
+}
+
+export function revealPose(t) {
+  const handRise=smooth(CUT.hand,5.25,t), handSink=smooth(5.45,7.35,t);
+  const rise=smooth(CUT.ghost,11.65,t), sink=smooth(14.10,CUT.end,t);
+  return {
+    hand:{x:.419,y:.958-.254*handRise+.26*handSink, width:.145,
+      opacity:.85*handRise*(1-handSink), angle:-.12+.12*handRise-.08*handSink},
+    ghost:{x:.515+.002*rise*Math.sin(t*1.05),y:.89-.684*rise+.70*sink+.0025*rise*Math.sin(t*1.12), width:.479,
+      opacity:smooth(CUT.ghost,8.65,t)*(1-.26*sink)*(1-smooth(17.75,CUT.end,t)), angle:-.022+.016*rise*Math.sin(t*.87)},
+  };
 }
 
 export function cutPhase(t) {
@@ -60,7 +85,7 @@ export class Score {
     }
   }
 
-  step(dt,input,filmTime=null) {
+  step(dt,input) {
     dt = clamp(dt,0,.12);
     this.elapsed += dt;
     if (this.state===PHASE.BOAT_LOST) {
@@ -69,7 +94,7 @@ export class Score {
       return;
     }
     if ([PHASE.SILENCE,PHASE.HAND_REVEAL,PHASE.GHOST_REVEAL].includes(this.state)) {
-      this.cut = Math.max(this.cut,Number.isFinite(filmTime) ? filmTime : this.cut+dt);
+      this.cut += dt;
       if (this.cut>=CUT.end) {
         this.cut = CUT.end;
         this.returning = !this.returning;
@@ -87,18 +112,18 @@ export class Score {
     }
     if (input<.10) this.needsRelease = false;
     const value = this.needsRelease ? 0 : clamp(input);
-    const time = value>this.wind ? .14 : .56;
+    const time = value>this.wind ? .37 : .58;
     this.wind += (value-this.wind)*(1-Math.exp(-dt/time));
-    if (this.wind>.19) {
+    if (this.wind>.68) {
       this.quiet = 0;
-      this.charge = Math.min(this.settings.lost,this.charge+dt*.19*((this.wind-.19)/.81)**1.12);
+      this.charge = Math.min(this.settings.lost,this.charge+dt*.23*smooth(.68,.98,this.wind));
     } else {
       this.quiet += dt;
       if (this.quiet>1.5) this.charge = Math.max(0,this.charge-dt*.017);
     }
     if (this.charge>=this.settings.lost-1e-6) this.setState(PHASE.BOAT_LOST);
     else if (this.wind<.052) this.setState(PHASE.CALM);
-    else this.setState(this.charge>=this.settings.storm ? PHASE.STORM : PHASE.WIND);
+    else this.setState(this.wind>=.70 && this.charge>=this.settings.storm ? PHASE.STORM : PHASE.WIND);
   }
 
   get view() {

@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b0d">
   <title>손돌바람</title>
-  <link rel="stylesheet" href="./style.css?v=river-travel">
+  <link rel="stylesheet" href="./style.css?v=soft-reveal">
 </head>
 <body>
   <main id="theatre" aria-label="손돌바람" data-phase="CALM">
     <div id="screen" aria-hidden="true">
       <canvas id="water"></canvas>
       <canvas id="stage"></canvas>
-      <video id="cut" src="./assets/sondol-reveal.mp4" muted playsinline preload="auto" hidden></video>
     </div>
     <section id="entry" aria-labelledby="title">
       <h1 id="title">손돌바람</h1>
@@ -37,6 +36,7 @@
         <output id="mic-status" aria-live="polite">연결 대기</output>
         <label>입력 레벨 <meter id="level" min="0" max="1" aria-label="마이크 입력 레벨"></meter></label>
         <label>바람 강도 <meter id="gust" min="0" max="1" aria-label="현재 바람 강도"></meter></label>
+        <output id="wind-band" aria-label="바람 단계">대기</output>
         <label class="range">민감도 <input id="sensitivity" type="range" min=".15" max=".95" step=".01"><output id="sensitivity-value"></output></label>
         <label class="range">최소 지속 <input id="minimum" type="range" min="100" max="650" step="10"><output id="minimum-value"></output></label>
         <label class="range">수동 바람 <input id="manual" type="range" min="0" max="1" step=".01" value="0"><output id="manual-value">0%</output></label>
@@ -86,6 +86,6 @@
       </section>
     </div>
   </dialog>
-  <script type="module" src="./app.mjs?v=river-travel"></script>
+  <script type="module" src="./app.mjs?v=soft-reveal"></script>
 </body>
 </html>

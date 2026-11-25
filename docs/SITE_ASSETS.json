@@ -1672,13 +1672,18 @@
     },
     {
       "path": "works/sondol-wind/app.mjs",
-      "bytes": 10871,
-      "sha256": "e8a0cc4a03ec4604bcf481690dff2856227608ca306b559d1322ab041f29f7ed"
+      "bytes": 8649,
+      "sha256": "5d03fafdf206076d3d82b1855c4021d7af672e5f7e6ce6006d2f6db05b31d714"
     },
     {
       "path": "works/sondol-wind/assets/ferry.png",
       "bytes": 1552802,
       "sha256": "4d5406ecc71c3ae3b310f5cd23c74a10d959a04d786d143b3fc94e443720fa66"
+    },
+    {
+      "path": "works/sondol-wind/assets/fx/hand-motion.png",
+      "bytes": 956079,
+      "sha256": "a67792b40ef0c97c537760f483aa8c889c54e6be01e19f4e1cdbeb6e09dc5cdc"
     },
     {
       "path": "works/sondol-wind/assets/fx/low-mist.png",
@@ -1757,8 +1762,8 @@
     },
     {
       "path": "works/sondol-wind/index.html",
-      "bytes": 5303,
-      "sha256": "e500259b8592f254085ceab0538814ab9203968ca8645c619538ae0c3b87b2ae"
+      "bytes": 5271,
+      "sha256": "8ed6f8264589eae77fe9591026627ae575edd84c5b8957dce8a2c293f2a542b4"
     },
     {
       "path": "works/sondol-wind/microphone.mjs",
@@ -1767,23 +1772,23 @@
     },
     {
       "path": "works/sondol-wind/score.mjs",
-      "bytes": 3815,
-      "sha256": "571eb556dd72234a9f4439f8dfcdbcb71616980789af05cd322188ed6727fab5"
+      "bytes": 4737,
+      "sha256": "857d9724a40d1af05fdd975de4649186c26aeceb1bf10b8eccb48e45fd9ea886"
     },
     {
       "path": "works/sondol-wind/sea.mjs",
-      "bytes": 16630,
-      "sha256": "5e130ea154e39e9366e6129c5a4cb20c77468dcecf03ca21a6b39f3640685506"
+      "bytes": 20866,
+      "sha256": "3bda97777ff13877f0062755ffc89ac3427e3d966f7bfcba44cd85d430ce480d"
     },
     {
       "path": "works/sondol-wind/sound.mjs",
-      "bytes": 4629,
-      "sha256": "3e00f46b21b257ebc9d87251d78f7ba3a875d28936a00ac1048c874be8aa9e5e"
+      "bytes": 4694,
+      "sha256": "8acc5afde1e520e1b8ec3a7434eae7f3f50cfec01a7a35c8ed5f77aec3c92b2d"
     },
     {
       "path": "works/sondol-wind/style.css",
-      "bytes": 3822,
-      "sha256": "4089ce322e5586c88830dc350f369bb7be6222e14d61d738dec408b7eb0ea985"
+      "bytes": 3555,
+      "sha256": "ddb295d92af6c1c4d92838547c2421fec57b3c91227f1a35236fe087634a8c11"
     },
     {
       "path": "works/sondol-wind/wind-worklet.mjs",

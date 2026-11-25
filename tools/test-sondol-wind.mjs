@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
-import {CUT, DEFAULTS, PHASE, Score} from '../site/works/sondol-wind/score.mjs';
+import {CUT, DEFAULTS, keyboardWind, PHASE, revealPose, Score, windBands} from '../site/works/sondol-wind/score.mjs';
 import {WindDetector} from '../site/works/sondol-wind/wind.mjs';
 import {WindInput} from '../site/works/sondol-wind/microphone.mjs';
 import {advanceTravel, surfaceFlow} from '../site/works/sondol-wind/sea.mjs';
@@ -18,11 +17,17 @@ assert.deepEqual([...simulate(score,45,0)],[PHASE.CALM]);
 simulate(score,.22,1);
 assert.equal(score.state,PHASE.WIND);
 const charge=score.view.progression;
-assert.ok(charge>0 && score.wind>.62);
+assert.ok(charge===0 && score.wind>.35,'a short input gives a breeze without a storm');
 simulate(score,2.3,0);
 assert.equal(score.state,PHASE.CALM);
-assert.ok(score.view.progression>0);
-const stages=simulate(score,27,1);
+assert.equal(score.view.progression,0);
+for (const [intensity,label] of [[.28,'약'],[.58,'중']]) {
+  simulate(score,32,intensity);
+  assert.equal(windBands(score.wind).label,label);
+  assert.equal(score.state,PHASE.WIND);
+  assert.equal(score.charge,0);
+}
+const stages=simulate(score,31,1);
 assert.deepEqual([...stages],[PHASE.WIND,PHASE.STORM,PHASE.BOAT_LOST,PHASE.SILENCE,PHASE.HAND_REVEAL,
   PHASE.GHOST_REVEAL,PHASE.RECOVERY,PHASE.CALM]);
 assert.equal(score.view.returning,true);
@@ -34,11 +39,10 @@ simulate(score,.3,1);
 assert.equal(score.state,PHASE.WIND);
 score.force(PHASE.HAND_REVEAL);
 assert.equal(score.cut,CUT.hand);
-score.step(.02,0,CUT.ghost);
+simulate(score,CUT.ghost-CUT.hand+.04,0);
 assert.equal(score.state,PHASE.GHOST_REVEAL);
 score.settings={...DEFAULTS,autoReset:false};
-score.step(.02,0,CUT.end);
-simulate(score,5,0);
+simulate(score,CUT.end-CUT.ghost+5,0);
 assert.equal(score.state,PHASE.RECOVERY);
 score.reset();
 assert.equal(score.state,PHASE.CALM);
@@ -91,11 +95,20 @@ for (let i=0;i<=3*60*60*20;i++) {
   assert.ok(longRun.view.progression>=0 && longRun.view.progression<=1);
 }
 assert.ok(recoveries>=185);
-const movie=await readFile(new URL('../site/works/sondol-wind/assets/sondol-reveal.mp4',import.meta.url));
-const header=movie.indexOf('mvhd');
-assert.ok(header>0 && movie.includes('avcC') && !movie.includes('mp4a'));
-const duration=movie.readUInt32BE(header+20)/movie.readUInt32BE(header+16);
-assert.ok(duration>=CUT.end && duration<13.5);
+const keyboard=new Score(), bands=new Set();
+for (let t=.02;t<8;t+=.02) {
+  keyboard.step(.02,keyboardWind(t));
+  bands.add(windBands(keyboard.wind).label);
+}
+assert.deepEqual([...bands].slice(0,4),['대기','약','중','강']);
+assert.ok(keyboard.state===PHASE.BOAT_LOST || keyboard.state===PHASE.SILENCE);
+const ghostTimes=[CUT.ghost,CUT.ghost+.5,CUT.ghost+2.6,11.65];
+const poses=ghostTimes.map(time=>revealPose(time).ghost);
+assert.equal(poses[0].opacity,0);
+assert.ok(poses[1].opacity<.18 && poses[1].y>.86,'ghost remains almost submerged at the start');
+assert.ok(poses[2].y<.65 && poses[2].y>.42 && poses[3].y<.22,'the rise takes several seconds');
+assert.equal(revealPose(CUT.end).ghost.opacity,0);
+assert.ok(revealPose(5).hand.opacity>.7 && revealPose(7.4).hand.opacity===0);
 
 function displacement(depth,wind) {
   const samples=Array.from({length:128},(_,i)=>surfaceFlow(.48,depth,i*.14,wind,0));
@@ -118,4 +131,4 @@ assert.equal(gale.shore,drift.shore);
 assert.ok(gale.water>drift.water*2 && stillness.water>0 && stillness.water<drift.water);
 const loop=advanceTravel({shore:2.235,water:2.235},1,0,0);
 assert.ok(loop.shore>0 && loop.shore<.02 && loop.water>0 && loop.water<.025,'travel phases wrap after the whole plate');
-console.log('PASS idle; moving 3-layer parallax; all 8 phases; released input; voice/clap rejection; sustained PCM wind; mic fallback; '+recoveries+' virtual recoveries; silent '+duration+'s clip.');
+console.log('PASS calm and three wind bands; 3-layer parallax; gradual hand and ghost reveal; all 8 phases; voice/clap rejection; sustained PCM wind; mic fallback; '+recoveries+' virtual recoveries.');

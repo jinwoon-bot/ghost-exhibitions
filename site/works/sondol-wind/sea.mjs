@@ -1,7 +1,8 @@
-import { clamp, PHASE, smooth } from './score.mjs';
+import { clamp, CUT, DRIP_OFFSETS, PHASE, revealPose, smooth, windBands } from './score.mjs?v=soft-reveal';
 
 const horizon=.366, sourceHorizon=.443;
 const panoramaSpan=2.24;
+const handAtlas={width:216,height:368,columns:6,frames:24,period:3.5};
 const layers=[
   {frequency:39, angle:8.2, speed:.83, lift:.30, drift:.26},
   {frequency:26, angle:6.0, speed:1.31, lift:.73, drift:.63},
@@ -33,7 +34,7 @@ export function surfaceFlow(x,z,motion,wind,quiet) {
   const energy=1-.49*quiet;
   return {
     x:drift*(.011+.019*wind)*fade*energy,
-    y:lift*(.009+.028*wind)*fade*energy,
+    y:lift*(.009+.021*wind)*fade*energy,
   };
 }
 
@@ -54,7 +55,7 @@ varying vec2 uv;
 uniform sampler2D stillSea, stormSea;
 uniform vec3 wavePhase;
 uniform vec2 travel;
-uniform float wind, mist, mistPhase, darkness;
+uniform float wind, roughness, mist, mistPhase, darkness;
 const float panoramaSpan=${panoramaSpan};
 vec2 positionOnPlate(float x,float y){
   return vec2(fract(x/panoramaSpan),y);
@@ -83,11 +84,11 @@ void main(){
     float fade=smoothstep(0.0,.075,z);
     float energy=(1.0-.49*darkness)*fade;
     float x=uv.x+flow.y*(.011+.019*wind)*energy;
-    float y=source+z*(1.0-source)-smoothstep(.62,1.0,z)*(.017+.046*wind)+flow.x*(.009+.028*wind)*energy;
+    float y=source+z*(1.0-source)-smoothstep(.62,1.0,z)*(.017+.038*wind)+flow.x*(.009+.021*wind)*energy;
     y=clamp(y,source,.999);
     float mid=smoothstep(${vector(midRange)},z);
     float near=smoothstep(${vector(nearRange)},z);
-    float storm=.87*wind*fade;
+    float storm=roughness*fade;
     color=vec3(0.0);
     if(mid<1.0) color+=(1.0-mid)*(1.0-near)*movingWater(x-travel.y,y,storm);
     if(mid>0.0 && near<1.0) color+=mid*(1.0-near)*movingWater(x-2.0*travel.y,y,storm);
@@ -142,6 +143,16 @@ function fixedSky(image) {
   return canvas;
 }
 
+function gradeActor(image,filter) {
+  const canvas=document.createElement('canvas');
+  canvas.width=image.width;
+  canvas.height=image.height;
+  const c=canvas.getContext('2d');
+  c.filter=filter;
+  c.drawImage(image,0,0);
+  return canvas;
+}
+
 function drawTravelStrip(c,image,sourceY,sourceHeight,width,height,top,start,end=start) {
   const span=width*panoramaSpan;
   const shift=wrapTravel(start)*width;
@@ -189,7 +200,7 @@ function seaProgram(gl,assets) {
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
     gl.uniform1i(gl.getUniformLocation(program,i ? 'stormSea' : 'stillSea'),i);
   });
-  return Object.fromEntries(['wind','wavePhase','travel','mist','mistPhase','darkness'].map(key=>[key,gl.getUniformLocation(program,key)]));
+  return Object.fromEntries(['wind','roughness','wavePhase','travel','mist','mistPhase','darkness'].map(key=>[key,gl.getUniformLocation(program,key)]));
 }
 
 export class Sea {
@@ -198,7 +209,10 @@ export class Sea {
     this.water=water;
     this.scene=scene;
     this.ctx=scene.getContext('2d',{alpha:true});
+    this.subject=document.createElement('canvas');
+    this.subjectContext=this.subject.getContext('2d');
     this.motion=0;
+    this.ferryDrift=0;
     this.travel={shore:0,water:0};
     this.ready=false;
     this.mode='대기';
@@ -208,12 +222,15 @@ export class Sea {
   }
 
   async load() {
-    const names={calm:'sea-calm.png',storm:'sea-storm.png',boat:'ferry.png',hand:'wet-hand-prosthetic.png',
+    const names={calm:'sea-calm.png',storm:'sea-storm.png',boat:'ferry.png',hand:'wet-hand-prosthetic.png',fingers:'fx/hand-motion.png',
       ghost:'sondol-prosthetic.png',spray:'fx/wind-spray.png',mist:'fx/low-mist.png'};
     this.assets={};
     await Promise.allSettled(Object.entries(names).map(async ([key,file])=>{this.assets[key]=await loadImage(file);}));
     if (this.assets.calm) this.upperSky=fixedSky(this.assets.calm);
     this.plates={calm:this.assets.calm && repeatablePlate(this.assets.calm),storm:this.assets.storm && repeatablePlate(this.assets.storm)};
+    this.hand=this.assets.hand && gradeActor(this.assets.hand,'brightness(.64) saturate(.62)');
+    this.fingers=this.assets.fingers && gradeActor(this.assets.fingers,'brightness(.64) saturate(.62)');
+    this.ghost=this.assets.ghost && gradeActor(this.assets.ghost,'brightness(.78) saturate(.64)');
     this.ready=Boolean(this.assets.calm);
     if (this.assets.boat) {
       const crop=document.createElement('canvas');
@@ -243,15 +260,21 @@ export class Sea {
     if (this.scene.width===width && this.scene.height===height) return;
     this.scene.width=this.water.width=width;
     this.scene.height=this.water.height=height;
+    this.subject.width=width;
+    this.subject.height=height;
   }
 
-  draw(dt,view,settings,fallback) {
+  draw(dt,view,settings) {
     if (!this.ready) return;
     const low=settings.low;
     this.resize(low);
     const w=this.scene.width,h=this.scene.height, c=this.ctx;
-    const wind=clamp(view.wind*settings.waves);
+    const {breeze,swell,gale}=windBands(view.wind);
+    const wind=clamp((.17*breeze+.29*swell+.43*gale)*settings.waves);
+    const roughness=clamp((.045*breeze+.27*swell+.39*gale)*settings.waves,0,.86);
     const calm=view.inCut ? 1 : view.state===PHASE.RECOVERY ? 1-view.recover : 0;
+    const drift=view.state===PHASE.BOAT_LOST ? .95 : !view.inCut && view.state!==PHASE.RECOVERY ? .73*view.progression+.18*swell+.09*gale : 0;
+    this.ferryDrift+=(drift-this.ferryDrift)*(1-Math.exp(-dt/1.25));
     const useGL=Boolean(this.uniforms && !low);
     this.water.hidden=!useGL;
     this.mode=useGL ? 'WebGL · 수면 3개 레이어' : 'Canvas 2D · 수면 3개 레이어';
@@ -261,19 +284,19 @@ export class Sea {
     if (useGL) {
       const gl=this.gl;
       gl.viewport(0,0,w,h);
-      for (const [name,value] of Object.entries({wind,mist:settings.mist,mistPhase:wrapPhase(this.motion*.15),darkness:calm}))
+      for (const [name,value] of Object.entries({wind,roughness,mist:settings.mist,mistPhase:wrapPhase(this.motion*.15),darkness:calm}))
         gl.uniform1f(this.uniforms[name],value);
       const [far,middle,near]=layers;
       gl.uniform3f(this.uniforms.wavePhase,wrapPhase(far.speed*this.motion),wrapPhase(middle.speed*this.motion),wrapPhase(near.speed*this.motion));
       gl.uniform2f(this.uniforms.travel,this.travel.shore,this.travel.water);
       gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-    } else this.strips(c,w,h,wind,calm,settings.mist,low);
+    } else this.strips(c,w,h,wind,roughness,calm,settings.mist,low);
     if (!view.inCut) this.drawBoat(c,w,h,view,wind,settings);
-    if (!view.inCut && wind>.27) this.drawSpray(c,w,h,wind,settings.mist,low);
-    if (fallback && view.inCut) this.drawFallback(c,w,h,view.cut);
+    if (!view.inCut && gale>.02) this.drawSpray(c,w,h,gale,settings.mist,low);
+    if (view.inCut && view.cut>CUT.hand) this.drawReveal(c,w,h,view.cut);
   }
 
-  strips(c,w,h,wind,calm,mist,low) {
+  strips(c,w,h,wind,roughness,calm,mist,low) {
     const {calm:photo,storm}=this.plates;
     const {shore,water}=this.travel;
     const sky=h*horizon, s=photo.height*sourceHorizon;
@@ -282,11 +305,10 @@ export class Sea {
     c.drawImage(this.upperSky,0,0,w,sky);
     const count=low ? 36 : 54;
     const bandHeight=(h-sky)/count;
-    const stormAlpha=wind*.87;
     const stormScale=storm ? storm.height/photo.height : 1;
     const sampleBandEdge=z=>{
       const flow=surfaceFlow(.46+z*.19,z,this.motion,wind,calm);
-      const reserve=smooth(.62,1,z)*(.017+.046*wind);
+      const reserve=smooth(.62,1,z)*(.017+.038*wind);
       return {x:flow.x,y:s+z*(photo.height-s)+(flow.y-reserve)*photo.height};
     };
     let start=sampleBandEdge(0), sourceRow=s;
@@ -298,7 +320,7 @@ export class Sea {
       const center=z+.5/count;
       const mid=smooth(...midRange,center), near=smooth(...nearRange,center);
       const fade=smooth(0,.075,center);
-      const rough=storm ? stormAlpha*fade : 0;
+      const rough=storm ? roughness*fade : 0;
       const top=sky+bandHeight*i;
       let total=0;
       const blend=(image,weight,offset,scale=1,drift=true)=>{
@@ -331,7 +353,7 @@ export class Sea {
 
   drawBoat(c,w,h,view,wind,settings) {
     if (!this.boat) return;
-    const p=smooth(0,1,view.progression);
+    const p=smooth(0,1,this.ferryDrift);
     const side=view.returning ? -1 : 1;
     const x=w*(.5+side*(.045+.106*p));
     const draft=.433-.044*p;
@@ -350,7 +372,7 @@ export class Sea {
     c.closePath();
     c.clip();
     c.translate(x,y);
-    c.rotate(Math.sin(this.motion*2.25)*(.009+.17*wind)*settings.boat);
+    c.rotate(Math.sin(this.motion*1.78)*(.007+.105*wind)*settings.boat);
     c.scale(side,1);
     c.globalAlpha=(.94-.22*p)*show;
     c.filter='brightness(.83) saturate(.68)';
@@ -377,7 +399,7 @@ export class Sea {
     c.restore();
   }
 
-  drawSpray(c,w,h,wind,mist,low) {
+  drawSpray(c,w,h,gale,mist,low) {
     if (!this.assets.spray) return;
     c.save();
     const count=low ? 3 : 7;
@@ -385,32 +407,104 @@ export class Sea {
       const t=(this.motion*.115+i*.392)%1;
       const x=((i*.711+t*.13)%1)*w;
       const y=(.43+(i*.163)% .46)*h;
-      c.globalAlpha=smooth(.27,1,wind)*Math.sin(Math.PI*t)**2*.33*(.52+mist*.48);
+      c.globalAlpha=gale*Math.sin(Math.PI*t)**2*.25*(.52+mist*.48);
       c.drawImage(this.assets.spray,x-w*.16,y-h*.028,w*(.11+(i*.037)% .19),h*.062);
     }
     c.restore();
   }
 
-  drawFallback(c,w,h,t) {
-    const a=this.assets;
-    const showHand=smooth(2.86,4.86,t), hideHand=smooth(5.40,6.75,t);
-    if (a.hand && showHand>0 && hideHand<1) {
-      c.save();
-      c.beginPath(); c.rect(0,0,w,h*.931); c.clip();
-      const width=w*.149,height=width*a.hand.height/a.hand.width;
-      c.filter='brightness(.7) saturate(.75)';
-      c.drawImage(a.hand,w*.342,h*(.967-.30*showHand+.29*hideHand),width,height);
-      c.restore();
+  drawReveal(c,w,h,t) {
+    const {hand,ghost}=revealPose(t);
+    const handLine=h*(.917+.007*Math.sin(this.motion*1.4));
+    const ghostLine=h*(.849+.009*Math.sin(this.motion*1.33));
+    const handFrame=((t-CUT.hand)%handAtlas.period)/handAtlas.period*handAtlas.frames;
+    this.drawSubmerged(c,w,h,this.fingers || this.hand,hand,handLine,this.fingers ? handFrame : null);
+    this.drawSubmerged(c,w,h,this.ghost,ghost,ghostLine);
+    this.drawRipple(c,hand.x*w,handLine,w*.073,h*.007,hand.opacity*.13,t);
+    this.drawRipple(c,ghost.x*w,ghostLine,w*.145,h*.014,ghost.opacity*.145,t);
+    if (!this.ghost || t<CUT.drips || t>CUT.drips+4.2) return;
+    const mouthX=w*(ghost.x+.020*ghost.width);
+    const mouthY=h*ghost.y+.402*w*ghost.width*this.ghost.height/this.ghost.width;
+    if (mouthY>=ghostLine) return;
+    for (const offset of DRIP_OFFSETS) {
+      const age=t-CUT.drips-offset;
+      if (age<0 || age>.98) continue;
+      if (age>.66) {
+        const spread=(age-.66)/.32;
+        this.drawRipple(c,mouthX,ghostLine,w*(.012+.034*spread),h*.004,.28*(1-spread),t);
+        continue;
+      }
+      const fall=clamp((age-.14)/.52);
+      const y=mouthY+(ghostLine-mouthY)*fall**2;
+      const length=h*(.003+.018*fall);
+      const wet=c.createLinearGradient(mouthX,y-length,mouthX,y+2);
+      wet.addColorStop(0,'rgba(141,166,176,0)');
+      wet.addColorStop(1,'rgba(170,193,198,.59)');
+      c.strokeStyle=wet;
+      c.lineWidth=Math.max(.65,w*.00105);
+      c.beginPath(); c.moveTo(mouthX-.6,y-length); c.lineTo(mouthX+.6,y+1); c.stroke();
     }
-    const rise=smooth(5.14,7.79,t),sink=smooth(11.76,13.22,t);
-    if (a.ghost && rise>0 && sink<1) {
-      c.save();
-      c.beginPath(); c.rect(0,0,w,h*.862); c.clip();
-      c.filter='brightness(.8) saturate(.83)';
-      const width=w*.515;
-      c.drawImage(a.ghost,w*.26,h*(.951-.821*rise+.85*sink),width,width*a.ghost.height/a.ghost.width);
-      c.restore();
+  }
+
+  drawSubmerged(c,w,h,image,pose,waterline,frame=null) {
+    if (!image || pose.opacity<.004 || pose.y*h>=waterline) return;
+    const layer=this.subjectContext;
+    const width=w*pose.width;
+    const top=h*pose.y;
+    layer.clearRect(0,0,w,h);
+    layer.save();
+    layer.translate(w*pose.x,top);
+    layer.rotate(pose.angle);
+    if (frame===null) layer.drawImage(image,-width/2,0,width,width*image.height/image.width);
+    else {
+      const {width:tileWidth,height:tileHeight,columns,frames}=handAtlas;
+      const index=Math.floor(frame);
+      const fraction=frame-index;
+      const drawTile=(tile,opacity)=>{
+        layer.globalAlpha=opacity;
+        layer.drawImage(image,(tile%columns)*tileWidth,Math.floor(tile/columns)*tileHeight,
+          tileWidth,tileHeight,-width/2,0,width,width*tileHeight/tileWidth);
+      };
+      drawTile(index,1-fraction);
+      layer.globalCompositeOperation='lighter';
+      drawTile((index+1)%frames,fraction);
     }
+    layer.restore();
+    layer.save();
+    layer.globalCompositeOperation='destination-in';
+    layer.filter=`blur(${Math.max(3,h*.011)}px)`;
+    layer.fillStyle='#000';
+    layer.beginPath();
+    layer.moveTo(-20,-20);
+    layer.lineTo(w+20,-20);
+    layer.lineTo(w+20,waterline-h*.012);
+    for(let n=36;n>=0;n--) {
+      const x=n/36;
+      const edge=Math.sin(x*23-this.motion*1.3)*.005+Math.sin(x*53+this.motion*.87)*.0025;
+      layer.lineTo(w*x,waterline+h*(edge-.012));
+    }
+    layer.lineTo(-20,waterline-h*.012);
+    layer.closePath();
+    layer.fill();
+    layer.restore();
+    c.globalAlpha=pose.opacity;
+    c.drawImage(this.subject,0,0);
+    c.globalAlpha=1;
+  }
+
+  drawRipple(c,x,y,width,height,opacity,t) {
+    if (opacity<.008) return;
+    const light=c.createLinearGradient(x-width,0,x+width,0);
+    light.addColorStop(0,'rgba(135,155,168,0)');
+    light.addColorStop(.24,`rgba(135,155,168,${opacity})`);
+    light.addColorStop(.51,`rgba(135,155,168,${opacity*.28})`);
+    light.addColorStop(.73,`rgba(135,155,168,${opacity*.74})`);
+    light.addColorStop(1,'rgba(135,155,168,0)');
+    c.strokeStyle=light;
+    c.lineWidth=Math.max(.7,height*.16);
+    c.beginPath();
+    c.ellipse(x,y,width,height,.012,.25+.12*Math.sin(t*1.3),Math.PI-.28);
+    c.stroke();
   }
 }
 
