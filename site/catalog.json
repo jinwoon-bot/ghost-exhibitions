@@ -74,6 +74,8 @@
     "description": "먼 산이 지나가고 나룻배가 흔들립니다. 관객의 바람이 세질수록 물결이 거세집니다.",
     "input": "마이크 · 바람",
     "entry": "works/sondol-wind/index.html",
-    "standalone": true
+    "standalone": true,
+    "extra": "works/sondol-wind-empty-water/index.html",
+    "extraLabel": "빈 물길판 열기"
   }
 ]

@@ -33,6 +33,8 @@ GitHub 로그인 없이 누구나 열 수 있습니다. 2026-11-24에 배포 성
 
 **손돌바람**은 통합 전시 목록의 여덟 번째 작품입니다. 마이크를 연결하거나 **키보드 시연**을 선택하고 `Space`를 길게 누르세요. [손돌바람 실행](https://jinwoon-bot.github.io/ghost-exhibitions/works/sondol-wind/) · [전시 운영 안내](docs/SONDOL_WIND_EXHIBIT.md)
 
+같은 카드의 **빈 물길판 열기**에서 렌즈 물방울과 물밑 울림을 중심으로 연출한 버전을 체험할 수 있습니다. [빈 물길판 실행](https://jinwoon-bot.github.io/ghost-exhibitions/works/sondol-wind-empty-water/) · [빈 물길판 운영 안내](docs/SONDOL_EMPTY_WATER.md)
+
 실사 캐릭터와 음원은 기존 제작물을 재사용합니다. 새 뉴스 6초 MP4는 별도 미리보기 링크로만 넣었으며 기존 방송 앱의 장면을 교체하지 않았습니다. 소품 전화기는 별도 센서가 없으면 들기/내리기를 자동 감지하지 못합니다.
 
 ## 구조
