@@ -1,4 +1,4 @@
-import { ClapDetector } from './clap.mjs';
+import { ClapDetector } from './clap.mjs?v=double-clap';
 
 class Claps extends AudioWorkletProcessor {
   constructor() {

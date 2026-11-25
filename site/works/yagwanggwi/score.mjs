@@ -1,6 +1,8 @@
+import { DEFAULT_CLAP_INTERVAL, DOUBLE_CLAP_WINDOW } from './clap.mjs?v=double-clap';
+
 export const STATES = Object.freeze({
   IDLE: 'IDLE', COUNTING: 'COUNTING', INTERRUPTED: 'INTERRUPTED',
-  AGITATED: 'AGITATED', REVEAL: 'REVEAL', QUIET: 'QUIET', RESET: 'RESET',
+  AGITATED: 'AGITATED', LUNGE: 'LUNGE', REVEAL: 'REVEAL', QUIET: 'QUIET', RESET: 'RESET',
 });
 export const NUMBERS = Object.freeze(['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열하나', '열둘']);
 export const LAST_LINE = '이번엔 너를 셀게.';
@@ -49,14 +51,18 @@ export class Score {
     return strikes >= this.settings.many ? 2 : Number(strikes >= this.settings.first);
   }
 
-  interrupt(now, interval = 300) {
-    if (now - this.lastClap < interval || this.state === STATES.REVEAL || this.state === STATES.RESET) return false;
+  interrupt(now, interval = DEFAULT_CLAP_INTERVAL) {
+    const gap = now - this.lastClap;
+    if (gap < interval || this.state === STATES.LUNGE || this.state === STATES.REVEAL || this.state === STATES.RESET) return false;
     this.lastClap = now;
     this.total++;
     this.interruptions = this.interruptions.filter(time => now - time < 18000);
     this.interruptions.push(now);
     this.count = 0;
-    if (this.interruptions.length >= this.settings.final) this.reveal(now);
+    if (gap <= DOUBLE_CLAP_WINDOW) {
+      this.enter(STATES.LUNGE, now, 2020);
+      this.emit('lunge');
+    } else if (this.interruptions.length >= this.settings.final) this.reveal(now);
     else {
       const anger = this.eyeStage(now);
       this.enter(STATES.INTERRUPTED, now, 430 + anger * 130);
@@ -80,7 +86,7 @@ export class Score {
 
   settle(now) {
     this.returnFrom = this.state;
-    this.enter(STATES.RESET, now, 1450);
+    this.enter(STATES.RESET, now, this.returnFrom === STATES.LUNGE ? 780 : 1450);
     this.emit('reset');
   }
 
@@ -91,7 +97,7 @@ export class Score {
     }
     if (now < this.next) return;
     if (this.state === STATES.RESET) { if (this.autoReset) this.reset(now); return; }
-    if (this.state === STATES.REVEAL || this.state === STATES.QUIET) { this.settle(now); return; }
+    if (this.state === STATES.LUNGE || this.state === STATES.REVEAL || this.state === STATES.QUIET) { this.settle(now); return; }
     if (this.count >= NUMBERS.length) { this.quiet(now); return; }
     const anger = this.eyeStage(now);
     const hold = 1390 + this.random() * 900 + (this.count % 4 === 2 ? 410 : 0) - anger * 155;

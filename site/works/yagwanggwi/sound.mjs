@@ -1,4 +1,4 @@
-import { LAST_LINE, NUMBERS } from './score.mjs?v=sieve-dark';
+import { LAST_LINE, NUMBERS } from './score.mjs?v=double-clap';
 
 const voiceRoot = new URL('./assets/voice/', import.meta.url);
 const audioFile = /^[a-z0-9_-]+\.(wav|mp3|ogg)$/i;
@@ -88,6 +88,11 @@ export class Sound {
         return (m*.58+(w-m)*.09+.11*Math.sin(phase)+.02*Math.sin(phase*2.73)) *
           strain*envelope(t,.08,.44,1.45);
       }, 579),
+      impact: makeSample(ctx,.64,(t,w,l,m) => {
+        const crack = (m*.55+(w-m)*.22)*Math.exp(-t*39);
+        const thud = (.43*Math.sin(2*Math.PI*(112*t-39*t*t))+.51*l)*Math.exp(-t*8.6);
+        return (crack+thud)*envelope(t,.009,.18,.64);
+      }, 3107),
     };
   }
 
@@ -248,6 +253,12 @@ export class Sound {
       sample('touch',{volume:.29,pan:side,cutoff:1580+count*220,pitch:.73+count*.043});
       sample('breath',{volume:.23+anger*.050,pan:side*.83,panEnd:side*.11,when:.074,cutoff:1650+anger*360,pitch:1.23});
       if (anger > 1) sample('reed',{volume:.23,pan:-side,panEnd:side*.32,when:.14,cutoff:1820,pitch:.87});
+    } else if (type === 'lunge') {
+      this.roomGate.gain.setTargetAtTime(.018,now,.044);
+      this.pressure.gain.setTargetAtTime(0,now,.16);
+      sample('reed',{volume:.22,pan:-.26,panEnd:0,when:.012,pitch:1.22,cutoff:1750});
+      sample('impact',{volume:this.settings.safe ? .24 : .57,when:.11,cutoff:3050});
+      sample('breath',{volume:.33,pan:.13,panEnd:0,when:.14,cutoff:2880,pitch:1.15});
     } else if (type === 'reveal') {
       this.roomGate.gain.setTargetAtTime(.02,now,.095);
       this.pressure.gain.setTargetAtTime(0,now,.25);

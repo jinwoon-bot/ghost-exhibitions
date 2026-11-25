@@ -1,12 +1,14 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const rms = (power, count) => Math.sqrt(power / Math.max(1, count));
+export const DEFAULT_CLAP_INTERVAL = 170;
+export const DOUBLE_CLAP_WINDOW = 480;
 
 export class ClapDetector {
   constructor(rate, result) {
     this.rate = rate;
     this.result = result;
     this.sensitivity = .55;
-    this.interval = 290;
+    this.interval = DEFAULT_CLAP_INTERVAL;
     this.low = this.mid = 0;
     this.lowWeight = 1 - Math.exp(-2 * Math.PI * 320 / rate);
     this.midWeight = 1 - Math.exp(-2 * Math.PI * 1750 / rate);

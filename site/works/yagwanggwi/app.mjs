@@ -1,26 +1,27 @@
-import { Score, STATES, thresholds } from './score.mjs?v=sieve-dark';
-import { Scene } from './scene.mjs?v=sieve-dark';
-import { Sound } from './sound.mjs?v=sieve-dark';
-import { Microphone } from './microphone.mjs';
+import { Score, STATES, thresholds } from './score.mjs?v=double-clap';
+import { Scene } from './scene.mjs?v=approach-film';
+import { Sound } from './sound.mjs?v=double-clap';
+import { Microphone } from './microphone.mjs?v=double-clap';
+import { DEFAULT_CLAP_INTERVAL } from './clap.mjs?v=double-clap';
 
 const element = id => document.getElementById(id);
 const panel = element('operator');
 const theatre = element('theatre');
 const key = 'yagwanggwi-exhibit-v1';
 const slider = {
-  sensitivity:[.15,.95,.55], interval:[150,850,290],
+  sensitivity:[.15,.95,.55], interval:[150,850,DEFAULT_CLAP_INTERVAL],
   master:[0,1,.73], voice:[0,1,.85], fx:[0,1,.57], room:[0,1,.32],
 };
 const booleans = {muted:false,safe:false,hideCursor:true,autoReset:true};
 const labels = {
   [STATES.IDLE]:'대기', [STATES.COUNTING]:'숫자 세기', [STATES.INTERRUPTED]:'방해받음',
-  [STATES.AGITATED]:'짜증 누적', [STATES.REVEAL]:'클라이맥스',
+  [STATES.AGITATED]:'짜증 누적', [STATES.LUNGE]:'야광귀 등장', [STATES.REVEAL]:'클라이맥스',
   [STATES.QUIET]:'정적', [STATES.RESET]:'진정 중',
 };
 let active = false, starting = false, disposed = false, preferredMic = true;
 let error = '', fps = 0, frames = 0, clock = 0, drawAt = 0, sampleAt = 0, low = false, lowSince = 0;
 let settings = readSettings();
-const scene = new Scene(element('picture'), element('frame'), message => announce(message));
+const scene = new Scene(element('picture'), element('frame'), element('approach-film'), message => announce(message));
 const sound = new Sound(() => report());
 const microphone = new Microphone(() => clap(), () => report());
 const score = new Score((...event) => sound.event(...event));
@@ -35,12 +36,13 @@ function readSettings() {
   for (const [name,[min,max,start]] of Object.entries(slider)) {
     current[name] = Number.isFinite(saved[name]) ? Math.max(min,Math.min(max,saved[name])) : start;
   }
+  if (!saved.doubleClapVersion && saved.interval === 290) current.interval = DEFAULT_CLAP_INTERVAL;
   for (const name of Object.keys(booleans)) if (typeof saved[name] === 'boolean') current[name] = saved[name];
   return current;
 }
 
 function saveSettings() {
-  try { localStorage.setItem(key,JSON.stringify({...settings,reactionVersion:1})); } catch {}
+  try { localStorage.setItem(key,JSON.stringify({...settings,reactionVersion:1,doubleClapVersion:1})); } catch {}
 }
 
 function applySettings() {

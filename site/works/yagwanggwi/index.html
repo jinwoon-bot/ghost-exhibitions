@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
   <title>야광귀 — 하나, 둘, 셋…</title>
-  <link rel="stylesheet" href="./style.css?v=sieve-dark">
+  <link rel="stylesheet" href="./style.css?v=approach-film">
 </head>
 <body>
   <main id="theatre" aria-label="야광귀 — 하나, 둘, 셋…">
     <div id="frame" aria-hidden="true">
       <canvas id="picture"></canvas>
+      <video id="approach-film" src="./assets/yagwanggwi-approach.mp4" preload="auto" muted playsinline hidden></video>
     </div>
     <section id="welcome" aria-labelledby="title">
       <div class="invitation">
@@ -85,6 +86,6 @@
       <output id="error" role="status"></output>
     </div>
   </dialog>
-  <script type="module" src="./app.mjs?v=sieve-dark"></script>
+  <script type="module" src="./app.mjs?v=approach-film"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { Score, STATES, NUMBERS, thresholds } from '../site/works/yagwanggwi/score.mjs';
-import { ClapDetector } from '../site/works/yagwanggwi/clap.mjs';
+import { ClapDetector, DEFAULT_CLAP_INTERVAL, DOUBLE_CLAP_WINDOW } from '../site/works/yagwanggwi/clap.mjs';
 import { Microphone } from '../site/works/yagwanggwi/microphone.mjs';
 
 const events = [];
@@ -55,11 +55,33 @@ assert.equal(score.interrupt(score.entered+200),true,'a clap can break the quiet
 assert.equal(score.state,STATES.INTERRUPTED);
 assert.deepEqual(thresholds({first:8,many:2,final:3}),{first:8,many:9,final:10});
 
+const doubleEvents = [];
+const double = new Score(type=>doubleEvents.push(type));
+assert.ok(double.interrupt(1000));
+assert.equal(double.interrupt(1000+DEFAULT_CLAP_INTERVAL-1),false,'a near echo does not trigger the second clap');
+assert.ok(double.interrupt(1000+DOUBLE_CLAP_WINDOW));
+assert.equal(double.state,STATES.LUNGE);
+assert.deepEqual(doubleEvents,['interruption','lunge']);
+assert.equal(double.interrupt(1700),false,'the apparition plays only once');
+double.step(double.next);
+assert.equal(double.view(double.entered).returnFrom,STATES.LUNGE);
+double.step(double.next);
+assert.equal(double.state,STATES.IDLE);
+assert.ok(double.interrupt(double.entered+100));
+assert.equal(double.state,STATES.INTERRUPTED,'the next visitor starts with one eye again');
+
 const meter = [];
 const sampleRate = 48000;
-const detector = new ClapDetector(sampleRate, report => { if (report.clap) meter.push(detector.samples/sampleRate); });
+const micEvents = [];
+const micScore = new Score(type=>micEvents.push(type));
+const detector = new ClapDetector(sampleRate, report => {
+  if (!report.clap) return;
+  const seconds = detector.samples/sampleRate;
+  meter.push(seconds);
+  micScore.interrupt(seconds*1000);
+});
 let rng=121;
-const short = [1.43, 1.93, 2.06, 2.57];
+const short = [1.43, 1.66, 1.79, 2.57];
 const signal = new Float32Array(sampleRate*5);
 for (let i=0;i<signal.length;i++) {
   const t=i/sampleRate;
@@ -76,6 +98,7 @@ for (let i=0;i<signal.length;i++) {
 }
 for (let i=0;i<signal.length;i+=128) detector.push(signal.subarray(i,i+128));
 assert.equal(meter.length,3,'three distinct transients, with the close duplicate rejected');
+assert.deepEqual(micEvents,['interruption','lunge'],'the first two detected claps trigger the apparition once');
 for (const [event,hit] of [short[0],short[1],short[3]].entries()) {
   assert.ok(meter[event]-hit<.056 && meter[event]>=hit,'clap acknowledged promptly');
 }
@@ -112,6 +135,12 @@ assert.equal(eyes.length,35);
 assert.ok(eyes.every(([x,y,w,h])=>x>=645 && y>=249 && x+w<=1015 && y+h<=625));
 const mask=await readFile(asset('weave-apertures.png'));
 assert.deepEqual([mask.readUInt32BE(16),mask.readUInt32BE(20)],[1672,941]);
+const ghost=await readFile(asset('yagwanggwi-lunge.png'));
+assert.equal(ghost.toString('ascii',12,16),'IHDR');
+assert.equal(ghost[25],6,'the Yagwanggwi layer has an alpha channel');
+const clip=await readFile(asset('yagwanggwi-approach.mp4'));
+assert.equal(clip.toString('ascii',4,8),'ftyp');
+assert.ok(clip.includes('avc1') && clip.includes('mp4a'),'the lunge clip contains H.264 video and AAC audio');
 const voice=JSON.parse(await readFile(asset('voice/manifest.json'),'utf8'));
 assert.equal(voice.count.length,NUMBERS.length);
 assert.equal(voice.reveal,'last-line.wav');
@@ -119,4 +148,4 @@ for (const file of [...voice.count,voice.reveal].filter(Boolean)) {
   const wave=await readFile(asset('voice/'+file));
   assert.ok(wave.length>2400 && wave.toString('ascii',0,4)==='RIFF','locally bundled WAV '+file);
 }
-console.log('PASS immediate first-eye response, five-clap climax, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+eyes.length+' positions behind the weave, '+voice.count.length+' count WAVs.');
+console.log('PASS first eye, double-clap lunge, five-clap climax, debounce, '+meter.length+' PCM claps (≤56 ms), calibration, 3-hour virtual run ('+cycles+' resets), '+eyes.length+' weave positions, '+voice.count.length+' count WAVs.');

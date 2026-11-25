@@ -1,4 +1,6 @@
-const link = new URL('./clap-worklet.mjs',import.meta.url);
+import { DEFAULT_CLAP_INTERVAL } from './clap.mjs?v=double-clap';
+
+const link = new URL('./clap-worklet.mjs?v=double-clap',import.meta.url);
 
 function help(error) {
   if (error.name === 'NotAllowedError' || error.name === 'SecurityError') return '권한이 거부됐습니다. 브라우저 주소창의 마이크 설정을 확인하세요.';
@@ -16,7 +18,7 @@ export class Microphone {
     this.level = this.floor = 0;
     this.count = 0;
     this.sensitivity = .55;
-    this.interval = 290;
+    this.interval = DEFAULT_CLAP_INTERVAL;
   }
 
   configure(settings) {
