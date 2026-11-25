@@ -1,4 +1,4 @@
-import { CUT, PHASE, windBands } from './score.mjs?v=soft-reveal';
+import { CUT, PHASE, windBands } from './score.mjs?v=quick-rise';
 
 const files = {
   calm:'sea-calm.wav', near:'wind-near.wav', gale:'wind-gale.wav', surf:'sea-breakers.wav',

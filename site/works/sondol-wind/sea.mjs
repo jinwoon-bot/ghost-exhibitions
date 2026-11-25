@@ -1,4 +1,4 @@
-import { clamp, CUT, DRIP_OFFSETS, PHASE, revealPose, smooth, windBands } from './score.mjs?v=soft-reveal';
+import { clamp, CUT, DRIP_OFFSETS, PHASE, revealPose, smooth, windBands } from './score.mjs?v=quick-rise';
 
 const horizon=.366, sourceHorizon=.443;
 const panoramaSpan=2.24;
@@ -422,6 +422,11 @@ export class Sea {
     this.drawSubmerged(c,w,h,this.ghost,ghost,ghostLine);
     this.drawRipple(c,hand.x*w,handLine,w*.073,h*.007,hand.opacity*.13,t);
     this.drawRipple(c,ghost.x*w,ghostLine,w*.145,h*.014,ghost.opacity*.145,t);
+    const splash=clamp((t-CUT.ghost-.40)/.78);
+    if (splash>0 && splash<1) {
+      this.drawRipple(c,ghost.x*w,ghostLine+h*.007,w*(.09+splash*.14),h*(.010+splash*.007),
+        Math.sin(Math.PI*splash)*.19,t);
+    }
     if (!this.ghost || t<CUT.drips || t>CUT.drips+4.2) return;
     const mouthX=w*(ghost.x+.020*ghost.width);
     const mouthY=h*ghost.y+.402*w*ghost.width*this.ghost.height/this.ghost.width;

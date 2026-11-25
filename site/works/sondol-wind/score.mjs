@@ -2,7 +2,7 @@ export const PHASE = Object.freeze({
   CALM:'CALM', WIND:'WIND', STORM:'STORM', BOAT_LOST:'BOAT_LOST',
   SILENCE:'SILENCE', HAND_REVEAL:'HAND_REVEAL', GHOST_REVEAL:'GHOST_REVEAL', RECOVERY:'RECOVERY',
 });
-export const CUT = Object.freeze({hand:3, ghost:6.25, handSound:3.7, drips:10.9, end:18.35});
+export const CUT = Object.freeze({hand:3, ghost:6.25, ghostHigh:7.02, handSound:3.7, drips:7.62, end:15.9});
 export const DRIP_OFFSETS = [0,.85,1.79,3.05];
 export const DEFAULTS = Object.freeze({sensitivity:.57, minimum:210, storm:.31, lost:1, waves:1, boat:1, mist:.67,
   master:.75, water:.64, wind:.57, effects:.75, muted:false, low:false, autoReset:true, device:''});
@@ -26,13 +26,14 @@ export function keyboardWind(seconds) {
 }
 
 export function revealPose(t) {
-  const handRise=smooth(CUT.hand,5.25,t), handSink=smooth(5.45,7.35,t);
-  const rise=smooth(CUT.ghost,11.65,t), sink=smooth(14.10,CUT.end,t);
+  const handRise=smooth(CUT.hand,5.25,t), handSink=smooth(5.45,6.60,t);
+  const rise=smooth(CUT.ghost+.12,CUT.ghostHigh,t), sink=smooth(11.90,CUT.end,t);
   return {
     hand:{x:.419,y:.958-.254*handRise+.26*handSink, width:.145,
       opacity:.85*handRise*(1-handSink), angle:-.12+.12*handRise-.08*handSink},
     ghost:{x:.515+.002*rise*Math.sin(t*1.05),y:.89-.684*rise+.70*sink+.0025*rise*Math.sin(t*1.12), width:.479,
-      opacity:smooth(CUT.ghost,8.65,t)*(1-.26*sink)*(1-smooth(17.75,CUT.end,t)), angle:-.022+.016*rise*Math.sin(t*.87)},
+      opacity:smooth(CUT.ghost+.16,CUT.ghost+.43,t)*(1-.26*sink)*(1-smooth(CUT.end-.60,CUT.end,t)),
+      angle:-.022+.016*rise*Math.sin(t*.87)},
   };
 }
 
@@ -116,7 +117,7 @@ export class Score {
     this.wind += (value-this.wind)*(1-Math.exp(-dt/time));
     if (this.wind>.68) {
       this.quiet = 0;
-      this.charge = Math.min(this.settings.lost,this.charge+dt*.23*smooth(.68,.98,this.wind));
+      this.charge = Math.min(this.settings.lost,this.charge+dt*.30*smooth(.68,.98,this.wind));
     } else {
       this.quiet += dt;
       if (this.quiet>1.5) this.charge = Math.max(0,this.charge-dt*.017);

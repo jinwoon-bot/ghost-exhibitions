@@ -1,6 +1,6 @@
-import { clamp, DEFAULTS, keyboardWind, PHASE, Score, windBands } from './score.mjs?v=soft-reveal';
-import { Sea } from './sea.mjs?v=soft-reveal';
-import { Sound } from './sound.mjs?v=soft-reveal';
+import { clamp, DEFAULTS, keyboardWind, PHASE, Score, windBands } from './score.mjs?v=quick-rise';
+import { Sea } from './sea.mjs?v=quick-rise';
+import { Sound } from './sound.mjs?v=quick-rise';
 import { WindInput } from './microphone.mjs';
 
 const get=id=>document.getElementById(id);

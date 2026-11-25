@@ -96,17 +96,20 @@ for (let i=0;i<=3*60*60*20;i++) {
 }
 assert.ok(recoveries>=185);
 const keyboard=new Score(), bands=new Set();
-for (let t=.02;t<8;t+=.02) {
+let boatLostAt;
+for (let t=.02;t<7;t+=.02) {
   keyboard.step(.02,keyboardWind(t));
   bands.add(windBands(keyboard.wind).label);
+  if (keyboard.state===PHASE.BOAT_LOST) boatLostAt??=t;
 }
 assert.deepEqual([...bands].slice(0,4),['대기','약','중','강']);
-assert.ok(keyboard.state===PHASE.BOAT_LOST || keyboard.state===PHASE.SILENCE);
-const ghostTimes=[CUT.ghost,CUT.ghost+.5,CUT.ghost+2.6,11.65];
+assert.ok(boatLostAt>5.95 && boatLostAt<6.18,'keyboard wind loses the boat after about six seconds');
+const ghostTimes=[CUT.ghost,CUT.ghost+.12,CUT.ghost+.5,CUT.ghostHigh];
 const poses=ghostTimes.map(time=>revealPose(time).ghost);
 assert.equal(poses[0].opacity,0);
-assert.ok(poses[1].opacity<.18 && poses[1].y>.86,'ghost remains almost submerged at the start');
-assert.ok(poses[2].y<.65 && poses[2].y>.42 && poses[3].y<.22,'the rise takes several seconds');
+assert.ok(poses[1].opacity===0 && poses[1].y>.86,'ghost is submerged just before the reveal');
+assert.ok(poses[2].opacity>.95 && poses[2].y<.58 && poses[3].y<.22,'the ghost rises in less than one second');
+assert.ok(Math.abs(poses[3].y-revealPose(CUT.ghostHigh+2).ghost.y)<.008,'the ghost holds its gaze after rising');
 assert.equal(revealPose(CUT.end).ghost.opacity,0);
 assert.ok(revealPose(5).hand.opacity>.7 && revealPose(7.4).hand.opacity===0);
 
@@ -131,4 +134,4 @@ assert.equal(gale.shore,drift.shore);
 assert.ok(gale.water>drift.water*2 && stillness.water>0 && stillness.water<drift.water);
 const loop=advanceTravel({shore:2.235,water:2.235},1,0,0);
 assert.ok(loop.shore>0 && loop.shore<.02 && loop.water>0 && loop.water<.025,'travel phases wrap after the whole plate');
-console.log('PASS calm and three wind bands; 3-layer parallax; gradual hand and ghost reveal; all 8 phases; voice/clap rejection; sustained PCM wind; mic fallback; '+recoveries+' virtual recoveries.');
+console.log('PASS three wind bands; faster boat loss; quick ghost rise and gaze; moving parallax; all 8 phases; voice/clap rejection; mic fallback; '+recoveries+' virtual recoveries.');
