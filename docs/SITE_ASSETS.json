@@ -1672,8 +1672,8 @@
     },
     {
       "path": "works/sondol-wind/app.mjs",
-      "bytes": 8646,
-      "sha256": "3dc827f8f7c5f8887cddd5ad97addfee9af23b12a8eaeab9c15cf0eaf2f2473c"
+      "bytes": 8675,
+      "sha256": "87bdbc9f6700174dbc50d041273ca783c617f4077a98b98828966ab3f72e7b46"
     },
     {
       "path": "works/sondol-wind/assets/ferry.png",
@@ -1762,8 +1762,8 @@
     },
     {
       "path": "works/sondol-wind/index.html",
-      "bytes": 5270,
-      "sha256": "ca2c30ed273eeb9618c0b40681ea5247ee2384c611583e32f1caf3ed46c26acd"
+      "bytes": 5272,
+      "sha256": "9a73b0a843ba0732827610a4676c4c8c1c5e17027e00d60942ea60b05b3e5f8e"
     },
     {
       "path": "works/sondol-wind/microphone.mjs",
@@ -1772,18 +1772,18 @@
     },
     {
       "path": "works/sondol-wind/score.mjs",
-      "bytes": 4789,
-      "sha256": "ba8273a20dd40a253836891e881628df2b5274cbd6f850dcbe413c107f467bcc"
+      "bytes": 5260,
+      "sha256": "04d37e4e63dd81f5ce2059ce34228edda73f8d0e156eece409fe930a8d0f1ef6"
     },
     {
       "path": "works/sondol-wind/sea.mjs",
-      "bytes": 21083,
-      "sha256": "8a7903c4356d946b4873463dbece144b664fcf4eaa0c2d0871e76b76b8d5b1a0"
+      "bytes": 21861,
+      "sha256": "ad6d61d3e49db4d6d6021d1f0c54b58dcd8a2a3e69b97c5beea79c271abc1bbb"
     },
     {
       "path": "works/sondol-wind/sound.mjs",
-      "bytes": 4693,
-      "sha256": "be91cbd0e43be2c9a7818cd12181e0a597eb8777d67e025de859e5487d4ec7b9"
+      "bytes": 4831,
+      "sha256": "b496718aa384f7f114574884d606d3ebab752438b54b0f90ce20e43b472fdc3a"
     },
     {
       "path": "works/sondol-wind/style.css",

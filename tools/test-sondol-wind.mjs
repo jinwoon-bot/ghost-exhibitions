@@ -28,7 +28,7 @@ for (const [intensity,label] of [[.28,'약'],[.58,'중']]) {
   assert.equal(score.charge,0);
 }
 const stages=simulate(score,31,1);
-assert.deepEqual([...stages],[PHASE.WIND,PHASE.STORM,PHASE.BOAT_LOST,PHASE.SILENCE,PHASE.HAND_REVEAL,
+assert.deepEqual([...stages],[PHASE.WIND,PHASE.STORM,PHASE.BOAT_LOST,PHASE.AFTERMATH,PHASE.HAND_REVEAL,
   PHASE.GHOST_REVEAL,PHASE.RECOVERY,PHASE.CALM]);
 assert.equal(score.view.returning,true);
 assert.equal(score.view.progression,0);
@@ -104,12 +104,23 @@ for (let t=.02;t<7;t+=.02) {
 }
 assert.deepEqual([...bands].slice(0,4),['대기','약','중','강']);
 assert.ok(boatLostAt>5.95 && boatLostAt<6.18,'keyboard wind loses the boat after about six seconds');
-const ghostTimes=[CUT.ghost,CUT.ghost+.12,CUT.ghost+.5,CUT.ghostHigh];
+const storm=new Score();
+storm.force(PHASE.BOAT_LOST);
+for (let i=0;i<380;i++) {
+  storm.step(.02,0);
+  assert.ok(storm.wind>.87,'the storm persists after the input is released and up to the apparition');
+}
+assert.equal(storm.state,PHASE.HAND_REVEAL);
+simulate(storm,5.9,0);
+assert.equal(storm.state,PHASE.GHOST_REVEAL);
+assert.ok(storm.wind<.12,'the storm eases during the gaze');
+const ghostTimes=[CUT.ghost,CUT.impact-.036,CUT.impact+.08,CUT.ghostHigh];
 const poses=ghostTimes.map(time=>revealPose(time).ghost);
 assert.equal(poses[0].opacity,0);
-assert.ok(poses[1].opacity===0 && poses[1].y>.86,'ghost is submerged just before the reveal');
-assert.ok(poses[2].opacity>.95 && poses[2].y<.58 && poses[3].y<.22,'the ghost rises in less than one second');
-assert.ok(Math.abs(poses[3].y-revealPose(CUT.ghostHigh+2).ghost.y)<.008,'the ghost holds its gaze after rising');
+assert.equal(poses[1].opacity,0,'ghost is concealed immediately before the impact');
+assert.ok(poses[2].opacity>.98 && poses[2].y<.30 && poses[3].width>.67,'the face appears abruptly and surges toward the foreground');
+const gaze=revealPose(CUT.ghostHigh+2).ghost;
+assert.ok(gaze.opacity>.98 && gaze.width<poses[3].width && gaze.width>.53,'the ghost stops near the camera and holds its gaze');
 assert.equal(revealPose(CUT.end).ghost.opacity,0);
 assert.ok(revealPose(5).hand.opacity>.7 && revealPose(7.4).hand.opacity===0);
 
@@ -134,4 +145,4 @@ assert.equal(gale.shore,drift.shore);
 assert.ok(gale.water>drift.water*2 && stillness.water>0 && stillness.water<drift.water);
 const loop=advanceTravel({shore:2.235,water:2.235},1,0,0);
 assert.ok(loop.shore>0 && loop.shore<.02 && loop.water>0 && loop.water<.025,'travel phases wrap after the whole plate');
-console.log('PASS three wind bands; faster boat loss; quick ghost rise and gaze; moving parallax; all 8 phases; voice/clap rejection; mic fallback; '+recoveries+' virtual recoveries.');
+console.log('PASS three wind bands; sustained pre-reveal storm; sudden close apparition; moving parallax; all 8 phases; voice/clap rejection; mic fallback; '+recoveries+' virtual recoveries.');

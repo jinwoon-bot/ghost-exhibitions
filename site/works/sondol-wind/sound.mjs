@@ -1,4 +1,4 @@
-import { CUT, PHASE, windBands } from './score.mjs?v=quick-rise';
+import { CUT, PHASE, smooth, windBands } from './score.mjs?v=storm-reveal';
 
 const files = {
   calm:'sea-calm.wav', near:'wind-near.wav', gale:'wind-gale.wav', surf:'sea-breakers.wav',
@@ -62,11 +62,12 @@ export class Sound {
     this.ready = true;
   }
 
-  play(name,volume,pan=0,offset=0) {
+  play(name,volume,pan=0,offset=0,rate=1) {
     const ctx=this.context, buffer=this.buffers.get(name);
     if (ctx?.state!=='running' || !buffer || offset>=buffer.duration) return;
     const source=ctx.createBufferSource(), mix=ctx.createGain(), place=ctx.createStereoPanner();
     source.buffer=buffer;
+    source.playbackRate.value=rate;
     mix.gain.value=volume;
     place.pan.value=pan;
     source.connect(mix).connect(place).connect(this.effects);
@@ -95,11 +96,9 @@ export class Sound {
     set(this.water,settings.water);
     set(this.wind,settings.wind);
     set(this.effects,settings.effects);
-    if (view.inCut && !this.wasCut) {
-      this.beds.gain.cancelScheduledValues(now);
-      this.beds.gain.setValueAtTime(0,now);
-    } else set(this.beds,view.inCut ? 0 : view.recover,.36);
-    this.wasCut=view.inCut;
+    const atImpact=view.inCut ? smooth(CUT.impact-.03,CUT.impact+.055,view.cut)*(1-smooth(CUT.impact+.18,CUT.impact+.57,view.cut)) : 0;
+    const bed=view.state===PHASE.RECOVERY ? .74+.26*view.recover : 1;
+    set(this.beds,bed*(1-.32*atImpact),.10);
     set(this.loops.get('calm')?.gain,.80-.32*swell-.19*gale,.32);
     set(this.loops.get('near')?.gain,.30*breeze+.17*swell-.11*gale,.32);
     set(this.loops.get('gale')?.gain,.59*gale,.38);
@@ -117,10 +116,12 @@ export class Sound {
       this.play('creak',(.19*swell+.12*gale),.21);
       this.nextCreak=now+2.8+Math.random()*1.9;
     }
-    if (view.inCut) for (const [name,at] of [['hand',CUT.handSound],['drips',CUT.drips]]) {
+    if (view.inCut) for (const [name,at,volume,pan,rate] of [
+      ['hand',CUT.handSound,.44,-.16,1], ['wash',CUT.impact,.72,.03,.68], ['drips',CUT.drips,.68,.025,1],
+    ]) {
       if (view.cut<at || this.cutCues.has(name)) continue;
       if (this.buffers.has(name)) {
-        this.play(name,name==='hand' ? .44 : .68,name==='hand' ? -.16 : .025,view.cut-at);
+        this.play(name,volume,pan,(view.cut-at)*rate,rate);
         this.cutCues.add(name);
       }
     }

@@ -1,6 +1,6 @@
-import { clamp, DEFAULTS, keyboardWind, PHASE, Score, windBands } from './score.mjs?v=quick-rise';
-import { Sea } from './sea.mjs?v=quick-rise';
-import { Sound } from './sound.mjs?v=quick-rise';
+import { clamp, DEFAULTS, keyboardWind, PHASE, Score, windBands } from './score.mjs?v=storm-reveal';
+import { Sea } from './sea.mjs?v=storm-reveal';
+import { Sound } from './sound.mjs?v=storm-reveal';
 import { WindInput } from './microphone.mjs';
 
 const get=id=>document.getElementById(id);
@@ -8,7 +8,7 @@ const theatre=get('theatre'), panel=get('operator'), entry=get('entry');
 const cache='sondol-wind.exhibit.v1';
 const controls={sensitivity:'sensitivity',minimum:'minimum',storm:'storm',lost:'lost',waves:'waves',
   boat:'boat',mist:'mist',master:'master',water:'water-volume',wind:'wind-volume',effects:'effects'};
-const labels={CALM:'잔잔한 물길',WIND:'바람',STORM:'폭풍',BOAT_LOST:'배 소실',SILENCE:'정적',
+const labels={CALM:'잔잔한 물길',WIND:'바람',STORM:'폭풍',BOAT_LOST:'배 소실',AFTERMATH:'배가 사라진 뒤 돌풍',
   HAND_REVEAL:'손 등장',GHOST_REVEAL:'손돌의 응시',RECOVERY:'물길 복귀'};
 const score=new Score();
 const sea=new Sea(get('screen'),get('water'),get('stage'));

@@ -1,4 +1,4 @@
-import { clamp, CUT, DRIP_OFFSETS, PHASE, revealPose, smooth, windBands } from './score.mjs?v=quick-rise';
+import { clamp, CUT, DRIP_OFFSETS, PHASE, revealPose, smooth, windBands } from './score.mjs?v=storm-reveal';
 
 const horizon=.366, sourceHorizon=.443;
 const panoramaSpan=2.24;
@@ -272,7 +272,7 @@ export class Sea {
     const {breeze,swell,gale}=windBands(view.wind);
     const wind=clamp((.17*breeze+.29*swell+.43*gale)*settings.waves);
     const roughness=clamp((.045*breeze+.27*swell+.39*gale)*settings.waves,0,.86);
-    const calm=view.inCut ? 1 : view.state===PHASE.RECOVERY ? 1-view.recover : 0;
+    const calm=view.inCut ? .4*smooth(CUT.impact+.7,CUT.end,view.cut) : view.state===PHASE.RECOVERY ? .4*(1-view.recover) : 0;
     const drift=view.state===PHASE.BOAT_LOST ? .95 : !view.inCut && view.state!==PHASE.RECOVERY ? .73*view.progression+.18*swell+.09*gale : 0;
     this.ferryDrift+=(drift-this.ferryDrift)*(1-Math.exp(-dt/1.25));
     const useGL=Boolean(this.uniforms && !low);
@@ -292,7 +292,7 @@ export class Sea {
       gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
     } else this.strips(c,w,h,wind,roughness,calm,settings.mist,low);
     if (!view.inCut) this.drawBoat(c,w,h,view,wind,settings);
-    if (!view.inCut && gale>.02) this.drawSpray(c,w,h,gale,settings.mist,low);
+    if (gale>.02) this.drawSpray(c,w,h,gale,settings.mist,low);
     if (view.inCut && view.cut>CUT.hand) this.drawReveal(c,w,h,view.cut);
   }
 
@@ -422,11 +422,8 @@ export class Sea {
     this.drawSubmerged(c,w,h,this.ghost,ghost,ghostLine);
     this.drawRipple(c,hand.x*w,handLine,w*.073,h*.007,hand.opacity*.13,t);
     this.drawRipple(c,ghost.x*w,ghostLine,w*.145,h*.014,ghost.opacity*.145,t);
-    const splash=clamp((t-CUT.ghost-.40)/.78);
-    if (splash>0 && splash<1) {
-      this.drawRipple(c,ghost.x*w,ghostLine+h*.007,w*(.09+splash*.14),h*(.010+splash*.007),
-        Math.sin(Math.PI*splash)*.19,t);
-    }
+    const splash=t-(CUT.impact-.15);
+    if (splash>0 && splash<1.05) this.drawBreach(c,w,h,ghost.x*w,ghostLine,splash,t);
     if (!this.ghost || t<CUT.drips || t>CUT.drips+4.2) return;
     const mouthX=w*(ghost.x+.020*ghost.width);
     const mouthY=h*ghost.y+.402*w*ghost.width*this.ghost.height/this.ghost.width;
@@ -449,6 +446,29 @@ export class Sea {
       c.lineWidth=Math.max(.65,w*.00105);
       c.beginPath(); c.moveTo(mouthX-.6,y-length); c.lineTo(mouthX+.6,y+1); c.stroke();
     }
+  }
+
+  drawBreach(c,w,h,x,y,age,t) {
+    const strike=smooth(0,.19,age)*(1-smooth(.24,1.05,age));
+    this.drawRipple(c,x,y+h*.014,w*(.10+age*.19),h*(.011+age*.017),strike*.36,t);
+    if (this.assets.spray) {
+      c.globalAlpha=strike*.59;
+      const spread=w*(.33+age*.32);
+      c.drawImage(this.assets.spray,x-spread*.58+w*.12*age,y-h*(.13+age*.09),spread,h*(.17+age*.12));
+      c.globalAlpha=1;
+    }
+    c.strokeStyle=`rgba(170,188,198,${strike*.34})`;
+    c.lineWidth=Math.max(.65,h*.00145);
+    c.beginPath();
+    for (let i=0;i<14;i++) {
+      const side=(i-6.5)/6.5;
+      const lift=.23+.63*((i*17)%19)/19;
+      const horizontal=x+w*(side*(.024+.37*age)+age*.09);
+      const height=y-h*(lift*age*1.02-age*age*.74);
+      c.moveTo(horizontal-side*w*.006,height+h*.018);
+      c.lineTo(horizontal,height);
+    }
+    c.stroke();
   }
 
   drawSubmerged(c,w,h,image,pose,waterline,frame=null) {
